@@ -15,8 +15,9 @@ const breath = () => new Promise(done => { const channel = new MessageChannel();
  * @param {(part: number) => void} [options.onProgress] 0..1
  * @returns {Promise<Uint8Array>} the GIF
  */
-export async function filmGif({ src, width = 640, height = 360, every = 80, longest = 40000, onProgress = () => {} }) {
-    const frame = Object.assign(document.createElement('iframe'), { width, height, title: '' });
+export async function filmGif({ src, width = 640, height = 360, every = 80, longest = 40000, onProgress = () => {}, zoom = 1 }) {
+    // (`zoom`: the page is that many times the film's size, and filmed reduced, for an animation that needs more room than the film has.)
+    const frame = Object.assign(document.createElement('iframe'), { width: width * zoom, height: height * zoom, title: '' });
     frame.setAttribute('aria-hidden', 'true');
     frame.style.cssText = 'position:fixed;left:-99999px;top:0;border:0;visibility:hidden';
     // Held at its very start: `seek` stops the page's own clock.
@@ -35,12 +36,12 @@ export async function filmGif({ src, width = 640, height = 360, every = 80, long
         const draw = async () => {
             const svg = doc.querySelector('svg.fig-stage').cloneNode(true);
             svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-            svg.setAttribute('width', width); svg.setAttribute('height', height); svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+            svg.setAttribute('width', width); svg.setAttribute('height', height); svg.setAttribute('viewBox', `0 0 ${width * zoom} ${height * zoom}`);
             svg.setAttribute('style', `${colours};color:${look.getPropertyValue('--fig-ink').trim()}`);
             picture.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(new XMLSerializer().serializeToString(svg));
             await picture.decode();
             pen.fillStyle = paper; pen.fillRect(0, 0, width, height);
-            if (floor) { const box = floor.getBoundingClientRect(); pen.fillStyle = line.borderTopColor; pen.fillRect(box.left, box.top, box.width, parseFloat(line.borderTopWidth) || 2); }
+            if (floor) { const box = floor.getBoundingClientRect(); pen.fillStyle = line.borderTopColor; pen.fillRect(box.left / zoom, box.top / zoom, box.width / zoom, (parseFloat(line.borderTopWidth) || 2) / zoom); }
             pen.drawImage(picture, 0, 0, width, height);
             return pen.getImageData(0, 0, width, height).data;
         };
@@ -51,6 +52,8 @@ export async function filmGif({ src, width = 640, height = 360, every = 80, long
         let filmed = 0;
         const over = () => (known ? filmed >= stage.length : stage.length > 0 && stage.time >= stage.began + stage.length + 240) || filmed >= longest;
         while (!over()) {
+            // An animation that has not begun after a second and a half has no room to play here: filmed again, from further away.
+            if (!known && filmed >= 1500 && stage.played === 0 && zoom < 3) { frame.remove(); return filmGif({ src, width, height, every, longest, onProgress, zoom: zoom * 1.5 }); }
             gif.add(await draw());
             stage.step(every); filmed += every;
             await breath(); await breath();

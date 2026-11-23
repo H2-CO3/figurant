@@ -624,11 +624,6 @@ nav.tabs button[aria-selected="true"], #items button[aria-current="true"] { colo
 #side .glyph { width: 100% !important; } #side input[type="file"] { width: 100%; font-size: 12px; }
 @media (max-width: 1000px) { .layout, .layout.wide { grid-template-columns: minmax(0, 1fr); padding: 10px 10px 0; } #side { grid-column: 1; grid-row: auto; max-height: none; } }
 
-/* Export says its name: it is not the button that sends a message. */
-#dock .speak #export { flex: none; display: inline-flex; align-items: center; gap: 8px; height: 62px; padding: 0 20px; border-radius: 31px; font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; background: var(--paper); color: var(--ink); border: 2.5px solid var(--edge); box-shadow: 0 4px 0 var(--edge); }
-#dock .speak #export[hidden] { display: none; }
-@media (max-height: 880px) { #dock .speak #export { height: 54px; } }
-
 /* Styles: one card each, with one of its characters on its own paper. */
 dialog#style { width: min(820px, calc(100vw - 32px)); padding: 28px; border: 2.5px solid var(--edge); border-radius: 26px; box-shadow: 0 10px 0 var(--edge); }
 #style-list { grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 18px; }
@@ -704,3 +699,32 @@ dialog#style { width: min(820px, calc(100vw - 32px)); padding: 28px; border: 2.5
 @media (max-width: 1000px) { #side { display: grid; overflow: visible; } #side #version-list { max-height: 240px; } }
 /* On a low screen the answer keeps to three lines and scrolls: the page itself must not. */
 @media (max-height: 820px) { #last-word, #dock:has(#questions:not(:empty):not([hidden])) #last-word { max-height: 4.2em; font-size: 15px; } #dock .row #about { flex-wrap: nowrap; } #about button { font-size: 12px; padding: 4px 9px; } }
+
+/* The column on the right is not a block: two blocks stand in it. The settings are short and
+   never scroll; the versions take what is left, and scroll. */
+#side { background: none; box-shadow: none; backdrop-filter: none; border-radius: 0; padding: 0 4px 6px 0; gap: 14px; }
+#side > #advanced { flex: none; overflow: visible; min-height: 0; padding: 10px 12px; gap: 6px; }
+#side > #advanced:not([hidden]) { min-height: 0; }
+#side { grid-row: 1 / span 2; align-self: start; max-height: calc(100vh - 96px); }
+#side > #versions { flex: 0 1 auto; min-height: 190px; max-height: 420px; }
+#side #widths { flex-direction: row; } #side #widths button + button { border-top: 0; border-left: 2.5px solid var(--edge); }
+#side #advanced .segment button { font-size: 11px; padding: 5px 2px; }
+#side #advanced .bar { gap: 5px; } #side #advanced .bar .tag { font-size: 12px; margin: 2px 0 -3px; }
+#side #advanced #sliders, #side #advanced .picks { max-height: 150px; overflow-y: auto; }
+@media (max-width: 1000px) { #side { grid-row: auto; max-height: none; } #side > #versions { flex: none; } }
+
+/* Export sits under the questions, away from the button that sends. */
+#export-row { display: flex; justify-content: flex-end; margin: 0 4px 8px; }
+#export-row:has(#export[hidden]) { display: none; }
+#dock #export { display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 16px; border-radius: 19px; font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; background: var(--paper); color: var(--ink); border: 2.5px solid var(--edge); box-shadow: 0 3px 0 var(--edge); }
+#dock #export[hidden] { display: none; }
+.layout.board #export-row { display: none; }
+
+/* Who plays, pictured beside their name; and every animation and scene by a moment of it. */
+#cast-pick { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+#cast-pick select { flex: 1; min-width: 0; }
+#cast-face { flex: none; width: 46px; height: 46px; display: grid; place-items: center; border: 2.5px solid var(--edge); border-radius: 12px; background: var(--paper); box-shadow: 0 3px 0 var(--edge); overflow: hidden; }
+#cast-face img { width: 100%; height: 100%; object-fit: contain; }
+#items button.film { grid-auto-flow: row; grid-template-columns: minmax(0, 1fr); justify-items: stretch; gap: 6px; padding: 8px; }
+#items button.film .thumb { width: 100%; height: 58px; object-fit: contain; }
+#items button.film .thumb-wait { justify-self: center; }

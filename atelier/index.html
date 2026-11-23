@@ -30,7 +30,7 @@
     <button role="tab" id="board-open"><b aria-hidden="true">✏️</b><span data-t="tab.board"></span></button>
   </nav>
   <div id="strip">
-      <label id="cast-label"><span data-t="character"></span> <select id="cast"></select></label>
+      <label id="cast-label"><span data-t="character"></span> <span id="cast-pick"><span id="cast-face"></span><select id="cast"></select></span></label>
       <div id="items"></div>
     <button type="button" id="new"><b aria-hidden="true">+</b><span data-t="new"></span></button>
   </div>
@@ -131,11 +131,12 @@
   <p id="last-word"></p>
   <form id="say">
     <div id="questions"></div>
+    <div id="export-row"><button type="button" id="export" data-t-title="export.title"><b aria-hidden="true">⬇</b><span data-t="export"></span></button></div>
     <div class="row">
       <div id="about" role="group" data-t-label="about.label">
         <button type="button" id="about-this" aria-pressed="true"></button>
-        <button type="button" id="about-new" aria-pressed="false" data-t="about.new"></button>
         <button type="button" id="about-interface" aria-pressed="false" data-t="about.interface" data-t-title="about.interface.title"></button>
+        <button type="button" id="about-new" aria-pressed="false" data-t="about.new"></button>
       </div>
       <span id="saved" role="status"></span>
       <button type="button" class="quiet" id="history" aria-expanded="false" data-t="history"></button>
@@ -143,7 +144,6 @@
     <div class="speak">
       <textarea id="note" rows="1" data-t-label="note"></textarea>
       <button type="submit" data-decision="redo" class="primary" data-t-title="redo.title">➤</button>
-      <button type="button" id="export" data-t-title="export.title"><b aria-hidden="true">⬇</b><span data-t="export"></span></button>
     </div>
   </form>
 </aside>

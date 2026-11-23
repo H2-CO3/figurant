@@ -7,8 +7,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 - `figurant atelier --lan`: the atelier opened to the local network on purpose, behind an access code made for each run (asked once per browser, five wrong tries lock an address out for five minutes).
+- The lists show a picture of each animation (its most telling moment) and of each scene (a band over its name), with a loader while they are drawn; the character who plays is pictured beside their name.
+
+### Changed
+- The column on the right is two separate blocks: short settings that never scroll, and the versions, which do. Export sits under the questions, away from the button that sends; "Change the interface" is the middle one of the three buttons.
 
 ### Fixed
+- GIFs: a film stepped by 80 ms moved on by 50 ms only, so a GIF played slowed down and a scene was cut before its end.
+- GIFs: an animation that needs more room than the film has was filmed standing still for forty seconds; it is now filmed from further away.
 - GIFs: each frame brings its own palette, so a colour that comes late into a film rich in tones is no longer replaced by a neighbour.
 - The working sign over the stage is taken down as soon as the assistant has answered.
 

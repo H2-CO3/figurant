@@ -20,6 +20,7 @@
 <script type="module">
 // One scene: several characters on one floor, each following its track. The
 // atelier drives the clock (speed, pause, frame by frame) and reads the time.
+import { advance } from './hold.js';
 import { createClock, createStage, createFx, playComposition, checkComposition, compositionLength, describeProblems } from '/__figurant/engine/index.js';
 
 const params = new URLSearchParams(location.search);
@@ -62,7 +63,7 @@ try {
         requestAnimationFrame(loop);
     };
     requestAnimationFrame(loop);
-    stage.step = (ms = 1000 / 60) => { stage.playing = false; clock.tick(ms); stage.time = show.time(); };
+    stage.step = (ms = 1000 / 60) => { stage.playing = false; advance(clock, ms); stage.time = show.time(); };
     // Going to a moment: time is run forward to it, out of sight, letting each step of the
     // scene happen on the way; then it holds there. Going back starts again from the beginning.
     const breath = () => new Promise(done => { const channel = new MessageChannel(); channel.port1.onmessage = () => done(); channel.port2.postMessage(0); });

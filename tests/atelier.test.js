@@ -663,3 +663,17 @@ test('opened to the local network on purpose: only by this machine\'s own addres
     const closed = await open(undefined, () => false);
     try { assert.equal((await asker(closed)('/secret.txt')).status, 403); } finally { closed.close(); await rm(root, { recursive: true, force: true }); }
 });
+
+test('a held page stepped by 80 ms moves on by 80 ms, though the clock takes 50 at most in one tick', async () => {
+    // The film of a GIF steps by 80 ms between two frames: at 50 ms a step, the
+    // GIF played slowed down, and a scene was cut before its end.
+    const { advance } = await import('../atelier/hold.js');
+    const { createClock } = await import('../src/index.js');
+    const clock = createClock();
+    advance(clock, 80);
+    assert.equal(clock.now, 80);
+    advance(clock, 1000 / 60);
+    assert.ok(Math.abs(clock.now - 80 - 1000 / 60) < 1e-9, 'a frame is still a frame');
+    advance(clock, 26500 - clock.now);
+    assert.ok(Math.abs(clock.now - 26500) < 1e-6, 'a whole scene, to its end');
+});
