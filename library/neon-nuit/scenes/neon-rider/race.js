@@ -83,6 +83,15 @@ export const raceNeonRider = {
             const forever = (attrs, update) => c.onLeave(fx.shape({ life: 1e12, attrs, update }).stop);
             const corner = (i, far) => wall((i + 0.5) * TURN, far);
             const frames = Array.from({ length: 20 }, (unused, i) => i);
+            // Gradients of its own, for the light at the far end and on the floor (where there is a page to hold them).
+            const stage = ctx?.api?.stage, defs = stage?.svg ? stage.el('defs', stage.svg) : null;
+            if (defs) {
+                c.onLeave(() => defs.remove?.());
+                const glow = stage.el('radialGradient', defs, { id: 'circuit-core' });
+                for (const [offset, tint, opacity] of [[0, '#ffffff', 0.95], [0.1, '#e9d6ff', 0.6], [0.32, VIOLET, 0.3], [0.7, DEEP, 0.1], [1, DEEP, 0]]) stage.el('stop', glow, { offset, 'stop-color': tint, 'stop-opacity': opacity });
+                const sheen = stage.el('linearGradient', defs, { id: 'circuit-floor', x1: 0, y1: 0, x2: 0, y2: 1 });
+                for (const [offset, tint, opacity] of [[0, '#d9c2ff', 0.6], [0.3, VIOLET, 0.22], [1, DEEP, 0.04]]) stage.el('stop', sheen, { offset, 'stop-color': tint, 'stop-opacity': opacity });
+            }
             // Time, speed, the bend of the tunnel, and the kick: every eight seconds or so, everything lurches forward.
             c.onLeave(c.clock.onFrame(dt => {
                 shared.t += dt / 1000;
@@ -95,6 +104,32 @@ export const raceNeonRider = {
             }));
             /** How far the frame of that number is, right now: they come at you and start again at the far end. */
             const farOf = i => 1 + ((i - shared.run) % 20 + 20) % 20 * 0.42 - 0.3;
+            // The walls themselves: eight faces, each its own dark, the ceiling the darkest and the floor a little lit,
+            // so that the tunnel is a volume and not a drawing of one. Then the light of the far end, falling down it.
+            const FACES = ['#0b0e24', '#0d1130', '#101433', '#0d1130', '#090b1d', '#07091a', '#090b1d', '#0b0e24'];
+            FACES.forEach((tint, side) => forever({ fill: side === 1 ? '#0c0f2a' : tint, stroke: 'none' }, el => {
+                let d = '';
+                for (let step = 0; step < 13; step++) {
+                    const near = 0.72 + step * step * 0.06, far = 0.72 + (step + 1) * (step + 1) * 0.06;
+                    const a = corner(side, near), b = corner(side + 1, near), b2 = corner(side + 1, far), a2 = corner(side, far);
+                    d += `M${f(a[0])} ${f(a[1])}L${f(b[0])} ${f(b[1])}L${f(b2[0])} ${f(b2[1])}L${f(a2[0])} ${f(a2[1])}Z`;
+                }
+                el.setAttribute('d', d);
+            }));
+            if (defs) {
+                // The floor shines where the light of the far end reaches it.
+                forever({ fill: 'url(#circuit-floor)', stroke: 'none' }, el => {
+                    let d = '';
+                    for (let step = 0; step <= 12; step++) { const [x, y] = corner(2, 11 - step * step * 0.0715); d += `${step ? 'L' : 'M'}${f(x)} ${f(y)}`; }
+                    for (let step = 12; step >= 0; step--) { const [x, y] = corner(1, 11 - step * step * 0.0715); d += `L${f(x)} ${f(y)}`; }
+                    el.setAttribute('d', d + 'Z');
+                });
+                // The far end: a glow that fills the tunnel there, and swells with the boost.
+                c.onLeave(fx.shape({ life: 1e12, tag: 'circle', attrs: { fill: 'url(#circuit-core)', stroke: 'none' }, update(el) {
+                    const [x, y] = centre(30);
+                    el.setAttribute('cx', f(x)); el.setAttribute('cy', f(y)); el.setAttribute('r', f((150 + 110 * shared.boost + 8 * Math.sin(shared.t * 9)) * k));
+                } }).stop);
+            }
             // The frames of the tunnel: one in four burns, the others are dim.
             for (const [every, attrs] of [[false, { stroke: DEEP, 'stroke-width': 1.3 * k, opacity: 0.75 }], [true, { stroke: VIOLET, 'stroke-width': 4.6 * k, opacity: 0.22 }], [true, { stroke: VIOLET, 'stroke-width': 1.7 * k }]]) forever(attrs, el => {
                 let d = '';
@@ -164,7 +199,8 @@ export const raceNeonRider = {
             }));
         }
         // Each runner trails a beam of its colour, along the floor and the wall, back to you.
-        if (fx) for (const [width, opacity] of [[11, 0.16], [5, 0.4], [1.8, 1]]) c.onLeave(fx.shape({ life: 1e12, attrs: { stroke: colour, 'stroke-width': width * k, opacity, 'stroke-linejoin': 'round' }, update(el) {
+        // (The widest and faintest is its light on the floor.)
+        if (fx) for (const [width, opacity] of [[30, 0.07], [11, 0.16], [5, 0.4], [1.8, 1]]) c.onLeave(fx.shape({ life: 1e12, attrs: { stroke: colour, 'stroke-width': width * k, opacity, 'stroke-linejoin': 'round' }, update(el) {
             let d = '';
             for (let step = 0; step <= 8; step++) { const far = me.far - (me.far - 0.7) * step / 8, [x, y] = wall(angleOf(me.lane), far); d += `${step ? 'L' : 'M'}${f(x)} ${f(y)}`; }
             el.setAttribute('d', d); el.setAttribute('stroke-width', f(width * k * (1 + 0.5 * shared.boost)));
