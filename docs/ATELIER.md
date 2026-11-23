@@ -112,6 +112,13 @@ is an order, named from its first words (`fiches/<those-words>.md`, with
 `Style:` and, for an animation, `Character:`). **Keep your answers short**:
 the drawer shows two lines of them.
 
+Above the line to write in, three keys say what the next message is about:
+**Change "<item>"** (what is on show), **Something new** (an order), and
+**Change the interface**: a remark about the page itself, kept in
+`fiches/atelier-interface.md` with where the person was. In this repository,
+act on it in `atelier/` (and test it); in a project made by `init` the page
+belongs to the engine: answer that, and what they can do instead.
+
 Each item has its own fiche (`<animation>.md`, `character-<name>.md`,
 `emoji-<name>.md`, `prop-<name>.md`, `scene-<name>.md`). An item you have
 just made from an order has none yet: your questions about it are read from

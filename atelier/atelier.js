@@ -102,7 +102,7 @@ function listing() {
     castNames = Object.keys(everyone).filter(name => inStyle('characters', name));
     if (!castNames.includes(view.cast)) view.cast = castNames[0];
     SHOPS.scenes.made = SHOPS.scenes.all.filter(scene => castNames.some(cast => plays(scene, cast)));
-    const ordered = prefix => Object.keys(view.fiches).filter(name => (prefix ? name.startsWith(prefix) : !/^(character|prop|emoji|scene)-/.test(name))).map(name => name.slice(prefix.length));
+    const ordered = prefix => Object.keys(view.fiches).filter(name => (prefix ? name.startsWith(prefix) : !/^(character|prop|emoji|scene|atelier)-/.test(name))).map(name => name.slice(prefix.length));
     // What was ordered and does not exist yet; an item hidden by the style filter is not an order.
     // An order the assistant made under another name is made: it is not listed as still to make.
     for (const shop of Object.values(SHOPS)) shop.names = [...new Set([...shop.made, ...ordered(shop.prefix).filter(name => !shop.all.includes(name) && !fulfilled(view.fiches[shop.fiche(name)], made))])];
@@ -262,14 +262,16 @@ function draw() {
     if (nothing) view.fresh = true;
     $('about-this').hidden = nothing;
     $('about-this').textContent = current() ? t('about.this', { name: label(view.shop, current()) }) + (view.moment != null && shown()?.playing === false ? ` · ⏱ ${(view.moment / 1000).toFixed(1)} s` : '') : '';
-    $('about-this').setAttribute('aria-pressed', String(!view.fresh));
+    $('about-this').setAttribute('aria-pressed', String(!view.fresh && !view.aside));
     $('about-new').setAttribute('aria-pressed', String(!!view.fresh));
-    $('note').placeholder = t(view.fresh ? `fresh.${view.shop}` : 'note.placeholder');
+    $('about-interface').setAttribute('aria-pressed', String(!!view.aside));
+    $('note').placeholder = t(view.aside ? 'interface.placeholder' : view.fresh ? `fresh.${view.shop}` : 'note.placeholder');
     $('questions').hidden = !!view.fresh;
     $('export').hidden = !!view.fresh || !current() || !exists();
     // Lean: only the assistant's last word shows; the whole conversation opens on demand.
     // The assistant's last word about what is on show, or else its last word at all.
-    const lastWord = fiche.entries.findLast?.(entry => entry.author === 'llm' && entry.text) ?? said.findLast?.(entry => entry.author === 'llm');
+    const onThis = fiche.entries.findLast?.(entry => entry.author === 'llm' && entry.text), onPage = view.fiches[INTERFACE]?.entries.findLast?.(entry => entry.author === 'llm' && entry.text);
+    const lastWord = (onPage && (view.aside || !onThis || onPage.date > onThis.date) ? onPage : onThis) ?? said.findLast?.(entry => entry.author === 'llm');
     $('last-word').textContent = lastWord ? lastWord.text.split('\n').filter(line => !/^(Name|Style|Character|Cast): /.test(line)).join(' ') : '';
     $('last-word').hidden = !lastWord || !$('thread').hidden;
     $('history').hidden = !said.length;
@@ -448,10 +450,13 @@ $('cast').addEventListener('change', event => { view.cast = event.target.value; 
 
 // The order form: a name, the elements to use, and what is wanted, in plain words.
 // "+ New": the next message asks for something that does not exist yet.
-const fresh = on => { view.fresh = on; draw(); load(); ready(); if (on) { $('note').focus(); note('new', { shop: view.shop }); } };
+const fresh = on => { view.aside = false; view.fresh = on; draw(); load(); ready(); if (on) { $('note').focus(); note('new', { shop: view.shop }); } };
 $('new').addEventListener('click', () => fresh(true));
 $('about-new').addEventListener('click', () => fresh(true));
 $('about-this').addEventListener('click', () => fresh(false));
+// A remark about the page itself goes to a fiche of its own, whatever is on show.
+const INTERFACE = 'atelier-interface';
+$('about-interface').addEventListener('click', () => { fresh(false); view.aside = true; draw(); ready(); $('note').focus(); });
 // Advanced: the fine settings, in the conversation's panel, which grows to hold them.
 const advanced = open => {
     $('advanced').hidden = !open; document.querySelector('.layout').classList.toggle('wide', open);
@@ -818,6 +823,17 @@ $('say').addEventListener('submit', async event => {
     let decision = event.submitter?.dataset.decision || 'note';
     // On the whiteboard, the message says what the drawing is: an order for a character, with the drawing.
     if (view.board) { await boardOrder(); return; }
+    // About the page itself: a remark in its own fiche, with where the person was.
+    if (view.aside) {
+        const text = $('note').value.trim();
+        if (!text) return;
+        try {
+            view.fiches[INTERFACE] = await api(`fiches/${INTERFACE}`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ decision: 'redo', note: `About: the atelier's own page (seen from ${view.shop}/${current() ?? ''})\n${text}` }) });
+            $('note').value = ''; view.aside = false; $('saved').textContent = t('saved.interface'); note('order-sent', { shop: view.shop });
+        } catch (error) { $('saved').textContent = t('saved.failed', { error: error.message }); }
+        draw(); ready();
+        return;
+    }
     // Something new: the message is the order. It is named from its first words.
     if (view.fresh) {
         const text = $('note').value.trim();

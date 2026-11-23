@@ -685,3 +685,9 @@ dialog#style { width: min(820px, calc(100vw - 32px)); padding: 28px; border: 2.5
 #side #version-list button[aria-current="true"] { background: var(--accent); color: var(--on-accent); }
 #side #version-restore { justify-self: stretch; background: var(--pop); color: var(--on-pop); }
 #versions .tag { order: -2; } #side #version-restore { order: -1; }
+
+/* The assistant's answer is read whole: as many lines as it takes, and it scrolls past six. */
+#last-word, #dock:has(#questions:not(:empty):not([hidden])) #last-word { display: block; -webkit-line-clamp: unset; overflow-y: auto; max-height: 8.2em; }
+@media (max-height: 880px) { #last-word, #dock:has(#questions:not(:empty):not([hidden])) #last-word { max-height: 6.8em; } }
+@media (max-width: 1000px) { #last-word { -webkit-line-clamp: unset; } }
+#dock .row #about { flex-wrap: wrap; row-gap: 8px; }
