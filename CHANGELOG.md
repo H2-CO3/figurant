@@ -6,6 +6,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+- Cut paper: two dancers, him and her (stick figures dressed in paper), and their first dance: they meet, step together, she spins under his arm, runs, jumps, and he holds her up (`first-dance`).
 - Line and gold: a pirate captain, who is the stick figure in costume (`pirate`: the model for dressing a stick figure), his landfall on the masthead of a sinking boat, the harbour keeper's toll, and their scene (`landfall`).
 - Ink wash: the brush writes 天 and 地 on an easel, stroke by stroke in the order they are written, its point on the paper all the way, and a frog on a rock watches (`heaven-and-earth`). The brush is redrawn (three lengths of bamboo, a carved cap, a tassel, a fuller tuft); a new easel and rock. This replaces the pond scene and the single stroke.
 - Default style: a ballpoint pen without its cap (`ballpoint`), the common gesture `high-five`, a tap dance for the pen and one for the highlighter, and the scene where they meet (`pen-pals`).
