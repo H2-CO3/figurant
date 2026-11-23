@@ -24,6 +24,7 @@ export function needles(shop, name) {
         for (const item of scene?.props ?? []) prop(item.prop);
     } else if (shop === 'scenes') { animation(name); character(view.cast); }
     else if (shop === 'props') prop(name);
+    else if (shop === 'effects') { const made = config.effects?.[name]; if (made) add('effect', name, made.play?.toString()); }
     else character(name);
     return out;
 }

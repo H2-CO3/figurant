@@ -6,6 +6,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+- An **Effects** workshop in the atelier: the special effects a project lists under `effects` in its config, each played on the bench, and ordered like anything else. Four new ready-made effects in the engine (`shockwave`, `flash`, `bolt`, `wave`), eight in the library (`library/common/effects.js`).
+- The duel is written on one floor and one clock shared by its two parts: they cross the whole stage, eight clashes land where the blades are, and each moment leaves the one before it time to end. Auras when the blades light up, a ring and a star at each clash, lightning for the lift, dust under every landing.
 - The stick figure's duel for two (`duel-stickman`): both play it from the same instant, each its part, and one clock keeps them together through clashes with sparks, a jump, a parry, a throw and a lift from afar, and blades locked until they go out. `duel-dance` is now that duel, then the dance.
 - A tutorial: a "?" on each part of the page says what it is for when pointed at or touched; one button in the heading turns them on or off, and they are on for a first visit.
 - Four more scenes of two stick figures (`tug-of-war`, `copycat`, `for-and-against`, `well-met`) and a common gesture, `haul`. With `duel-dance`, where the foils are now swords of light, one blue, one red (`with: { colour }`), they are the examples that play while something new is asked for.

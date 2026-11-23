@@ -290,6 +290,29 @@ const show = playComposition({
 // show.stop() removes everything.
 ```
 
+### Special effects
+
+What an animation draws besides its character: sparks, a ring, dust,
+lightning. `ctx.api.fx` makes them (`null` where there is nothing to draw
+on: always guard it), and `effects` from `'figurant'` are ready-made ones:
+
+```js
+import { effects } from 'figurant';
+// in play(c, ctx):
+const fx = ctx?.api?.fx;
+if (fx) effects.shockwave(fx, c.figure.points.armR.tip, { k: c.figure.k, color: '#2f7df6' });
+```
+
+`burst`, `dust`, `shockwave`, `flash`, `bolt` (lightning between two points,
+which may be functions), `wave` (arcs leaving a point at an angle), `aura`
+(a glow round a figure, whose `level` you animate). Points are page pixels;
+`k` is pixels per character unit, so an effect is the size of who makes it.
+A project lists its own under `effects` in `figurant.config.js`, each
+`{ play(fx, [x, y], { k, color }), every? }`: the atelier's **Effects**
+workshop plays them one by one, and an order written there is an order for
+a new one. `library/common/effects.js` is the model, and
+`library/common/scenes/stickman/duel.js` uses nearly all of them.
+
 ### Sound
 
 A scene may play sound files, each at its time:

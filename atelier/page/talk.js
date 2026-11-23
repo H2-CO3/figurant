@@ -69,7 +69,7 @@ $('detailed').addEventListener('click', () => {
     $('new-scene-fields').hidden = view.shop !== 'scenes';
     $('new-cast-pick').hidden = view.shop !== 'compositions';
     $('new-cast-list').replaceChildren(...castNames.map(name => el('label', {}, el('input', { type: 'checkbox', value: name }), ' ' + name)));
-    $('new-drawing-label').hidden = ['scenes', 'emoji', 'compositions'].includes(view.shop);
+    $('new-drawing-label').hidden = ['scenes', 'emoji', 'compositions', 'effects'].includes(view.shop);
     $('new-cast').replaceChildren(...castNames.map(name => el('option', { value: name, textContent: name, selected: name === view.cast })));
     $('new-props').replaceChildren(...SHOPS.props.made.map(name => el('label', {}, el('input', { type: 'checkbox', value: name }), ' ' + name)));
     $('compose-error').textContent = '';
@@ -210,7 +210,8 @@ export function drawTalk() {
     $('about-interface').setAttribute('aria-pressed', String(!!view.aside));
     $('note').placeholder = t(view.aside ? 'interface.placeholder' : view.fresh ? (view.shop === 'scenes' ? 'fresh.example' : `fresh.${view.shop}`) : 'note.placeholder');
     $('questions').hidden = !!view.fresh;
-    $('export').hidden = !!view.fresh || !current() || !exists();
+    // (An effect is not exported by itself: it leaves with the animation that uses it.)
+    $('export').hidden = !!view.fresh || !current() || !exists() || view.shop === 'effects';
     // Lean: only the assistant's last word shows; the whole conversation opens on demand.
     // The assistant's last word about what is on show, or else its last word at all.
     const onThis = fiche.entries.findLast?.(entry => entry.author === 'llm' && entry.text), onPage = view.fiches[INTERFACE]?.entries.findLast?.(entry => entry.author === 'llm' && entry.text);

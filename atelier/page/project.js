@@ -23,6 +23,8 @@ export const SHOPS = {
     characters: { made: Object.keys(config.cast || {}), prefix: 'character-' },
     emoji: { made: Object.keys(config.emoji || {}), prefix: 'emoji-' },
     props: { made: Object.keys(config.props || {}), prefix: 'prop-' },
+    // Special effects: what an animation draws besides its character.
+    effects: { made: Object.keys(config.effects || {}), prefix: 'effect-' },
     // A scene: several characters, each on its track in time.
     compositions: { made: Object.keys(config.compositions || {}), prefix: 'scene-' },
 };
@@ -76,7 +78,7 @@ export function listing() {
     castNames = Object.keys(everyone).filter(name => inStyle('characters', name));
     if (!castNames.includes(view.cast)) view.cast = castNames[0];
     SHOPS.scenes.made = SHOPS.scenes.all.filter(scene => castNames.some(cast => plays(scene, cast)));
-    const ordered = prefix => Object.keys(view.fiches).filter(name => (prefix ? name.startsWith(prefix) : !/^(character|prop|emoji|scene|atelier)-/.test(name))).map(name => name.slice(prefix.length));
+    const ordered = prefix => Object.keys(view.fiches).filter(name => (prefix ? name.startsWith(prefix) : !/^(character|prop|emoji|scene|effect|atelier)-/.test(name))).map(name => name.slice(prefix.length));
     // What was ordered and does not exist yet; an item hidden by the style filter is not an order.
     // An order the assistant made under another name is made: it is not listed as still to make.
     for (const shop of Object.values(SHOPS)) shop.names = [...new Set([...shop.made, ...ordered(shop.prefix).filter(name => !shop.all.includes(name) && !fulfilled(view.fiches[shop.fiche(name)], made))])];

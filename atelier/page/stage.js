@@ -20,7 +20,7 @@ export function address(commit, more = {}) {
     const also = { ...stageTheme(), ...(commit ? { config: `/__figurant/at/${commit}/figurant.config.js` } : {}), ...more };
     return view.shop === 'compositions' ? `show.html?${new URLSearchParams({ scene: current(), speed: view.speed, ...also })}` : view.shop === 'scenes'
         ? `stage.html?${new URLSearchParams({ scene: current(), cast: view.cast, speed: view.speed, ...also })}`
-        : `bench.html?${new URLSearchParams({ kind: view.shop === 'props' ? 'prop' : 'character', name: current(), ...also })}`;
+        : `bench.html?${new URLSearchParams({ kind: { props: 'prop', effects: 'effect' }[view.shop] ?? 'character', name: current(), ...also })}`;
 }
 /** What can play on the stage while something new is being asked for: the stick figure's own, each with the request that made it (i18n: demo.<name>). */
 const DEMOS = [{ shop: 'compositions', name: 'duel-dance' }, { shop: 'compositions', name: 'tug-of-war' }, { shop: 'compositions', name: 'copycat' }, { shop: 'compositions', name: 'for-and-against' }, { shop: 'compositions', name: 'well-met' }, { shop: 'scenes', name: 'tap-dance-stickman', cast: 'stickman' }, { shop: 'scenes', name: 'notes', cast: 'stickman' }, { shop: 'scenes', name: 'hello', cast: 'stickman' }];

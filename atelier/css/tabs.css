@@ -1,4 +1,4 @@
-/* The sections (scenes, characters, emoji, props, compositions, whiteboard): big keys coming
+/* The sections (animations, characters, emoji, props, effects, scenes, whiteboard): big keys coming
    out of the left wall. The one in use comes out further, in colour. */
 .tabs {
     flex-wrap: wrap;
@@ -109,4 +109,16 @@ nav.tabs button[aria-selected="true"] {
     .tabs button { flex: 0 0 104px; }
     .tabs button, .tabs button:hover { width: auto; }
     nav.tabs button[aria-selected="true"], .tabs button:hover { border-radius: 18px; }
+}
+
+/* Seven keys now: each a little lower, so that all of them stand on the wall of a laptop's screen. */
+.tabs { gap: 10px; }
+.tabs button { min-height: 84px; padding: 9px 8px; }
+@media (max-height: 900px) {
+    .tabs { gap: 7px; }
+    .tabs button { min-height: 0; padding: 6px 8px; font-size: 12px; box-shadow: 0 4px 0 var(--edge); }
+    .tabs button b { font-size: 24px; line-height: 1.1; }
+}
+@media (max-height: 720px) {
+    .tabs button span { display: none; }
 }

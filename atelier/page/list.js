@@ -23,7 +23,8 @@ export function drawList() {
         // A picture of it.
         // An animation and a scene are shown by a moment of them.
         const who = view.shop === 'scenes' ? ['scene', name, view.cast] : view.shop === 'compositions' ? ['show', name] : [view.shop === 'props' ? 'prop' : 'character', name];
-        const pictured = made;
+        // (An effect has no still picture: it is a moment.)
+        const pictured = made && view.shop !== 'effects';
         // The picture drawn this time, or meanwhile the one kept from last time.
         const source = pictured ? thumbs.get(who.join(':')) || keptThumb(who.join(':')) || thumbs.get(who.join(':')) : null;
         if (pictured && !thumbs.has(who.join(':'))) thumbnail(...who);

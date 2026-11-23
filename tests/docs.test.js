@@ -291,7 +291,8 @@ test('every scene of the library plays to its end with the character it was made
             cast: { default: everyone[owner] }, scenes: { [name]: { ...scene, play: async (c, ctx) => { await scene.play(c, ctx); ended++; } } },
         }).start();
         assert.deepEqual(director.problems, [], name);
-        await advance(clock, 30000);
+        // (The longest, the duel, lasts some 34 seconds.)
+        await advance(clock, 45000);
         const figure = director.members[0].figure;
         // Some animations go on until something else replaces them.
         const loops = ['notes', 'notes-teapot', 'picket', 'haul'].includes(name);

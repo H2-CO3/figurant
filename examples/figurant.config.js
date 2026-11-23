@@ -29,6 +29,8 @@ export default {
     },
     scenes: { ...common.scenes, ...Object.assign({}, ...styles.map(style => style.scenes)) },
     props: { ...basics, ...Object.assign({}, ...styles.map(style => style.props)) },
+    // Special effects, ready to use in an animation.
+    effects: { ...common.effects },
     // Scenes: several characters, each on its track in time.
     compositions: { ...common.compositions, ...Object.assign({}, ...styles.map(style => style.compositions ?? {})) },
     // The style a fresh copy starts in (the person changes it from the atelier).

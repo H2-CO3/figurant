@@ -103,3 +103,71 @@ export function aura(fx, figure, { color = 'var(--fig-accent, #d9a400)' } = {}) 
     };
     return state;
 }
+
+/** A ring that grows from a point and fades: a shock, a landing, a blast. */
+export function shockwave(fx, [x, y], { k = 1, size = 46, life = 420, color = INK, width = 2.4, flat = 1 } = {}) {
+    return fx.shape({
+        life, tag: 'ellipse', attrs: { cx: f(x), cy: f(y), stroke: color, 'stroke-width': width },
+        update(el, p) {
+            const r = (4 + (1 - Math.pow(1 - p, 3)) * size) * k;
+            el.setAttribute('rx', f(r)); el.setAttribute('ry', f(r * flat));
+            el.setAttribute('opacity', f(1 - p)); el.setAttribute('stroke-width', f(width * (1 - p * 0.7)));
+        },
+    });
+}
+
+/** A star of rays that opens and closes in an instant: a hit, a cut. */
+export function flash(fx, [x, y], { k = 1, size = 26, rays = 8, life = 220, color = INK, width = 2.2 } = {}) {
+    const turn = fx.range(0, TAU);
+    return fx.shape({
+        life, attrs: { stroke: color, 'stroke-width': width },
+        update(el, p) {
+            const open = Math.sin(Math.min(1, p * 1.6) * Math.PI / 2), from = size * k * 0.25 * open + size * k * p * 0.6, to = size * k * open;
+            let d = '';
+            for (let i = 0; i < rays; i++) { const a = turn + i * TAU / rays, long = i % 2 ? 0.6 : 1; d += `M${f(x + Math.cos(a) * from)} ${f(y + Math.sin(a) * from)}L${f(x + Math.cos(a) * to * long)} ${f(y + Math.sin(a) * to * long)}`; }
+            el.setAttribute('d', d); el.setAttribute('opacity', f(1 - p * p));
+        },
+    });
+}
+
+/**
+ * Lightning between two points, redrawn jagged on every frame for as long as it lasts.
+ * `from` and `to` may be functions, for ends that move.
+ */
+export function bolt(fx, from, to, { k = 1, life = 500, color = INK, width = 2, jag = 9, forks = 1 } = {}) {
+    const end = point => (typeof point === 'function' ? point() : point);
+    return fx.shape({
+        life, attrs: { stroke: color, 'stroke-width': width, 'stroke-linejoin': 'miter' },
+        update(el, p) {
+            const [ax, ay] = end(from), [bx, by] = end(to), long = Math.hypot(bx - ax, by - ay) || 1, nx = -(by - ay) / long, ny = (bx - ax) / long;
+            let d = '';
+            for (let fork = 0; fork <= forks; fork++) {
+                const steps = Math.max(3, Math.round(long / (14 * k)));
+                d += `M${f(ax)} ${f(ay)}`;
+                for (let i = 1; i <= steps; i++) {
+                    const t = i / steps, off = i === steps ? 0 : fx.range(-jag, jag) * k * (fork ? 1.6 : 1);
+                    d += `L${f(ax + (bx - ax) * t + nx * off)} ${f(ay + (by - ay) * t + ny * off)}`;
+                }
+            }
+            el.setAttribute('d', d); el.setAttribute('opacity', f(0.55 + fx.random() * 0.45 - (p > 0.8 ? (p - 0.8) * 3 : 0)));
+        },
+    });
+}
+
+/** Arcs leaving a point one after the other, towards `angle` (radians): a push from afar, a shout, a call. */
+export function wave(fx, origin, angle, { k = 1, count = 4, reach = 80, life = 520, every = 110, color = INK, width = 2.2 } = {}) {
+    const at = () => (typeof origin === 'function' ? origin() : origin), turn = angle * 180 / Math.PI;
+    for (let i = 0; i < count; i++) {
+        fx.shape({
+            life: life + i * every, attrs: { stroke: color, 'stroke-width': width },
+            update(el, p) {
+                const q = Math.max(0, (p * (life + i * every) - i * every) / life);
+                if (q <= 0) { el.setAttribute('d', ''); return; }
+                const [x, y] = at(), far = (10 + q * reach) * k, wide = (6 + q * 18) * k;
+                el.setAttribute('d', `M${f(-wide * 0.35)} ${f(-wide)}Q${f(wide * 0.5)} 0 ${f(-wide * 0.35)} ${f(wide)}`);
+                el.setAttribute('transform', `translate(${f(x + Math.cos(angle) * far)} ${f(y + Math.sin(angle) * far)}) rotate(${f(turn)})`);
+                el.setAttribute('opacity', f(0.9 * (1 - q)));
+            },
+        });
+    }
+}

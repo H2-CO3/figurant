@@ -21,7 +21,7 @@
 <script type="module">
 // The bench: one character or one prop, standing still, so that it can be
 // looked at closely, posed number by number, and put through the stock moves.
-import { createClock, createStage, createFigure, createActor, createProp, moves, checkCharacter, describeProblems } from '/__figurant/engine/index.js';
+import { createClock, createStage, createFigure, createActor, createProp, createFx, moves, checkCharacter, describeProblems } from '/__figurant/engine/index.js';
 
 const params = new URLSearchParams(location.search);
 // The style in use lends its colours to the stage: the page's ink, paper and accent.
@@ -53,7 +53,22 @@ try {
     const marks = svg.layer('marks');
     let state, points = () => [];
 
-    if (kind === 'prop') {
+    if (kind === 'effect') {
+        // An effect is over in an instant: it is played again and again, above the floor, to be looked at.
+        const effect = config.effects?.[name];
+        if (typeof effect?.play !== 'function') throw new Error(`No effect named "${name}" in the configuration.`);
+        const fx = createFx({ stage: svg, clock });
+        const colour = getComputedStyle(document.documentElement).getPropertyValue('--fig-accent').trim() || undefined;
+        state = {};
+        let next = 0, turn = 0;
+        clock.onFrame(() => {
+            if (clock.now < next) return;
+            next = clock.now + (effect.every ?? 1200);
+            const [x, y] = ground();
+            // Once in ink, once in the style's colour: an effect takes the colour it is given.
+            effect.play(fx, [x, y - 90 * size * 0.5], { k: size * 0.5, ...(turn++ % 2 && colour ? { color: colour } : {}) });
+        });
+    } else if (kind === 'prop') {
         const description = config.props?.[name];
         if (!description) throw new Error(`No prop named "${name}" in the configuration.`);
         // A prop made of layers is shown whole.

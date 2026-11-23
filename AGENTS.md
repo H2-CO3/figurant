@@ -36,7 +36,7 @@ Only what `src/index.js` exports is public.
 | `src/heads` | `shapeHead`: a head described as data. |
 | `src/actor` | Interruptible sequences (`c.tween`, `c.hands`, `c.feet`, `c.prop`...), stock moves. |
 | `src/props` | Objects described as data, held or placed. |
-| `src/fx` | Particles and temporary shapes. |
+| `src/fx` | Particles and temporary shapes; `effects.js` holds ready-made ones (burst, dust, shockwave, flash, bolt, wave, aura). |
 | `src/sound` | Sound files played in step with a scene's time. Makes no sound of its own. |
 | `src/director` | Reads `data-fig-*` markers, takes characters from place to place, starts scenes when they fit. `scene.js` is the scene format and its checker. |
 | `src/stage` | The SVG layer laid over the page. |

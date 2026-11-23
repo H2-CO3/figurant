@@ -17,6 +17,7 @@ import { copycat } from './compositions/copycat.js';
 import { forAndAgainst } from './compositions/for-and-against.js';
 import { wellMet } from './compositions/well-met.js';
 
+export { effects } from './effects.js';
 export const scenes = { hello, notes: takeNotesScene, 'tap-dance-stickman': tapDanceStickman, 'fence-stickman': fenceStickman, 'duel-stickman': duelStickman, picket, 'shake-hands': shakeHands, cheer, haul, 'faces-emoji': facesEmoji };
 /** Scenes: several characters, each on its track in time. */
 export const compositions = { 'walk-the-dog': walkTheDog, 'duel-dance': duelDance, 'tug-of-war': tugOfWar, copycat, 'for-and-against': forAndAgainst, 'well-met': wellMet };
