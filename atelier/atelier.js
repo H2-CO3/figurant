@@ -463,7 +463,7 @@ const advanced = open => {
     $('more').setAttribute('aria-expanded', String(open)); keep('advanced', open ? '1' : '0');
 };
 $('history').addEventListener('click', () => { $('thread').hidden = !$('thread').hidden; $('history').setAttribute('aria-expanded', String(!$('thread').hidden)); draw(); $('thread').scrollTop = $('thread').scrollHeight; });
-$('more').addEventListener('click', () => { advanced($('advanced').hidden); note('advanced', { value: $('advanced').hidden ? 0 : 1 }); });
+$('more').addEventListener('click', () => { advanced($('advanced').hidden); before(); note('advanced', { value: $('advanced').hidden ? 0 : 1 }); });
 $('detailed').addEventListener('click', () => {
     const shop = SHOPS[view.shop];
     $('compose-title').textContent = t('new.title', { noun: t(`noun.${view.shop}`) });
@@ -735,7 +735,8 @@ function before() {
     $('version-name').textContent = back ? t('version.name', { n: past.at + 1, of: n }) : '';
     $('viewport').classList.toggle('past', !gone && back);
     // The same versions as a list, newest first: one click goes to any of them.
-    $('versions').hidden = gone;
+    // (A block of its own beside the settings, shown with them: each scrolls by itself.)
+    $('versions').hidden = gone || $('advanced').hidden;
     if (gone) return;
     const said = here.flatMap(([, fiche]) => (fiche.entries ?? []).filter(entry => entry.author === 'person')).sort((a, b) => a.date < b.date ? -1 : 1);
     /** What the person had asked for when that version was made, or failing that what the commit says. */

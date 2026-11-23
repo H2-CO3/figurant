@@ -691,3 +691,16 @@ dialog#style { width: min(820px, calc(100vw - 32px)); padding: 28px; border: 2.5
 @media (max-height: 880px) { #last-word, #dock:has(#questions:not(:empty):not([hidden])) #last-word { max-height: 6.8em; } }
 @media (max-width: 1000px) { #last-word { -webkit-line-clamp: unset; } }
 #dock .row #about { flex-wrap: wrap; row-gap: 8px; }
+
+/* The settings and the versions are two blocks, one above the other: each scrolls by itself. */
+#side { display: flex; flex-direction: column; overflow: hidden; }
+#side > section { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+#side > #advanced { flex-shrink: 2; } #side > #advanced:not([hidden]) { min-height: 120px; }
+#side #versions { display: flex; flex-direction: column; gap: 6px; margin: 0; padding: 12px; min-height: 150px; flex: 1 1 auto; overflow: hidden;
+    border: 2.5px solid var(--edge); border-radius: 18px; background: color-mix(in srgb, var(--accent) 9%, var(--paper)); }
+#side #versions[hidden] { display: none; }
+#side #versions .tag { margin: 0; flex: none; } #side #version-restore { flex: none; }
+#side #version-list { flex: 1 1 auto; min-height: 0; max-height: none; overflow-y: auto; padding: 2px 2px 6px; }
+@media (max-width: 1000px) { #side { display: grid; overflow: visible; } #side #version-list { max-height: 240px; } }
+/* On a low screen the answer keeps to three lines and scrolls: the page itself must not. */
+@media (max-height: 820px) { #last-word, #dock:has(#questions:not(:empty):not([hidden])) #last-word { max-height: 4.2em; font-size: 15px; } #dock .row #about { flex-wrap: nowrap; } #about button { font-size: 12px; padding: 4px 9px; } }
