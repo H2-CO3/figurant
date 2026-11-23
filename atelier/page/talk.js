@@ -43,13 +43,14 @@ export async function refresh() {
 
 // The order form: a name, the elements to use, and what is wanted, in plain words.
 // "+ New": the next message asks for something that does not exist yet.
-const fresh = on => { view.aside = false; if (on && !view.fresh) { view.demo = undefined; view.first = false; } view.fresh = on; draw(); load(); ready(); if (on) { $('note').focus(); note('new', { shop: view.shop }); } };
+const fresh = on => { view.aside = false; if (on && !view.fresh) { view.demo = undefined; view.first = !!view.welcome; view.welcome = false; } view.fresh = on; draw(); load(); ready(); if (on) { $('note').focus(); note('new', { shop: view.shop }); } };
 $('new').addEventListener('click', () => fresh(true));
 /** Home: as on a first visit, ready to ask for a new animation of the stick figure, an example playing. */
 export function home() {
     view.board = false; view.shop = 'scenes'; keep('shop', 'scenes');
     if (castNames.includes('stickman')) { view.cast = 'stickman'; keep('cast', 'stickman'); }
-    view.fresh = false; fresh(true);
+    // (As on a first visit: the fullest example, and the line to write in says it as the game does.)
+    view.fresh = false; view.welcome = true; fresh(true);
 }
 for (const kind of ['click', 'keydown']) $('home').addEventListener(kind, event => { if (kind === 'click' || event.key === 'Enter') home(); });
 $('about-new').addEventListener('click', () => fresh(true));
@@ -208,7 +209,7 @@ export function drawTalk() {
     $('about-this').setAttribute('aria-pressed', String(!view.fresh && !view.aside));
     $('about-new').setAttribute('aria-pressed', String(!!view.fresh));
     $('about-interface').setAttribute('aria-pressed', String(!!view.aside));
-    $('note').placeholder = t(view.aside ? 'interface.placeholder' : view.fresh ? (view.shop === 'scenes' ? 'fresh.example' : `fresh.${view.shop}`) : 'note.placeholder');
+    $('note').placeholder = t(view.aside ? 'interface.placeholder' : view.fresh ? (view.shop === 'scenes' ? (view.first ? 'fresh.says' : 'fresh.example') : `fresh.${view.shop}`) : 'note.placeholder');
     $('questions').hidden = !!view.fresh;
     // (An effect is not exported by itself: it leaves with the animation that uses it.)
     $('export').hidden = !!view.fresh || !current() || !exists() || view.shop === 'effects';

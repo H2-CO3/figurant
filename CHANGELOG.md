@@ -6,6 +6,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+- Neon at night: the stick figure's ride without end (`neon-ride-stickman`, and the scene `neon-ride`): a motorbike of light, a grid running under it, a skyline, a striped sun, a ribbon of light behind, jumps.
+- The welcome says its example as the game does, in each language ("Simon says", « Jacques a dit »): there only.
 - An **Effects** workshop in the atelier: the special effects a project lists under `effects` in its config, each played on the bench, and ordered like anything else. Four new ready-made effects in the engine (`shockwave`, `flash`, `bolt`, `wave`), eight in the library (`library/common/effects.js`).
 - The duel is written on one floor and one clock shared by its two parts: they cross the whole stage, eight clashes land where the blades are, and each moment leaves the one before it time to end. Auras when the blades light up, a ring and a star at each clash, lightning for the lift, dust under every landing.
 - The stick figure's duel for two (`duel-stickman`): both play it from the same instant, each its part, and one clock keeps them together through clashes with sparks, a jump, a parry, a throw and a lift from afar, and blades locked until they go out. `duel-dance` is now that duel, then the dance.

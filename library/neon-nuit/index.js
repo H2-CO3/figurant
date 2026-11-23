@@ -8,10 +8,13 @@ import { jukebox } from './props/jukebox.js';
 import { openingTimeDinerCup } from './scenes/diner-cup/opening-time.js';
 import { rewindCassette } from './scenes/cassette/rewind.js';
 
+import { neonRideStickman } from './scenes/stickman/neon-ride.js';
+
 import { openAllNight } from './compositions/open-all-night.js';
+import { neonRide } from './compositions/neon-ride.js';
 export const style = 'neon-nuit';
 export const characters = { 'diner-cup': dinerCup, cassette };
 export const props = { 'open-sign': openSign, jukebox };
-export const scenes = { 'opening-time-diner-cup': openingTimeDinerCup, 'rewind-cassette': rewindCassette };
+export const scenes = { 'opening-time-diner-cup': openingTimeDinerCup, 'rewind-cassette': rewindCassette, 'neon-ride-stickman': neonRideStickman };
 /** Scenes: several characters, each on its track in time. */
-export const compositions = { 'open-all-night': openAllNight };
+export const compositions = { 'open-all-night': openAllNight, 'neon-ride': neonRide };
