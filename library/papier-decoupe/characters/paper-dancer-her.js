@@ -1,7 +1,7 @@
 // A dancer, in cut paper: her. A stick figure dressed in paper: a coral dress
 // with a skirt that flares, a mustard belt, a sand head, navy hair with a
-// ponytail and a coral band, two navy dots for eyes with a lash each, two
-// coral cheeks. What is its own: the ponytail swings behind every move;
+// ponytail and a coral band, two navy dots for eyes with a lash each, a wide
+// smile, two coral cheeks. What is its own: the ponytail swings behind every move;
 // `twirl` (0 -> 1) opens the skirt wide and lifts its hem, as when she spins;
 // `blush` (0 -> 1) makes the cheeks grow, one notch at a time.
 //
@@ -31,6 +31,8 @@ const head = {
         k.piece(group, 'M -12 -45.4 Q 0 -51.6 12.6 -44.6 L 13.4 -41.4 Q 0 -48 -12.8 -42.2 Z', CORAL, 0.7);
         const cheeks = [-8.4, 8.4].map(x => k.dot(group, x, -28.4, 2.6, CORAL));
         const eyes = [-5, 5].map(x => stage.el('ellipse', group, { cx: x, cy: -34, rx: 1.9, ry: 1.9, fill: NAVY, stroke: 'none' }));
+        // A wide smile, cut from navy paper: it grows with the cheeks.
+        const smile = stage.el('path', group, { fill: NAVY, stroke: 'none' });
         const lashes = [-1, 1].map(side => stage.el('path', group, { fill: 'none', stroke: NAVY, 'stroke-width': 1.1, 'stroke-linecap': 'round' }));
         const frame = { hips: [[-5, 22], [5, 22]], shoulders: [[-8.8, -11.6], [9.2, -11.2]], hipY: 22, top: [0, -51], soft: 0.25 };
         return {
@@ -47,6 +49,8 @@ const head = {
                     lashes[i].setAttribute('d', `M ${f(x + (i ? 1.6 : -1.6))} ${f(y - 1.6)} l ${i ? 2.4 : -2.4} -2`);
                 });
                 cheeks.forEach(cheek => cheek.setAttribute('r', f(2.6 + 2.2 * notch(clamp(s.blush, 0, 1)))));
+                const joy = 1.6 + 1.6 * notch(clamp(s.blush, 0, 1));
+                smile.setAttribute('d', `M -5.4 -27.4 Q 0 ${f(-27.4 + joy * 2.6)} 5.4 -27.4 Q 0 ${f(-27.4 + joy * 1.1)} -5.4 -27.4 Z`);
                 // The skirt flares with `twirl`, and with a quick move sideways.
                 const open = notch(clamp(Math.max(s.twirl, Math.abs(drag[0]) / 9), 0, 1));
                 for (const piece of hem) piece.setAttribute('d', skirt(open));

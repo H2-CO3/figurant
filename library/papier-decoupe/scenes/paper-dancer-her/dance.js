@@ -1,6 +1,6 @@
 // Made for her: the first dance, her part. They see each other from the two
 // ends of the floor; she comes up, takes the hand held out, and they step
-// from side to side together; she spins under his arm, skirt open; she backs
+// from side to side together (he turns her once, in the middle of it); she spins under his arm, skirt open; she backs
 // away, runs, and jumps, and he holds her up in the air, arms wide, for as
 // long as a held breath; down again, a bow. His part is in
 // ../paper-dancer-him/dance.js: both keep the time and the places below.
@@ -45,6 +45,15 @@ export const firstDanceHer = {
         await at(T.step);
         for (let beat = 0; beat < 8; beat++) {
             const to = beat % 2 ? -1 : 1;
+            // In the middle of it he lifts her hand, and she turns once round on the spot, led by him.
+            if (beat === 4) {
+                await c.all(c.tween({ x: X(SPOT.her), tilt: 0 }, 200, easeInOut), c.hands({ left: { x: -8, y: -48 } }, 200, easeInOut), c.tween({ twirl: 0.8, blush: 1 }, 200));
+                for (let turn = 0; turn < 2; turn++) { s.dir = -s.dir; await c.tween({ squash: turn ? 0 : -0.1 }, 330, easeInOut); }
+                s.dir = -1;
+                await c.all(c.tween({ twirl: 0, squash: 0 }, 220, easeInOut), c.hands({ left: { x: -19, y: -4, angle: 200 } }, 220, easeInOut));
+                beat++;
+                continue;
+            }
             await c.all(c.tween({ x: X(SPOT.her + to * SPOT.sway), tilt: to * 6, crouch: 2 }, 300, easeInOut), c.feet({ left: { x: to * 3, y: beat % 2 ? 6 : 0 }, right: { x: to * 3, y: beat % 2 ? 0 : 6 } }, 300, easeInOut));
             await c.all(c.tween({ crouch: 0 }, 240, easeOut), c.feet({ left: { x: 0, y: 0 }, right: { x: 0, y: 0 } }, 240));
         }

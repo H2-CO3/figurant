@@ -41,6 +41,14 @@ export const firstDanceHim = {
         await at(T.step);
         for (let beat = 0; beat < 8; beat++) {
             const to = beat % 2 ? -1 : 1;
+            // In the middle of it he lifts her hand over her head and turns her once, standing where he is.
+            if (beat === 4) {
+                await c.all(c.tween({ x: X(SPOT.him), tilt: 0 }, 200, easeInOut), c.hands({ right: { x: 32, y: -50, angle: -80 } }, 200, easeInOut), c.tween({ blush: 1, gazeY: -0.2 }, 200));
+                await c.tween({ tilt: 3 }, 330, easeInOut); await c.tween({ tilt: -2 }, 330, easeInOut);
+                await c.all(c.tween({ tilt: 0, gazeY: 0 }, 220), c.hands({ right: { x: 21, y: -4, angle: -20 } }, 220, easeInOut));
+                beat++;
+                continue;
+            }
             await c.all(c.tween({ x: X(SPOT.him + to * SPOT.sway), tilt: to * 6, crouch: 2 }, 300, easeInOut), c.feet({ left: { x: to * 3, y: beat % 2 ? 0 : 6 }, right: { x: to * 3, y: beat % 2 ? 6 : 0 } }, 300, easeInOut));
             await c.all(c.tween({ crouch: 0 }, 240, easeOut), c.feet({ left: { x: 0, y: 0 }, right: { x: 0, y: 0 } }, 240));
         }
