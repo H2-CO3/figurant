@@ -201,7 +201,7 @@ export function drawTalk() {
     $('about-this').setAttribute('aria-pressed', String(!view.fresh && !view.aside));
     $('about-new').setAttribute('aria-pressed', String(!!view.fresh));
     $('about-interface').setAttribute('aria-pressed', String(!!view.aside));
-    $('note').placeholder = t(view.aside ? 'interface.placeholder' : view.fresh ? `fresh.${view.shop}` : 'note.placeholder');
+    $('note').placeholder = t(view.aside ? 'interface.placeholder' : view.fresh ? (view.shop === 'scenes' ? 'fresh.example' : `fresh.${view.shop}`) : 'note.placeholder');
     $('questions').hidden = !!view.fresh;
     $('export').hidden = !!view.fresh || !current() || !exists();
     // Lean: only the assistant's last word shows; the whole conversation opens on demand.

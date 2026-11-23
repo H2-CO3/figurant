@@ -69,6 +69,7 @@ const pointer = latestPointer(view.fiches, made);
 if (pointer && remember('followed') !== pointer.key) {
     keep('followed', pointer.key);
     go(pointer.shop, pointer.name);
+    view.fresh = false;
     draw();
 }
 if (remember('advanced') === '1') { $('advanced').hidden = false; document.querySelector('.layout').classList.add('wide'); }

@@ -39,6 +39,9 @@ export const view = {
     width: Number(remember('width', 1440)), speed: Number(remember('speed', 1)), fiches: {}, every: remember('every') === '1',
 };
 for (const [shop, { names }] of Object.entries(SHOPS)) view.item[shop] = names.includes(remember('item.' + shop)) ? remember('item.' + shop) : names[0];
+// A first visit opens ready to ask for something: a new animation for the stick figure
+// (whoever the project has, failing that), the line to write in showing what a request looks like.
+if (remember('shop') == null && remember('item.scenes') == null) { view.fresh = true; if (castNames.includes('stickman')) view.cast = 'stickman'; }
 
 /** The styles of the project and the one in use (kept up to date by styles.js). */
 export const styleBook = { active: null, styles: [] };
