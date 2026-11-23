@@ -6,6 +6,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+- The stick figure's duel for two (`duel-stickman`): both play it from the same instant, each its part, and one clock keeps them together through clashes with sparks, a jump, a parry, a throw and a lift from afar, and blades locked until they go out. `duel-dance` is now that duel, then the dance.
 - A tutorial: a "?" on each part of the page says what it is for when pointed at or touched; one button in the heading turns them on or off, and they are on for a first visit.
 - Four more scenes of two stick figures (`tug-of-war`, `copycat`, `for-and-against`, `well-met`) and a common gesture, `haul`. With `duel-dance`, where the foils are now swords of light, one blue, one red (`with: { colour }`), they are the examples that play while something new is asked for.
 - The name in the heading goes back to the start: ready to ask for something new, an example playing.

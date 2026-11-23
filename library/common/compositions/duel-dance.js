@@ -1,27 +1,29 @@
-// A duel that ends in a dance: two stick figures cross swords of light, one blue, one red, salute, walk
-// up to each other and tap dance side by side. Made of two animations of the
-// stick figure, each played by both, one a beat after the other.
+// A duel that ends in a dance: two stick figures fight with swords of light,
+// one blue, one red (clashes, a jump, a parry, each throwing the other about
+// from afar, blades locked until they go out), then walk up to each other
+// and tap dance side by side, one a beat behind the other.
 
 export const duelDance = {
     title: 'A duel, then a dance',
     style: 'default',
-    width: 420,
-    length: 17500,
+    width: 460,
+    length: 30500,
     loop: true,
     cast: [
         { id: 'left', character: 'stickman', at: -62 },
         { id: 'right', character: 'stickman', at: 62, dir: -1 },
     ],
     tracks: {
+        // Both parts start at the same instant: the duel keeps them together from there.
         left: [
-            { at: 300, play: 'fence-stickman', with: { colour: '#2f7df6' } },
-            { at: 6000, walk: -34, pace: 0.8 },
-            { at: 7200, play: 'tap-dance-stickman' },
+            { at: 400, play: 'duel-stickman', with: { part: 'first', colour: '#2f7df6' } },
+            { at: 19000, walk: -34, pace: 0.8 },
+            { at: 20300, play: 'tap-dance-stickman' },
         ],
         right: [
-            { at: 760, play: 'fence-stickman', with: { colour: '#e5383b' } },
-            { at: 6300, walk: 34, pace: 0.8 },
-            { at: 7400, play: 'tap-dance-stickman' },
+            { at: 400, play: 'duel-stickman', with: { part: 'second', colour: '#e5383b' } },
+            { at: 19300, walk: 34, pace: 0.8 },
+            { at: 20700, play: 'tap-dance-stickman' },
         ],
     },
 };
