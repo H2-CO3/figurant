@@ -10,6 +10,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - The lists show a picture of each animation (its most telling moment) and of each scene (a band over its name), with a loader while they are drawn; the character who plays is pictured beside their name.
 
 ### Changed
+- The atelier's page script, one file of 1,200 lines, is sixteen modules in `atelier/page/`, one per part of the page; `atelier/atelier.js` starts it and says which is which. Nothing behaves differently.
 - The column on the right is two separate blocks: short settings that never scroll, and the versions, which do. Export sits under the questions, away from the button that sends; "Change the interface" is the middle one of the three buttons.
 
 ### Fixed

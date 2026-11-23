@@ -20,6 +20,14 @@ Enlarged the cup by a third.
 ? Anything else?
 `;
 
+/** The page's own script, whole: the file that starts it and every module of atelier/page/. */
+async function pageScript() {
+    const { readdir } = await import('node:fs/promises');
+    const folder = new URL('../atelier/', import.meta.url);
+    const names = ['atelier.js', ...(await readdir(new URL('page/', folder))).filter(name => name.endsWith('.js')).map(name => `page/${name}`)];
+    return (await Promise.all(names.map(name => readFile(new URL(name, folder), 'utf8')))).join('\n');
+}
+
 test('a fiche is read and written back unchanged', () => {
     const fiche = parseFiche(SAMPLE);
     assert.equal(fiche.scene, 'tea');
@@ -178,7 +186,7 @@ test('the atelier speaks French and English with the same words, and the page as
     const all = keys();
     assert.deepEqual(all.fr, all.en, 'both languages have exactly the same keys');
     const page = await readFile(new URL('../atelier/index.html', import.meta.url), 'utf8');
-    const script = await readFile(new URL('../atelier/atelier.js', import.meta.url), 'utf8');
+    const script = await pageScript();
     const used = [...page.matchAll(/data-t(?:-title|-placeholder|-label)?="([^"]+)"/g), ...script.matchAll(/\bt\('([^'$]+)'/g)].map(m => m[1]);
     assert.ok(used.length > 40);
     for (const key of used) assert.ok(all.en.includes(key), `"${key}" is used and has no words`);
@@ -192,7 +200,9 @@ test('the atelier\'s scripts are sound: a slip of the pen must not leave the pag
     const { execFile } = await import('node:child_process');
     const { readdir } = await import('node:fs/promises');
     const folder = new URL('../atelier/', import.meta.url);
-    for (const file of (await readdir(folder)).filter(name => name.endsWith('.js'))) {
+    const files = [...(await readdir(folder)), ...(await readdir(new URL('page/', folder))).map(name => `page/${name}`)].filter(name => name.endsWith('.js'));
+    assert.ok(files.includes('page/draw.js') && files.includes('atelier.js'));
+    for (const file of files) {
         const source = await readFile(new URL(file, folder), 'utf8');
         const problem = await new Promise(done => { const child = execFile(process.execPath, ['--input-type=module', '--check'], (error, out, err) => done(error ? err : '')); child.stdin.end(source); });
         assert.equal(problem, '', `${file} does not parse`);
@@ -574,8 +584,9 @@ test('the questions about something just made are where its order is, until it h
     assert.equal(talkedIn({ 'it-stretches': order, 'a-dog': other }, 'stretch-tabby', 'scenes', 'stretch-tabby', exists), 'it-stretches', 'the order it came from');
     assert.equal(talkedIn({ 'it-stretches': order, 'stretch-tabby': { entries: [{ author: 'person', date: 'x', text: 'slower' }] } }, 'stretch-tabby', 'scenes', 'stretch-tabby', exists), 'stretch-tabby', 'its own, once it has one');
     assert.equal(talkedIn({ 'a-dog': other }, 'stretch-tabby', 'scenes', 'stretch-tabby', exists), 'stretch-tabby', 'nothing said yet: its own');
-    const page = await readFile(new URL('../atelier/atelier.js', import.meta.url), 'utf8');
-    assert.ok(!/view\.fiches\[ficheName\(\)\] = await api/.test(page), 'the page answers in that fiche too');
+    const page = await pageScript();
+    assert.match(page, /view\.fiches\[talk\] = await api/, 'the page answers in that fiche');
+    assert.ok(!/view\.fiches\[ficheName\(\)\] = await api/.test(page), 'and not in the item\'s own');
 });
 
 test('a colour that comes late into a film rich in tones is still that colour', async () => {
@@ -676,4 +687,26 @@ test('a held page stepped by 80 ms moves on by 80 ms, though the clock takes 50 
     assert.ok(Math.abs(clock.now - 80 - 1000 / 60) < 1e-9, 'a frame is still a frame');
     advance(clock, 26500 - clock.now);
     assert.ok(Math.abs(clock.now - 26500) < 1e-6, 'a whole scene, to its end');
+});
+
+test('the page\'s modules hold together: each name one of them imports is exported by the file it names', async () => {
+    // The page is not run by these tests (it needs a browser): a name moved or renamed in one module
+    // and still imported by another would leave the page blank. This is checked from the text.
+    const { readdir } = await import('node:fs/promises');
+    const folder = new URL('../atelier/', import.meta.url);
+    const files = ['atelier.js', ...(await readdir(new URL('page/', folder))).filter(name => name.endsWith('.js')).map(name => `page/${name}`)];
+    let checked = 0;
+    for (const file of files) {
+        const source = await readFile(new URL(file, folder), 'utf8');
+        for (const [, names, from] of source.matchAll(/^import \{([^}]+)\} from '(\.[^']+)';$/gm)) {
+            const target = await readFile(new URL(from, new URL(file, folder)), 'utf8');
+            for (const name of names.split(',').map(part => part.trim()).filter(Boolean)) {
+                assert.match(target, new RegExp(`^export (?:async )?(?:const|let|function) ${name.replace('$', '\\$')}(?![\\w$])`, 'm'), `${file} imports "${name}" from ${from}, which does not export it`);
+                checked++;
+            }
+        }
+        // And nothing of another module is run while a module loads: only the file that starts the page does that.
+        if (file !== 'atelier.js') assert.doesNotMatch(source, /^(?:await |setInterval\((?!\(\) => \{)|draw\(|load\(|listening\(|refresh\(|loadStyles\()/m, `${file} starts something while it loads`);
+    }
+    assert.ok(checked > 150, `${checked} imports checked`);
 });

@@ -42,6 +42,33 @@ Only what `src/index.js` exports is public.
 | `library` | Characters, props and scenes ready to take into a site, **one folder per style**, all built the same way (`characters/`, `props/`, `scenes/`, `kit.js`, `index.js`); `library/default/` holds earlier work in several styles, each in a sub-folder (its `cartoon-realiste/characters/` are the models to draw from); `library/common/` holds what belongs to every style, `library/emoji/` the emoji figures, a kind apart. Each file imports only `'figurant'` and its neighbours. |
 | `cli`, `atelier` | The `figurant` command and the local atelier page (Node's standard library only; never imported by `src/`). |
 
+## Map of the atelier
+
+The page (`atelier/`) is plain modules, no build. `atelier/atelier.js` only
+starts it, and lists what each module of `atelier/page/` is for:
+
+| File | What it holds |
+| --- | --- |
+| `page/project.js` | The project and where the person is in it: the state every module reads. Draws nothing. |
+| `page/draw.js` | `draw()`: the page drawn again from that state, part by part. Call it after any change. |
+| `page/list.js`, `stage.js`, `timeline.js` | The list of items; the work zone and its buttons; time (the bar, a scene's timeline, going to a moment). |
+| `page/talk.js`, `assistant.js` | The one box to write in, questions, orders; whether an assistant listens and what it shows. |
+| `page/versions.js`, `export.js`, `thumbs.js` | Earlier versions from git; Export (folder and GIF); the small pictures of the lists. |
+| `page/styles.js`, `custom.js`, `pins.js`, `whiteboard.js` | Styles and the page's colours; an emoji or a picture for a head; pointing at a spot; the sheet to draw on. |
+| `i18n.js` | Every word shown, in French and English: a word used with no entry fails a test. |
+| `orders.js`, `board.js`, `film.js`, `gif.js`, `theme.js`, `hold.js`, `where.js` | Logic with no page in it, tested in Node. New logic that can be tested belongs here, not in `page/`. |
+| `stage.html`, `show.html`, `bench.html`, `thumbs.html` | The pages shown inside the work zone: one animation, one scene in time, one character or prop on a bench, the pictures of the lists. |
+
+The server (`cli/server.js`) is a table of routes; each concern is a module of
+`cli/server/` (the checks in `guard.js`, the `--lan` code in `door.js`, one
+file per group of routes).
+
+The page's modules call each other's functions freely, but none runs
+another's code while it loads: what starts the page is in `atelier/atelier.js`.
+The tests do not open a browser; `tests/atelier.test.js` checks from the text
+that every import names something exported. After changing the page, open it
+and look.
+
 ## Rules
 
 - No runtime dependencies. Browser code is plain ES modules.
