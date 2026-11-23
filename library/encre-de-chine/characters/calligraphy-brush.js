@@ -76,7 +76,7 @@ const head = {
         // The cord it hangs from when it rests: it swings behind every move.
         const cord = stage.el('path', group, { fill: 'none', stroke: RED, 'stroke-width': 1.5, 'stroke-linecap': 'round' });
 
-        const frame = { hips: [[-4.5, HIP], [4.5, HIP]], shoulders: [[0, -10], [0, -10]], hipY: HIP, top: [0, -92], soft: 0.3 };
+        const frame = { hips: [[-4.5, HIP], [4.5, HIP]], shoulders: [[-3.4, -14], [3.4, -14]], hipY: HIP, top: [0, -92], soft: 0.3 };
         // The stroke on the ground: where the tip first touched, and the furthest it went since.
         let from = null, to = null;
         // The drop: it swells at the tip, falls, and leaves a blot that dries.
@@ -165,8 +165,7 @@ export const calligraphyBrush = {
     line: 1.9,
     limbs: INK,
     head,
-    // A brush is all handle and hair: it has legs to walk on, and no arms.
-    arms: 'none',
+    // Two thin arms, hung high on the handle: it writes with a hand, as a calligrapher does.
     sits: false,
-    proportions: { thigh: 23, shin: 24, reach: 44, foot: 8, stride: 17, lift: 6 },
+    proportions: { thigh: 23, shin: 24, reach: 44, foot: 8, stride: 17, lift: 6, upper: 30, fore: 30, hand: 5 },
 };
