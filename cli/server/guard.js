@@ -30,7 +30,11 @@ export function knownHost(req, lan) {
 }
 
 /** Whether a request says it comes from a page of another site. */
-export const crossSite = req => req.headers.origin && new URL(req.headers.origin).host !== req.headers.host;
+export function crossSite(req) {
+    if (!req.headers.origin) return false;
+    // An Origin that is no address is not this page's.
+    try { return new URL(req.headers.origin).host !== req.headers.host; } catch { return true; }
+}
 
 // An imported drawing is shown as a picture; opened on its own it must not run anything.
 export const DRAWING_POLICY = "default-src 'none'; style-src 'unsafe-inline'; sandbox";

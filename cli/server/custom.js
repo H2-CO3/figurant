@@ -57,7 +57,9 @@ export function createCustom(root, custom) {
     return {
         /** GET or PUT /__figurant/api/custom/<character> */
         async one(req, res, [, name]) {
-            const target = customFile(decodeURIComponent(name));
+            let wanted;
+            try { wanted = decodeURIComponent(name); } catch { return send(res, 400, 'Bad name.'); }
+            const target = customFile(wanted);
             if (!target) return send(res, 404, 'This character is not declared as customisable (custom: { name: "path/name.custom.js" } in figurant.config.js).');
             if (req.method === 'GET') return json(res, 200, await read(target));
             if (req.method !== 'PUT') return send(res, 405, 'GET or PUT.');

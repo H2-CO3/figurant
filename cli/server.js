@@ -19,7 +19,7 @@ import { inside, loopback, knownHost, crossSite } from './server/guard.js';
 import { send } from './server/http.js';
 import { createDoor } from './server/door.js';
 import { file, atelierPage } from './server/static.js';
-import { createFiches, BAD_NAME } from './server/fiches.js';
+import { createFiches } from './server/fiches.js';
 import { createPresence } from './server/presence.js';
 import { createStyles } from './server/styles.js';
 import { createExports } from './server/exports.js';
@@ -117,8 +117,7 @@ export function createAtelierServer({ root, fiches: ficheFolder = 'fiches', cust
             if (path.startsWith('/__figurant/api/')) {
                 if (req.method !== 'GET' && crossSite(req)) return send(res, 403, 'Cross-site request refused.');
                 const route = find(api, req.method, path);
-                // An address the API does not know is answered as a fiche with a bad name would be.
-                return route ? await route.handler(req, res, route.found) : send(res, 400, BAD_NAME);
+                return route ? await route.handler(req, res, route.found) : send(res, 404, 'Unknown address.');
             }
 
             // 4. Files.

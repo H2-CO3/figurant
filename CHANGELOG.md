@@ -15,6 +15,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - The atelier's server is split by concern: `cli/server.js` is the table of routes, and `cli/server/` holds the checks (`guard.js`), the access code (`door.js`), the files (`static.js`) and one module per part of the API. Nothing it answers has changed.
 
 ### Fixed
+- The server: an `Origin` that is no address is refused (403) and a name that cannot be read is a bad name (400), where both were answered as a breakdown (500); an address the API does not know is 404; a link out of the project is refused before it is read, not after.
 - GIFs: a film stepped by 80 ms moved on by 50 ms only, so a GIF played slowed down and a scene was cut before its end.
 - GIFs: an animation that needs more room than the film has was filmed standing still for forty seconds; it is now filmed from further away.
 - GIFs: each frame brings its own palette, so a colour that comes late into a film rich in tones is no longer replaced by a neighbour.

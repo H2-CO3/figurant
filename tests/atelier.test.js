@@ -710,3 +710,25 @@ test('the page\'s modules hold together: each name one of them imports is export
     }
     assert.ok(checked > 150, `${checked} imports checked`);
 });
+
+test('a request the server cannot make sense of is refused for what it is, not answered as a breakdown', async () => {
+    const { symlink } = await import('node:fs/promises');
+    const { request } = await import('node:http');
+    const root = await mkdtemp(join(tmpdir(), 'figurant-'));
+    await writeFile(join(root, 'figurant.config.js'), 'export default {};');
+    // A link to something that never ends: it must be refused without being read.
+    await symlink('/dev/zero', join(root, 'endless.bin'));
+    const server = createAtelierServer({ root }).listen(0, '127.0.0.1');
+    await new Promise(done => server.once('listening', done));
+    const port = server.address().port;
+    const ask = (path, { method = 'GET', headers = {}, body } = {}) => new Promise((done, fail) => {
+        const sent = request({ host: '127.0.0.1', port, path, method, headers: { host: `localhost:${port}`, ...headers } }, res => { res.resume(); res.on('end', () => done(res.statusCode)); });
+        sent.on('error', fail); sent.setTimeout(3000, () => { sent.destroy(); done('no answer'); }); sent.end(body);
+    });
+    try {
+        assert.equal(await ask('/__figurant/api/fiches/hello', { method: 'POST', headers: { origin: 'nonsense', 'content-type': 'application/json' }, body: '{"decision":"redo","note":"x"}' }), 403, 'an Origin that is no address is not this page');
+        assert.equal(await ask('/__figurant/api/custom/%zz'), 400, 'a name that cannot be read');
+        assert.equal(await ask('/__figurant/api/nothing-here'), 404, 'an address the server does not know');
+        assert.equal(await ask('/endless.bin'), 404, 'a link out of the project, refused before it is read');
+    } finally { server.close(); await rm(root, { recursive: true, force: true }); }
+});

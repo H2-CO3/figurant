@@ -2,7 +2,7 @@
 // Never outside the folder given, never a hidden file, never what a link
 // points to outside.
 
-import { readFile, realpath } from 'node:fs/promises';
+import { readFile, realpath, stat } from 'node:fs/promises';
 import { join, sep, relative } from 'node:path';
 import { inside, hidden } from './guard.js';
 import { send, typeOf, TYPES } from './http.js';
@@ -14,13 +14,13 @@ export async function file(res, base, asked, own = false) {
     if (!path) return send(res, 403, 'Outside the served folders.');
     try {
         if (hidden(relative(base, path))) throw new Error('hidden');
+        // Where it really is, before a byte of it is read: a link may point to something huge, or endless.
+        const home = await realpath(base);
+        const allowed = async target => { const real = await realpath(target); if ((real !== home && !real.startsWith(home + sep)) || hidden(relative(home, real))) throw new Error('linked outside, or to something hidden'); };
         let target = path;
-        let body;
-        try { body = await readFile(target); }
-        catch (error) { if (error.code !== 'EISDIR') throw error; target = join(path, 'index.html'); body = await readFile(target); }
-        const [real, home] = await Promise.all([realpath(target), realpath(base)]);
-        if ((real !== home && !real.startsWith(home + sep)) || hidden(relative(home, real))) throw new Error('linked outside, or to something hidden');
-        send(res, 200, body, typeOf(target), own);
+        await allowed(target);
+        if ((await stat(target)).isDirectory()) { target = join(path, 'index.html'); await allowed(target); }
+        send(res, 200, await readFile(target), typeOf(target), own);
     } catch { send(res, 404, 'Not found.'); }
 }
 
