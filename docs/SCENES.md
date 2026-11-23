@@ -252,8 +252,9 @@ on: 'boat', at: -37, up: 39 }` stands `at` units from the middle of its
 carrier and `up` units above the floor, and goes where the carrier goes. A
 rider does not walk or exit (the checker says so): move the carrier, and give
 the rider `play`, `move` or `set` clips. `state: { ... }` on a cast member
-sets numbers of its own before the scene starts. See
-`library/trait-et-or/compositions/stickman-naviguant.js`.
+sets numbers of its own before the scene starts. The sailing boat of the
+line-and-gold style is made to carry somebody: its deck is 12 units above
+the middle of its hull (`library/trait-et-or/characters/boat.js`).
 
 A clip starts at `at` (milliseconds from the beginning), **replaces** what
 its character was doing, and does one thing:

@@ -1,20 +1,24 @@
-// Made for the pirate: landfall. It comes into harbour standing on the
-// masthead of a small boat that is going down under it, without a glance at
-// the water: the boat sinks at exactly the pace that brings the masthead level
-// with the quay as it gets there, and it steps off as one steps off a stair.
-// The boat goes on to the bottom. It walks up the quay to the harbour
-// keeper, flips a coin, lifts its hat, and walks off into town.
+// Made for the pirate: landfall. Out at sea it stands on the masthead of a
+// small boat that is going down under it, in the best of moods and none too
+// steady: it takes out its compass, turns about to find where the needle
+// means, shakes it, and points the way. The boat sinks all the while, at
+// exactly the pace that will bring the masthead level with the quay. Then the
+// harbour comes into sight (the quay draws itself in, the customs officer
+// walks down it): it steps off as one steps off a stair, and the boat goes on
+// to the bottom. It walks up the quay, flips a coin, lifts its hat, and
+// rolls off into town.
 //
 // The harbour is the animation's own: the water, the quay on its piles, the
 // boat. Places are counted from the foot of the quay's first pile
-// (`data.home` says where the pirate starts from there, on the water).
+// (`data.home` says where the pirate starts from there, out on the water).
 
 import { easing, moves } from 'figurant';
+import { pocketCompass } from '../../props/pocket-compass.js';
 import { GOLD, INK, PAPER, goldShape, inkShape, dotShape } from '../../kit.js';
 
 const { easeOut, easeIn, easeInOut, linear } = easing;
-/** When each moment starts, in ms, for the pirate and for the keeper (see ../stickman/toll.js). */
-export const T = { sail: 700, land: 7700, walk: 8600, meet: 10900, coin: 11900, hat: 12900, end: 14200 };
+/** When each moment starts, in ms, for the pirate and for the officer (see ../customs-officer/toll.js). */
+export const T = { sail: 700, compass: 1800, point: 7400, quay: 9600, land: 14600, walk: 15500, meet: 17800, coin: 18800, hat: 19800, end: 21100 };
 /** The mast above the boat's waterline; the water below the quay; where the keeper stands. */
 const MAST = 128, WATER = 36;
 export const KEEPER = 108;
@@ -37,10 +41,10 @@ const water = {
     name: 'harbour-water',
     shapes: [
         // What is under the water is not seen: the paper covers it.
-        { tag: 'path', attrs: { d: `M -420 ${WATER} L 70 ${WATER} L 70 ${WATER + 190} L -420 ${WATER + 190} Z`, fill: PAPER, stroke: 'none' } },
-        inkShape(`M -420 ${WATER} L 0 ${WATER}`, 1),
-        inkShape([-390, -300, -210, -120, -60].map((x, i) => wave(x, WATER + 9 + (i % 2) * 7)).join(' '), 0.7),
-        inkShape([-350, -250, -150].map(x => wave(x, WATER + 24)).join(' '), 0.6),
+        { tag: 'path', attrs: { d: `M -560 ${WATER} L 70 ${WATER} L 70 ${WATER + 190} L -560 ${WATER + 190} Z`, fill: PAPER, stroke: 'none' } },
+        inkShape(`M -560 ${WATER} L 0 ${WATER}`, 1),
+        inkShape([-530, -450, -390, -300, -210, -120, -60].map((x, i) => wave(x, WATER + 9 + (i % 2) * 7)).join(' '), 0.7),
+        inkShape([-490, -350, -250, -150].map(x => wave(x, WATER + 24)).join(' '), 0.6),
     ],
     points: {},
 };
@@ -63,14 +67,14 @@ const coin = { name: 'coin', shapes: [{ tag: 'circle', attrs: { cx: 0, cy: 0, r:
 
 export const landfallPirate = {
     character: 'pirate',
-    room: { left: 60, right: 560, up: 150 },
+    room: { left: 60, right: 560, up: 160 },
 
     async play(c, ctx) {
-        const s = c.state, k = c.figure.k, home = s.x, ground = s.y, base = ctx?.data?.home ?? -230, fx = ctx?.api?.fx ?? null;
+        const s = c.state, k = c.figure.k, home = s.x, ground = s.y, base = ctx?.data?.home ?? -330, fx = ctx?.api?.fx ?? null;
         const start = c.clock.now, at = ms => c.wait(Math.max(0, ms - (c.clock.now - start)));
         /** A place along the quay (from the foot of its first pile) as the figure's own number. */
         const X = place => home + (place - base) * k;
-        c.onLeave(() => { s.y = ground; c.feet({ left: null, right: null }, 1).catch(() => {}); c.hands({ left: null, right: null }, 1).catch(() => {}); });
+        c.onLeave(() => { s.y = ground; s.squint = 0; c.feet({ left: null, right: null }, 1).catch(() => {}); c.hands({ left: null, right: null }, 1).catch(() => {}); });
 
         // The harbour: the boat first, then the water over what of it is under, then the quay.
         const skiff = c.prop(boat, { behind: true, state: { draw: 0 } });
@@ -85,19 +89,45 @@ export const landfallPirate = {
         };
         ride();
         c.onLeave(c.clock.onFrame(ride));
-        await c.all(c.animate(skiff.state, { draw: 1 }, 600), c.animate(sea.state, { draw: 1 }, 600), c.animate(pier.state, { draw: 1 }, 600));
+        // (Out at sea there is no quay yet: it comes into sight later.)
+        await c.all(c.animate(skiff.state, { draw: 1 }, 600), c.animate(sea.state, { draw: 1 }, 600));
 
-        // In it comes, going down all the way: one hand on the hip, eyes on the town.
+        // Under way, going down all the way. In the best of moods: eyes half shut, rocking more than the boat does.
         await at(T.sail);
         c.animate(voyage, { x: -10, sunk: MAST - WATER }, T.land - T.sail, linear).catch(() => {});
-        // (A hand over the eyes first, to make out the town; then it stands there as if on a quarterdeck.)
-        await c.all(c.hands({ left: { x: -10, y: 10, angle: 30 }, right: { x: 9, y: -40, angle: -100 } }, 500, easeInOut), c.tween({ gazeX: 0.9, tilt: 4 }, 500));
-        await c.wait(1300);
-        await c.hands({ right: { x: 13, y: 6, angle: -20 } }, 500, easeInOut);
-        for (let sway = 0; c.clock.now - start < T.land - 2600; sway++) await c.tween({ tilt: sway % 2 ? -5 : 5 }, 760, easeInOut);
+        await c.all(c.hands({ left: { x: -10, y: 10, angle: 30 } }, 400, easeInOut), c.tween({ gazeX: 0.9, squint: 0.5, tilt: 6 }, 400));
+        await c.tween({ tilt: -5 }, 600, easeInOut);
+        // The compass: out of the coat, held up, looked at closely.
+        await at(T.compass);
+        const needle = c.give('right', pocketCompass, { tilt: -10, state: { draw: 0 } });
+        await c.hands({ right: { x: 5, y: 10 } }, 300, easeInOut);
+        await c.all(c.hands({ right: { x: 13, y: -10, angle: -60 } }, 420, easeOut), c.animate(needle.state, { draw: 1 }, 420), c.tween({ gazeX: 0.5, gazeY: 0.7, tilt: 2 }, 420));
+        await c.wait(600);
+        // It does not say what it should: turned one way, the other; shaken; looked at again, from very near.
+        await c.all(c.tween({ tilt: -8, gazeX: -0.6 }, 420, easeInOut), c.hands({ right: { x: -6, y: -12, angle: -120 } }, 420, easeInOut));
+        await c.wait(300);
+        await c.all(c.tween({ tilt: 7, gazeX: 0.8 }, 460, easeInOut), c.hands({ right: { x: 15, y: -12, angle: -60 } }, 460, easeInOut));
+        for (let shake = 0; shake < 4; shake++) { await c.hands({ right: { x: 17, y: -16, angle: -60 } }, 80, easeOut); await c.hands({ right: { x: 13, y: -9, angle: -60 } }, 80, easeIn); }
+        await c.all(c.hands({ right: { x: 8, y: -24, angle: -80 } }, 320, easeInOut), c.tween({ gazeX: 0.3, gazeY: -0.2, squint: 0.9, tilt: 3 }, 320));
+        await c.wait(650);
+        // A hiccup. And there: that way, obviously.
+        c.also({ wide: 1, squint: 0 }, 80);
+        await c.tween({ squash: -0.18, crouch: -2 }, 90, easeOut);
+        await c.tween({ squash: 0, crouch: 0, wide: 0, squint: 0.5 }, 220, easeOut);
+        await at(T.point);
+        await c.all(c.hands({ left: { x: 27, y: -16, angle: -15 }, right: { x: 8, y: 4 } }, 360, easeOut), c.tween({ gazeX: 1, gazeY: -0.1, tilt: 8 }, 360, easeOut));
+        await c.wait(900);
+        await c.all(c.animate(needle.state, { draw: 0 }, 300), c.hands({ left: { x: -10, y: 10, angle: 30 }, right: { x: 13, y: 6, angle: -20 } }, 400, easeInOut), c.tween({ tilt: 0 }, 400));
+        // The harbour comes into sight: the quay draws itself in. A hand over the eyes to make it out.
+        await at(T.quay);
+        c.animate(pier.state, { draw: 1 }, 1500, easeInOut).catch(() => {});
+        await c.all(c.hands({ right: { x: 9, y: -40, angle: -100 } }, 400, easeInOut), c.tween({ gazeX: 0.9, tilt: 4 }, 400));
+        await c.wait(1100);
+        await c.hands({ right: { x: 13, y: 6, angle: -20 } }, 400, easeInOut);
+        for (let sway = 0; c.clock.now - start < T.land - 2400; sway++) await c.tween({ tilt: sway % 2 ? -6 : 6 }, 700, easeInOut);
         // One look down at the water, where its boat used to be; and up again, untroubled.
         await c.tween({ tilt: 0, gazeX: 0.2, gazeY: 0.9 }, 500, easeInOut);
-        await c.wait(700);
+        await c.wait(600);
         await c.tween({ gazeX: 0.9, gazeY: 0 }, 400, easeInOut);
 
         // Level with the quay at the very moment it gets there: it steps off, as off a stair.

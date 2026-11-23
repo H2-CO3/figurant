@@ -1,7 +1,7 @@
 // A pirate captain, in line and gold: the stick figure in costume. It is the
 // plain stick figure's own body (a spine, a round head, two eyes that look
 // about) with clothes drawn over it: a three-cornered hat, a scarf knotted
-// under it with its two ends flying, long loose hair with a trinket or two in
+// under it with its two ends flying, a wide lopsided smile, long loose hair with a trinket or two in
 // it, a moustache and a beard in two strands, a dark line under each eye, a
 // ring in one ear, a long coat open down the front, a sash across it. Nothing else changes: every
 // gesture the stick figure knows, it knows. This is how a stick figure is
@@ -37,8 +37,10 @@ export const pirate = {
             gold('M -25 -44 Q -13 -53 0 -47 Q 13 -53 25 -44 Q 13 -39 0 -42 Q -13 -39 -25 -44 Z'),
             // A moustache, a tuft on the chin, a ring in the ear.
             ink('M -7 -27 Q -3.5 -30 0 -27.5 Q 3.5 -30 7 -27', { 'stroke-width': 1.5 }),
+            // A wide lopsided smile under it: it is in the best of moods.
+            ink('M -6 -25 Q 1 -19.6 7.4 -25.8', { 'stroke-width': 1.5 }),
             // (The beard in two thin strands; a dark line under each eye.)
-            ink('M -1.6 -21.8 L -2.8 -14.5 M 1.6 -21.8 L 2.8 -14.5', { 'stroke-width': 1.3 }),
+            ink('M -1.4 -20.4 L -2.6 -14 M 1.8 -20.6 L 3 -14.2', { 'stroke-width': 1.3 }),
             ink('M -8.2 -32.6 Q -5 -30.6 -1.8 -32.6 M 1.8 -32.6 Q 5 -30.6 8.2 -32.6', { 'stroke-width': 1.1 }),
             { tag: 'circle', attrs: { cx: -15.5, cy: -30, r: 2.3, stroke: GOLD, fill: 'none', 'stroke-width': 1.3 } },
         ],
