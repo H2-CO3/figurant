@@ -16,6 +16,7 @@
                    the line to write in
      board.css     the whiteboard: its sheet, its bar, its pens, and what it hides
      dialogs.css   the detailed order, the styles, the form of one style
+     tutor.css     the tutorial: the "?" marks over the page and their words
 
    Each file ends with what changes on a low screen (max-height: 880px, then 820px), on a narrow
    one (max-width: 1000px, a single column) and for who wants no motion. The order of the
@@ -30,3 +31,4 @@
 @import "css/dock.css";
 @import "css/board.css";
 @import "css/dialogs.css";
+@import "css/tutor.css";

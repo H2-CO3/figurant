@@ -8,10 +8,14 @@ import { tapDanceStickman } from './scenes/stickman/tap-dance.js';
 import { fenceStickman } from './scenes/stickman/fence.js';
 
 import { facesEmoji } from './scenes/emoji/faces.js';
-import { picket, shakeHands, cheer } from './scenes/crowd.js';
+import { picket, shakeHands, cheer, haul } from './scenes/crowd.js';
 import { walkTheDog } from './compositions/walk-the-dog.js';
 import { duelDance } from './compositions/duel-dance.js';
+import { tugOfWar } from './compositions/tug-of-war.js';
+import { copycat } from './compositions/copycat.js';
+import { forAndAgainst } from './compositions/for-and-against.js';
+import { wellMet } from './compositions/well-met.js';
 
-export const scenes = { hello, notes: takeNotesScene, 'tap-dance-stickman': tapDanceStickman, 'fence-stickman': fenceStickman, picket, 'shake-hands': shakeHands, cheer, 'faces-emoji': facesEmoji };
+export const scenes = { hello, notes: takeNotesScene, 'tap-dance-stickman': tapDanceStickman, 'fence-stickman': fenceStickman, picket, 'shake-hands': shakeHands, cheer, haul, 'faces-emoji': facesEmoji };
 /** Scenes: several characters, each on its track in time. */
-export const compositions = { 'walk-the-dog': walkTheDog, 'duel-dance': duelDance };
+export const compositions = { 'walk-the-dog': walkTheDog, 'duel-dance': duelDance, 'tug-of-war': tugOfWar, copycat, 'for-and-against': forAndAgainst, 'well-met': wellMet };

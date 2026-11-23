@@ -45,6 +45,13 @@ export async function refresh() {
 // "+ New": the next message asks for something that does not exist yet.
 const fresh = on => { view.aside = false; if (on && !view.fresh) { view.demo = undefined; view.first = false; } view.fresh = on; draw(); load(); ready(); if (on) { $('note').focus(); note('new', { shop: view.shop }); } };
 $('new').addEventListener('click', () => fresh(true));
+/** Home: as on a first visit, ready to ask for a new animation of the stick figure, an example playing. */
+export function home() {
+    view.board = false; view.shop = 'scenes'; keep('shop', 'scenes');
+    if (castNames.includes('stickman')) { view.cast = 'stickman'; keep('cast', 'stickman'); }
+    view.fresh = false; fresh(true);
+}
+for (const kind of ['click', 'keydown']) $('home').addEventListener(kind, event => { if (kind === 'click' || event.key === 'Enter') home(); });
 $('about-new').addEventListener('click', () => fresh(true));
 $('about-this').addEventListener('click', () => fresh(false));
 // A remark about the page itself goes to a fiche of its own, whatever is on show.

@@ -19,7 +19,13 @@ function applyTheme() {
     for (const name of [...THEME_KEYS.map(key => `--${key}`), '--on-accent', '--on-pop']) {
         if (vars[name]) root.setProperty(name, vars[name]); else root.removeProperty(name);
     }
-    $('style-open').textContent = style ? t('style.label', { name: style.name }) : t('style.open');
+    // The style in use, with its colours: the button that opens the styles shows there is more than one look.
+    const theme = themeOf(style);
+    $('style-open').replaceChildren(
+        el('span', { className: 'swatches' }, ...['paper', 'accent', 'pop', 'ink'].map(key => el('i', { style: `background:${theme[key]}` }))),
+        el('span', { className: 'word', textContent: t('style.word') }),
+        el('b', { textContent: style ? style.name : t('style.none') }),
+        el('span', { className: 'turn', textContent: '⇄' }));
 }
 export const stageTheme = () => {
     const style = styleBook.styles.find(candidate => candidate.id === styleBook.active);

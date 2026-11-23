@@ -13,10 +13,11 @@
 <div class="wallpaper" aria-hidden="true"><i></i><i></i><i></i></div>
 <div id="progress" hidden></div>
 <header>
-  <h1>Figurant</h1>
+  <h1 id="home" tabindex="0" role="link" data-t-title="home.title">Figurant</h1>
   <div class="tools">
     <span id="listening" role="status"></span>
-    <button type="button" id="style-open"></button>
+    <button type="button" id="style-open" data-t-title="style.open.title"></button>
+    <button type="button" id="tutor" aria-pressed="false" data-t="tutor" data-t-title="tutor.title"></button>
     <span class="lang" role="group" data-t-label="language"><button type="button" data-lang="fr">FR</button><button type="button" data-lang="en">EN</button></span>
   </div>
 </header>
@@ -148,6 +149,7 @@
   </form>
 </aside>
 </div>
+<div id="tips" aria-live="polite"></div>
 <dialog id="composer">
   <form method="dialog" id="compose">
     <h2 id="compose-title"></h2>

@@ -1,5 +1,5 @@
-// Made for the stick figure: a bout with a foil. On guard, two lunges, a
-// step back, a salute. Two of them facing each other, one starting a beat
+// Made for the stick figure: a bout with a sword of light. On guard, two lunges, a
+// step back, a salute. `data.colour` is the colour of the blade. Two of them facing each other, one starting a beat
 // after the other, make a duel: each lunges while the other draws back.
 // It plays towards the side the figure faces (`dir`).
 
@@ -7,23 +7,28 @@ import { easing, moves } from 'figurant';
 
 const { easeOut, easeIn, easeInOut } = easing;
 
-/** A foil: a blade, a guard. Origin: the grip. */
-const foil = {
-    name: 'foil',
-    shapes: [{ tag: 'path', attrs: { d: 'M 0 0 L 40 0' }, weight: 0.7 }, { tag: 'path', attrs: { d: 'M 5 -4 L 5 4' }, weight: 1 }],
-    points: { grip: [0, 0], tip: [40, 0] },
-};
+/** A sword of light: a hilt, and a blade that glows in the colour it is given. Origin: the grip. */
+const lightSword = colour => ({
+    name: 'light-sword',
+    shapes: [
+        { tag: 'path', attrs: { d: 'M 8 0 L 46 0', stroke: colour, 'stroke-linecap': 'round', opacity: 0.35 }, weight: 4.2 },
+        { tag: 'path', attrs: { d: 'M 8 0 L 46 0', stroke: colour, 'stroke-linecap': 'round' }, weight: 2.2 },
+        { tag: 'path', attrs: { d: 'M 9 0 L 45 0', stroke: '#ffffff', 'stroke-linecap': 'round' }, weight: 0.6 },
+        { tag: 'path', attrs: { d: 'M -1 0 L 7 0' }, weight: 1.7 },
+    ],
+    points: { grip: [0, 0], tip: [46, 0] },
+});
 
 export const fenceStickman = {
     character: 'stickman',
     room: { left: 70, right: 70, up: 110 },
 
-    async play(c) {
+    async play(c, ctx) {
         const s = c.state, way = s.dir || 1, k = c.figure.k, home = s.x;
         const sword = way > 0 ? 'right' : 'left', free = way > 0 ? 'left' : 'right';
         c.onLeave(() => { c.feet({ left: null, right: null }, 1).catch(() => {}); c.hands({ left: null, right: null }, 1).catch(() => {}); });
         // The blade points the way the figure faces, a little up.
-        const blade = c.give(sword, foil, { tilt: way > 0 ? -8 : 188, state: { draw: 0 } });
+        const blade = c.give(sword, lightSword(ctx?.data?.colour ?? '#2f7df6'), { tilt: way > 0 ? -8 : 188, state: { draw: 0 } });
         /** The sword arm out in front at `reach`, the other up behind for balance. */
         const arms = (reach, lift, ms, ease = easeInOut) => c.hands({ [sword]: { x: way * reach, y: lift }, [free]: { x: -way * 20, y: -22 } }, ms, ease);
 

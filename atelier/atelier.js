@@ -22,6 +22,7 @@
 //   custom.js      an emoji or a picture for a head
 //   pins.js        pointing at a spot of the picture
 //   whiteboard.js  the sheet to draw on
+//   tutor.js       the tutorial: a "?" on each part of the page, and what it says
 //   activity.js    what the person does, noted for the assistant
 //
 // Beside them, with no page in them: i18n.js (the words, in two languages),
@@ -41,9 +42,10 @@ import { tick } from './page/timeline.js';
 import { refresh, ready, attend } from './page/talk.js';
 import { listening } from './page/assistant.js';
 import { loadStyles } from './page/styles.js';
+import { drawTutor } from './page/tutor.js';
 
 for (const button of document.querySelectorAll('[data-lang]')) {
-    button.addEventListener('click', () => { setLanguage(button.dataset.lang); translate(); forgetTools(); draw(); });
+    button.addEventListener('click', () => { setLanguage(button.dataset.lang); translate(); forgetTools(); draw(); drawTutor(); });
 }
 
 // Space plays and pauses, as in any player, unless the person is writing.
@@ -58,6 +60,9 @@ setInterval(listening, 4000);
 listening();
 loadStyles().then(() => { draw(); load(); });
 setInterval(tick, 200);
+// The tutorial's marks follow the parts of the page they are about.
+setInterval(drawTutor, 500);
+drawTutor();
 // The LLM answers in the files: pick its answers up without a reload.
 setInterval(refresh, 3000);
 

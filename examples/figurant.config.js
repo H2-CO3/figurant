@@ -19,7 +19,8 @@ const sized = characters => Object.fromEntries(Object.entries(characters).map(([
 
 export default {
     cast: {
-        stickman: { character: stickman, ...size },
+        // The stick figure belongs to the default style, with everything made of it.
+        stickman: { character: { ...stickman, style: 'default' }, ...size },
         ...Object.assign({}, ...styles.map(style => sized(style.characters))),
     },
     // A kind apart: stick figures whose head is an emoji or an imported picture.
@@ -31,7 +32,7 @@ export default {
     // Scenes: several characters, each on its track in time.
     compositions: { ...common.compositions, ...Object.assign({}, ...styles.map(style => style.compositions ?? {})) },
     // The style a fresh copy starts in (the person changes it from the atelier).
-    style: 'cartoon-realiste',
+    style: 'default',
     // Characters a person may customise from the atelier, and where each choice is saved.
     custom: { emoji: 'library/emoji/person.custom.js' },
 };

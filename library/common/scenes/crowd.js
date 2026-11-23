@@ -1,5 +1,5 @@
-// Three animations for a crowd, playable by any body that has arms: picketing
-// with a placard, shaking hands, cheering. They are what scenes with several
+// Four animations for a crowd, playable by any body that has arms: picketing
+// with a placard, shaking hands, cheering, hauling on a rope. They are what scenes with several
 // characters are made of (see ../compositions).
 
 import { easing, moves } from 'figurant';
@@ -58,5 +58,23 @@ export const cheer = {
         await c.tween({ wave: 1 }, 200);
         await c.wait(700);
         await c.tween({ wave: 0 }, 200);
+    },
+};
+
+/**
+ * It hauls on a rope: leaning back, it walks to where the scene says and holds there, still leaning.
+ * `data.to`: where to, in character units from where it stands (negative: to the left);
+ * `data.lean`: how far it leans, in degrees (negative: to the left); `data.pace`.
+ */
+export const haul = {
+    room: { left: 80, right: 80, up: 100 },
+    async play(c, ctx) {
+        const lean = ctx?.data?.lean ?? -14;
+        await c.tween({ tilt: lean, crouch: 6 }, 220, easeOut);
+        await moves.walkTo(c, c.state.x + (ctx?.data?.to ?? 0) * c.figure.k, ctx?.data?.pace ?? 0.5);
+        for (;;) {
+            await c.tween({ tilt: lean * 1.25, crouch: 8 }, 260, easeInOut);
+            await c.tween({ tilt: lean, crouch: 6 }, 260, easeInOut);
+        }
     },
 };

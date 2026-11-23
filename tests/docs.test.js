@@ -294,8 +294,9 @@ test('every scene of the library plays to its end with the character it was made
         await advance(clock, 30000);
         const figure = director.members[0].figure;
         // Some animations go on until something else replaces them.
-        const loops = ['notes', 'notes-teapot', 'picket'].includes(name);
-        const underWay = name === 'picket' ? figure.state.handR.weight > 0.9 : figure.state.seat === 1;
+        const loops = ['notes', 'notes-teapot', 'picket', 'haul'].includes(name);
+        // (Hauling on a rope goes on, leaning, for as long as the scene leaves it to.)
+        const underWay = name === 'picket' ? figure.state.handR.weight > 0.9 : name === 'haul' ? Math.abs(figure.state.tilt) > 5 : figure.state.seat === 1;
         assert.ok(loops ? underWay : ended === 1, `${name} ${loops ? 'is under way' : 'played to its end'} with ${owner}`);
         for (const [key, value] of Object.entries(figure.state)) if (typeof value === 'number') assert.ok(Number.isFinite(value), `${name}: ${key}`);
         if (castOf(scene).length) {
@@ -312,7 +313,7 @@ test('every animation has its one owner, every character has an animation of its
     const names = Object.values(everyone).map(member => member.character.name);
     // The only animations without an owner: the common gestures, what a crowd is made of.
     const gestures = Object.keys(config.scenes).filter(name => config.scenes[name].character === undefined);
-    assert.deepEqual(gestures.sort(), ['cheer', 'hello', 'picket', 'shake-hands'], 'the common gestures, and nothing else, belong to nobody');
+    assert.deepEqual(gestures.sort(), ['cheer', 'haul', 'hello', 'picket', 'shake-hands'], 'the common gestures, and nothing else, belong to nobody');
     const bodies = new Map();
     for (const [name, scene] of Object.entries(config.scenes)) {
         const owners = castOf(scene);

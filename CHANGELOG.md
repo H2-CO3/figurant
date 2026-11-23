@@ -6,6 +6,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+- A tutorial: a "?" on each part of the page says what it is for when pointed at or touched; one button in the heading turns them on or off, and they are on for a first visit.
+- Four more scenes of two stick figures (`tug-of-war`, `copycat`, `for-and-against`, `well-met`) and a common gesture, `haul`. With `duel-dance`, where the foils are now swords of light, one blue, one red (`with: { colour }`), they are the examples that play while something new is asked for.
+- The name in the heading goes back to the start: ready to ask for something new, an example playing.
 - The stage is never empty while something new is asked for: an example plays on it (the stick figure's animations; on a first visit, two of them in a duel that ends in a dance), with the request that made it.
 - The stick figure fences (`fence-stickman`), and a scene of two, `duel-dance`.
 - What the library holds can have a name in each language (`item.<name>` in `atelier/i18n.js`); the stick figure's animations have one.
@@ -15,6 +18,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - The lists show a picture of each animation (its most telling moment) and of each scene (a band over its name), with a loader while they are drawn; the character who plays is pictured beside their name.
 
 ### Changed
+- A fresh copy starts in the default style, which is now the stick figure's own. The button that opens the styles shows the colours of the one in use.
 - A first visit opens ready to ask for something: a new animation for the stick figure, the line to write in showing an example of a request.
 - The atelier's stylesheet is one file per part of the page (`atelier/css/`: base, buttons, layout, tabs, strip, stage, side, dock, board, dialogs), imported in order by `atelier/atelier.css`, which says what each holds. The rules overridden further down are gone. Nothing looks different.
 - The atelier's page script, one file of 1,200 lines, is sixteen modules in `atelier/page/`, one per part of the page; `atelier/atelier.js` starts it and says which is which. Nothing behaves differently.

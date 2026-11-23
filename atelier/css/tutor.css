@@ -1,0 +1,79 @@
+/* The tutorial: a "?" on the corner of each part of the page worth a word, and the words it
+   says when pointed at or touched. The layer lies over the page and lets everything through
+   but its marks. */
+#tips {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    pointer-events: none;
+}
+#tips .tip {
+    position: absolute;
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    border: 2.5px solid var(--edge);
+    border-radius: 50%;
+    /* Its own yellow, whatever the style: it is not part of the page, it points at it. */
+    background: #ffd23f;
+    color: #16181d;
+    font-size: 15px;
+    font-weight: 900;
+    line-height: 1;
+    box-shadow: 0 3px 0 var(--edge);
+    pointer-events: auto;
+    cursor: help;
+    animation: tip-beat 1.8s ease-in-out infinite;
+}
+#tips .tip[hidden] { display: none; }
+#tips .tip:hover,
+#tips .tip:focus-visible,
+#tips .tip.open { animation: none; z-index: 1; transform: none; }
+#tips .bubble {
+    display: none;
+    position: absolute;
+    top: 30px;
+    left: -6px;
+    width: max-content;
+    max-width: min(300px, 70vw);
+    padding: 10px 14px;
+    border: 2.5px solid var(--edge);
+    border-radius: 14px;
+    background: var(--paper);
+    color: var(--ink);
+    box-shadow: 0 5px 0 var(--edge);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.35;
+    text-align: left;
+    text-transform: none;
+    letter-spacing: 0;
+    cursor: default;
+}
+#tips .tip.leftwards .bubble { left: auto; right: -6px; }
+#tips .tip.upwards .bubble { top: auto; bottom: 30px; }
+#tips .tip:hover .bubble,
+#tips .tip:focus-visible .bubble,
+#tips .tip.open .bubble { display: block; }
+@keyframes tip-beat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.14); }
+}
+
+/* The button that turns it on and off, in the heading. */
+#tutor {
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    border-radius: 50%;
+    font-weight: 900;
+    font-size: 17px;
+    background: var(--paper);
+    border: 2.5px solid var(--edge);
+    box-shadow: 0 4px 0 var(--edge);
+}
+#tutor[aria-pressed="true"] { background: #ffd23f; color: #16181d; transform: translateY(2px); box-shadow: 0 2px 0 var(--edge); }
+
+@media (prefers-reduced-motion: reduce) {
+    #tips .tip { animation: none; }
+}

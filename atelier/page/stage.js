@@ -23,7 +23,7 @@ export function address(commit, more = {}) {
         : `bench.html?${new URLSearchParams({ kind: view.shop === 'props' ? 'prop' : 'character', name: current(), ...also })}`;
 }
 /** What can play on the stage while something new is being asked for: the stick figure's own, each with the request that made it (i18n: demo.<name>). */
-const DEMOS = [{ shop: 'compositions', name: 'duel-dance' }, { shop: 'scenes', name: 'tap-dance-stickman', cast: 'stickman' }, { shop: 'scenes', name: 'notes', cast: 'stickman' }, { shop: 'scenes', name: 'hello', cast: 'stickman' }];
+const DEMOS = [{ shop: 'compositions', name: 'duel-dance' }, { shop: 'compositions', name: 'tug-of-war' }, { shop: 'compositions', name: 'copycat' }, { shop: 'compositions', name: 'for-and-against' }, { shop: 'compositions', name: 'well-met' }, { shop: 'scenes', name: 'tap-dance-stickman', cast: 'stickman' }, { shop: 'scenes', name: 'notes', cast: 'stickman' }, { shop: 'scenes', name: 'hello', cast: 'stickman' }];
 /** The example on show: chosen when the person starts asking (the fullest one on a first visit, any after), from those the project has. */
 function demo() {
     if (view.shop !== 'scenes' && view.shop !== 'compositions') return null;
