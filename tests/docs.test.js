@@ -314,7 +314,7 @@ test('every animation has its one owner, every character has an animation of its
     const names = Object.values(everyone).map(member => member.character.name);
     // The only animations without an owner: the common gestures, what a crowd is made of.
     const gestures = Object.keys(config.scenes).filter(name => config.scenes[name].character === undefined);
-    assert.deepEqual(gestures.sort(), ['cheer', 'haul', 'hello', 'picket', 'shake-hands'], 'the common gestures, and nothing else, belong to nobody');
+    assert.deepEqual(gestures.sort(), ['cheer', 'haul', 'hello', 'high-five', 'picket', 'shake-hands'], 'the common gestures, and nothing else, belong to nobody');
     const bodies = new Map();
     for (const [name, scene] of Object.entries(config.scenes)) {
         const owners = castOf(scene);

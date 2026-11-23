@@ -1,5 +1,5 @@
-// Four animations for a crowd, playable by any body that has arms: picketing
-// with a placard, shaking hands, cheering, hauling on a rope. They are what scenes with several
+// Five animations for a crowd, playable by any body that has arms: picketing
+// with a placard, shaking hands, slapping hands in the air, cheering, hauling on a rope. They are what scenes with several
 // characters are made of (see ../compositions).
 
 import { easing, moves } from 'figurant';
@@ -42,6 +42,35 @@ export const shakeHands = {
         }
         await moves.blink(c);
         await c.all(c.hands({ [hand]: null }, 300), c.tween({ tilt: 0, gazeX: 0 }, 300));
+    },
+};
+
+/**
+ * It jumps and slaps a hand held high: two of them, face to face and jumping together, slap hands in
+ * the air, the way a team does. Bodies differ, so a scene says where each one's hand goes for the two
+ * to meet: `data.reach` (how far in front of its middle) and `data.height` (y from its origin, up
+ * negative), in character units; `data.jump`: how high it leaves the floor.
+ */
+export const highFive = {
+    room: { left: 60, right: 60, up: 170 },
+    async play(c, ctx) {
+        const s = c.state, dir = s.dir || 1, hand = dir > 0 ? 'right' : 'left', other = dir > 0 ? 'left' : 'right', ground = s.y;
+        const x = dir * (ctx?.data?.reach ?? 30), y = ctx?.data?.height ?? -52, up = (ctx?.data?.jump ?? 34) * c.figure.k;
+        c.onLeave(() => { s.y = ground; c.hands({ left: null, right: null }, 1).catch(() => {}); });
+        // The wind-up: down on its legs, the arm drawn back.
+        c.also({ gazeX: dir, wide: 0.5 }, 200);
+        await c.all(c.tween({ crouch: 9, squash: 0.3, tilt: -dir * 5 }, 260, easeInOut), c.hands({ [hand]: { x: -dir * 12, y: -8, angle: dir * 60 }, [other]: { x: -dir * 14, y: 6 } }, 260, easeInOut));
+        // Up, and the slap at the top.
+        c.also({ crouch: 0, squash: -0.25, tilt: dir * 6 }, 120, easeOut);
+        await c.all(c.tween({ y: ground - up }, 260, easeOut), c.hands({ [hand]: { x, y, angle: dir * -70 } }, 250, easeIn));
+        const fx = ctx?.api?.fx;
+        if (fx) { const [px, py] = c.figure.points[hand === 'right' ? 'armR' : 'armL'].tip; const stars = fx.particles({ width: 1.8 }); for (let i = 0; i < 6; i++) { const a = fx.range(0, Math.PI * 2), v = fx.range(60, 150) * c.figure.k; stars.emit({ x: px, y: py, vx: Math.cos(a) * v, vy: Math.sin(a) * v, life: 0.3, trail: 0.05, drag: 3 }); } stars.close(); }
+        await c.wait(70);
+        // Down, and a bounce of pleasure.
+        await c.all(c.tween({ y: ground }, 240, easeIn), c.hands({ [hand]: { x: dir * 16, y: -20 } }, 240));
+        await c.tween({ squash: 0.35, crouch: 6, tilt: 0 }, 100, easeOut);
+        await c.all(c.tween({ squash: 0, crouch: 0, wide: 0 }, 260, easeOutBack), c.hands({ left: null, right: null }, 260));
+        await moves.blink(c);
     },
 };
 

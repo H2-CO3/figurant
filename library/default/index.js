@@ -16,4 +16,5 @@ export const props = Object.assign({}, ...parts.map(part => part.props));
 export const scenes = Object.assign({}, ...parts.map(part => part.scenes));
 
 import { strike } from './compositions/strike.js';
-export const compositions = { strike };
+import { penPals } from './compositions/pen-pals.js';
+export const compositions = { strike, 'pen-pals': penPals };
