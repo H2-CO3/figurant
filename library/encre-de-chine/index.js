@@ -1,21 +1,22 @@
 // Everything drawn in the "encre-de-chine" style. Built like every style of the library:
 // characters/, props/, scenes/, kit.js (the style's drawing helpers) and this index.
 
-import { calligraphyBrush } from './characters/calligraphy-brush.js';
+import { inkMaster } from './characters/ink-master.js';
+import { inkBrush } from './props/ink-brush.js';
 import { frog } from './characters/frog.js';
 import { inkstone } from './props/inkstone.js';
 import { lotusLeaf } from './props/lotus-leaf.js';
 import { mayfly } from './props/mayfly.js';
 import { easel } from './props/easel.js';
 import { inkRock } from './props/rock.js';
-import { heavenAndEarthCalligraphyBrush } from './scenes/calligraphy-brush/heaven-and-earth.js';
+import { heavenAndEarthInkMaster } from './scenes/ink-master/heaven-and-earth.js';
 import { watchFrog } from './scenes/frog/watch.js';
 import { stillPondFrog } from './scenes/frog/still-pond.js';
 
 import { heavenAndEarth } from './compositions/heaven-and-earth.js';
 export const style = 'encre-de-chine';
-export const characters = { 'calligraphy-brush': calligraphyBrush, frog };
-export const props = { inkstone, 'lotus-leaf': lotusLeaf, mayfly, easel, 'ink-rock': inkRock };
-export const scenes = { 'heaven-and-earth-calligraphy-brush': heavenAndEarthCalligraphyBrush, 'still-pond-frog': stillPondFrog, 'watch-frog': watchFrog };
+export const characters = { 'ink-master': inkMaster, frog };
+export const props = { inkstone, 'lotus-leaf': lotusLeaf, mayfly, easel, 'ink-rock': inkRock, 'ink-brush': inkBrush };
+export const scenes = { 'heaven-and-earth-ink-master': heavenAndEarthInkMaster, 'still-pond-frog': stillPondFrog, 'watch-frog': watchFrog };
 /** Scenes: several characters, each on its track in time. */
 export const compositions = { 'heaven-and-earth': heavenAndEarth };
