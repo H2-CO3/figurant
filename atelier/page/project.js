@@ -41,7 +41,7 @@ export const view = {
 for (const [shop, { names }] of Object.entries(SHOPS)) view.item[shop] = names.includes(remember('item.' + shop)) ? remember('item.' + shop) : names[0];
 // A first visit opens ready to ask for something: a new animation for the stick figure
 // (whoever the project has, failing that), the line to write in showing what a request looks like.
-if (remember('shop') == null && remember('item.scenes') == null) { view.fresh = true; if (castNames.includes('stickman')) view.cast = 'stickman'; }
+if (remember('shop') == null && remember('item.scenes') == null) { view.fresh = true; view.first = true; if (castNames.includes('stickman')) view.cast = 'stickman'; }
 
 /** The styles of the project and the one in use (kept up to date by styles.js). */
 export const styleBook = { active: null, styles: [] };
@@ -56,7 +56,9 @@ export const talkName = () => talkedIn(view.fiches, ficheName(), view.shop, curr
 export const label = (shop, name) => {
     const typed = view.fiches[SHOPS[shop].fiche(name)]?.entries[0]?.text.match(/^Name: (.+)$/m)?.[1];
     const owner = shop === 'scenes' ? castOf(config.scenes?.[name])[0] : undefined;
-    return readable(name, owner, typed ?? (shop === 'compositions' ? config.compositions?.[name]?.title : undefined));
+    // What the library holds has a name in each language (i18n: item.<name>); what a person makes keeps the name they gave it.
+    const worded = t(`item.${name}`), known = worded !== `item.${name}` ? worded : undefined;
+    return typed ?? known ?? readable(name, owner, shop === 'compositions' ? config.compositions?.[name]?.title : undefined);
 };
 
 export const asked = fiche => {

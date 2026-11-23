@@ -95,6 +95,31 @@ main {
     color: var(--accent);
     animation: nudge 0.9s ease-in-out infinite alternate;
 }
+/* With an example playing behind it, the slate is only its words: what to do, above, and under
+   the picture the request that made what is playing. */
+#blank.demo {
+    background: none;
+    place-content: stretch;
+    grid-template-rows: auto auto 1fr;
+    gap: 4px;
+    padding: 16px 20px;
+    pointer-events: none;
+}
+#blank.demo strong { font-size: clamp(20px, 2.6vw, 34px); }
+#blank.demo #blank-say { font-size: 17px; }
+#blank.demo b { display: none; }
+#blank #blank-demo {
+    align-self: end;
+    justify-self: center;
+    max-width: 92%;
+    padding: 8px 16px;
+    border: 2.5px solid var(--edge);
+    border-radius: 14px;
+    background: var(--paper);
+    box-shadow: 0 4px 0 var(--edge);
+    font-size: 15px;
+}
+#blank #blank-demo:empty { display: none; }
 /* Whatever else lies over the stage is out of sight meanwhile. */
 #blank:not([hidden]) ~ * { visibility: hidden; }
 

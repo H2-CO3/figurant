@@ -6,6 +6,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+- The stage is never empty while something new is asked for: an example plays on it (the stick figure's animations; on a first visit, two of them in a duel that ends in a dance), with the request that made it.
+- The stick figure fences (`fence-stickman`), and a scene of two, `duel-dance`.
+- What the library holds can have a name in each language (`item.<name>` in `atelier/i18n.js`); the stick figure's animations have one.
 - The stick figure tap dances (`tap-dance-stickman`): shuffles, ball changes, a travelling step, heel digs, a finish.
 - Sound on a scene: `sounds: [{ at, src, volume, loop }]` plays sound files in step with the scene's time (paused, slowed down, taken to a moment and looped with it). The atelier shows them as a track on the timeline, an export carries them. Figurant makes no sound: the files are the person's, or made by their assistant with whatever tool they have.
 - `figurant atelier --lan`: the atelier opened to the local network on purpose, behind an access code made for each run (asked once per browser, five wrong tries lock an address out for five minutes).
@@ -19,6 +22,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - The atelier's server is split by concern: `cli/server.js` is the table of routes, and `cli/server/` holds the checks (`guard.js`), the access code (`door.js`), the files (`static.js`) and one module per part of the API. Nothing it answers has changed.
 
 ### Fixed
+- French: one form of address throughout (tu), and a French word for the timeline.
 - The server: an `Origin` that is no address is refused (403) and a name that cannot be read is a bad name (400), where both were answered as a breakdown (500); an address the API does not know is 404; a link out of the project is refused before it is read, not after.
 - GIFs: a film stepped by 80 ms moved on by 50 ms only, so a GIF played slowed down and a scene was cut before its end.
 - GIFs: an animation that needs more room than the film has was filmed standing still for forty seconds; it is now filmed from further away.

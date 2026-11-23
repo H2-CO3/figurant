@@ -4,7 +4,7 @@
 
 import { t } from '../i18n.js';
 import { $, el, keep } from './dom.js';
-import { config, SHOPS, view, current, ficheName, label, exists } from './project.js';
+import { config, SHOPS, everyone, view, current, ficheName, label, exists, made } from './project.js';
 import { note } from './activity.js';
 import { draw } from './draw.js';
 import { past } from './versions.js';
@@ -21,6 +21,17 @@ export function address(commit, more = {}) {
     return view.shop === 'compositions' ? `show.html?${new URLSearchParams({ scene: current(), speed: view.speed, ...also })}` : view.shop === 'scenes'
         ? `stage.html?${new URLSearchParams({ scene: current(), cast: view.cast, speed: view.speed, ...also })}`
         : `bench.html?${new URLSearchParams({ kind: view.shop === 'props' ? 'prop' : 'character', name: current(), ...also })}`;
+}
+/** What can play on the stage while something new is being asked for: the stick figure's own, each with the request that made it (i18n: demo.<name>). */
+const DEMOS = [{ shop: 'compositions', name: 'duel-dance' }, { shop: 'scenes', name: 'tap-dance-stickman', cast: 'stickman' }, { shop: 'scenes', name: 'notes', cast: 'stickman' }, { shop: 'scenes', name: 'hello', cast: 'stickman' }];
+/** The example on show: chosen when the person starts asking (the fullest one on a first visit, any after), from those the project has. */
+function demo() {
+    if (view.shop !== 'scenes' && view.shop !== 'compositions') return null;
+    if (view.demo === undefined) {
+        const there = DEMOS.filter(example => made(example.shop, example.name) && (!example.cast || everyone[example.cast]));
+        view.demo = there.length ? there[view.first ? 0 : Math.floor(Math.random() * there.length)] : null;
+    }
+    return view.demo;
 }
 export function load() {
     const scenes = view.shop === 'scenes';
@@ -51,7 +62,16 @@ export function load() {
     $('blank').hidden = !view.fresh;
     $('transport').hidden = !!view.fresh;
     $('blank-say').textContent = t(`fresh.${view.shop}`);
-    if (view.fresh || !current() || !exists()) { frame.src = 'about:blank'; return; }
+    if (view.fresh) {
+        // Not an empty stage: an example plays on it, with the request that made it.
+        const example = demo();
+        $('blank').classList.toggle('demo', !!example);
+        $('blank-demo').textContent = example ? t('demo.made', { prompt: t(`demo.${example.name}`) }) : '';
+        const src = example ? `${example.shop === 'compositions' ? 'show' : 'stage'}.html?${new URLSearchParams({ scene: example.name, ...(example.cast ? { cast: example.cast } : {}), ...stageTheme(), mute: 1 })}` : 'about:blank';
+        if (frame.getAttribute('src') !== src) frame.src = src;
+        return;
+    }
+    if (!current() || !exists()) { frame.src = 'about:blank'; return; }
     frame.src = address(past.at === null ? null : past.steps[past.at], view.seek ? { seek: Math.round(view.seek) } : {});
     if (!view.seek) view.moment = null;
     view.seek = 0;

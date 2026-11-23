@@ -43,7 +43,7 @@ export async function refresh() {
 
 // The order form: a name, the elements to use, and what is wanted, in plain words.
 // "+ New": the next message asks for something that does not exist yet.
-const fresh = on => { view.aside = false; view.fresh = on; draw(); load(); ready(); if (on) { $('note').focus(); note('new', { shop: view.shop }); } };
+const fresh = on => { view.aside = false; if (on && !view.fresh) { view.demo = undefined; view.first = false; } view.fresh = on; draw(); load(); ready(); if (on) { $('note').focus(); note('new', { shop: view.shop }); } };
 $('new').addEventListener('click', () => fresh(true));
 $('about-new').addEventListener('click', () => fresh(true));
 $('about-this').addEventListener('click', () => fresh(false));
