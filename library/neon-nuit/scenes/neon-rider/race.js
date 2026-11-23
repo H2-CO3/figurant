@@ -17,7 +17,8 @@
 import { effects } from 'figurant';
 import { RUNNERS } from '../../characters/neon-rider.js';
 
-const WHITE = '#e8ecff', DEEP = '#4d6bff';
+// The circuit keeps to its own colours: none of them is a runner's.
+const WHITE = '#e8ecff', DEEP = '#3b3fd8', VIOLET = '#b45cff', ROSE = '#ff3fa4';
 const SIDES = 8, TURN = Math.PI * 2 / SIDES;
 const f = n => n.toFixed(1);
 /** What the two runners know of each other, and of the circuit they share, for as long as it is drawn. */
@@ -56,11 +57,11 @@ export const raceNeonRider = {
         const mark = first ? 0 : 1.9;
         c.onLeave(c.clock.onFrame(dt => {
             const t = shared.t + mark;
-            const climb = Math.pow(Math.max(0, Math.sin(t * 0.21 + (first ? 0 : 2.6))), 6) * 1.9;
-            const wanted = (first ? -1 : 1) * (0.5 + climb) + 0.36 * Math.sin(t * 0.67) + 0.14 * Math.sin(t * 1.7);
+            const climb = Math.pow(Math.max(0, Math.sin(t * 0.45 + (first ? 0 : 2.6))), 6) * 1.9;
+            const wanted = (first ? -1 : 1) * (0.5 + climb) + 0.36 * Math.sin(t * 1.25) + 0.14 * Math.sin(t * 3.1);
             const before = me.lane;
-            me.lane += (wanted - me.lane) * Math.min(1, dt / 220);
-            me.far = 1.55 + (first ? 1 : -1) * 0.3 * Math.sin(shared.t * 0.43) + 0.07 * Math.sin(t * 1.3) - 0.12 * shared.boost;
+            me.lane += (wanted - me.lane) * Math.min(1, dt / 150);
+            me.far = 1.55 + (first ? 1 : -1) * 0.3 * Math.sin(shared.t * 0.8) + 0.07 * Math.sin(t * 2.3) - 0.12 * shared.boost;
             const [x, y] = wall(angleOf(me.lane), me.far);
             s.x = home + (x - mid - at);
             s.y = ground - (low - 56 * k - y);
@@ -85,17 +86,17 @@ export const raceNeonRider = {
             // Time, speed, the bend of the tunnel, and the kick: every eight seconds or so, everything lurches forward.
             c.onLeave(c.clock.onFrame(dt => {
                 shared.t += dt / 1000;
-                const beat = (shared.t % 8.4) / 8.4, kick = beat > 0.62 && beat < 0.9 ? Math.sin((beat - 0.62) / 0.28 * Math.PI) : 0;
+                const beat = (shared.t % 6.2) / 6.2, kick = beat > 0.62 && beat < 0.9 ? Math.sin((beat - 0.62) / 0.28 * Math.PI) : 0;
                 shared.boost += (kick - shared.boost) * Math.min(1, dt / 160);
-                shared.speed = 1.25 + 1.6 * shared.boost;
-                shared.run = (shared.run + dt / 1000 * 1.9 * shared.speed) % 4;
-                shared.bend = Math.sin(shared.t * 0.29) * 0.85 + Math.sin(shared.t * 0.83) * 0.35;
+                shared.speed = 3.4 + 2.6 * shared.boost;
+                shared.run = (shared.run + dt / 1000 * 1.9 * shared.speed) % 20;
+                shared.bend = Math.sin(shared.t * 0.62) * 0.85 + Math.sin(shared.t * 1.57) * 0.35;
                 shared.shake = [fx.range(-1, 1) * 3.2 * k * shared.boost, fx.range(-1, 1) * 2.4 * k * shared.boost];
             }));
             /** How far the frame of that number is, right now: they come at you and start again at the far end. */
-            const farOf = i => 1 + ((i + 4 - shared.run) % 20 + 20) % 20 * 0.42 - 0.3;
+            const farOf = i => 1 + ((i - shared.run) % 20 + 20) % 20 * 0.42 - 0.3;
             // The frames of the tunnel: one in four burns, the others are dim.
-            for (const [every, attrs] of [[false, { stroke: DEEP, 'stroke-width': 1.3 * k, opacity: 0.75 }], [true, { stroke: RUNNERS[0], 'stroke-width': 4.6 * k, opacity: 0.22 }], [true, { stroke: RUNNERS[0], 'stroke-width': 1.7 * k }]]) forever(attrs, el => {
+            for (const [every, attrs] of [[false, { stroke: DEEP, 'stroke-width': 1.3 * k, opacity: 0.75 }], [true, { stroke: VIOLET, 'stroke-width': 4.6 * k, opacity: 0.22 }], [true, { stroke: VIOLET, 'stroke-width': 1.7 * k }]]) forever(attrs, el => {
                 let d = '';
                 for (const i of frames) {
                     const far = farOf(i);
@@ -114,7 +115,7 @@ export const raceNeonRider = {
                 el.setAttribute('d', d);
             });
             // Panels on the walls, between two frames: the same ones every time a frame comes round, like a circuit board going by.
-            forever({ stroke: RUNNERS[1], 'stroke-width': 1.2 * k, opacity: 0.7 }, el => {
+            forever({ stroke: ROSE, 'stroke-width': 1.2 * k, opacity: 0.7 }, el => {
                 let d = '';
                 for (const i of frames) {
                     const far = farOf(i), side = (i * 5 + 3) % SIDES;
@@ -131,7 +132,7 @@ export const raceNeonRider = {
             forever({ stroke: WHITE, 'stroke-width': 2.4 * k, opacity: 0.95 }, el => {
                 let d = '';
                 for (let side = 0; side < SIDES; side++) for (let n = 0; n < 2; n++) {
-                    const far = 9 - ((shared.t * (2.6 + side * 0.23) * shared.speed + side * 1.7 + n * 4.1) % 8.2);
+                    const far = 9 - ((shared.t * (1.5 + side * 0.13) * shared.speed + side * 1.7 + n * 4.1) % 8.2);
                     if (far < 0.8) continue;
                     const [x1, y1] = corner(side, far), [x2, y2] = corner(side, far + 0.1 + 0.02 * far);
                     d += `M${f(x1)} ${f(y1)}L${f(x2)} ${f(y2)}`;
@@ -152,12 +153,12 @@ export const raceNeonRider = {
                 el.setAttribute('d', d); el.setAttribute('opacity', f(0.6 + 0.4 * shared.boost));
             });
             // The air: streaks leaving the far end, thicker and longer under boost; a ring thrown out when the kick comes.
-            const air = [fx.particles({ color: WHITE, width: 1.2, opacity: 0.75 }), fx.particles({ color: RUNNERS[0], width: 1.5, opacity: 0.7 }), fx.particles({ color: RUNNERS[1], width: 1.5, opacity: 0.7 })];
+            const air = [fx.particles({ color: WHITE, width: 1.2, opacity: 0.75 }), fx.particles({ color: VIOLET, width: 1.5, opacity: 0.7 }), fx.particles({ color: ROSE, width: 1.5, opacity: 0.7 })];
             c.onLeave(() => air.forEach(system => system.close()));
             let kicked = false;
             c.onLeave(c.clock.onFrame(dt => {
                 const [x, y] = centre(30);
-                for (const system of air) if (fx.random() < 0.014 * dt * shared.speed) { const a = fx.range(0, Math.PI * 2), v = fx.range(260, 620) * k * shared.speed; system.emit({ x: x + Math.cos(a) * 26 * k, y: y + Math.sin(a) * 16 * k, vx: Math.cos(a) * v, vy: Math.sin(a) * v * 0.6, life: 0.75, trail: 0.06 + 0.07 * shared.boost }); }
+                for (const system of air) if (fx.random() < 0.009 * dt * shared.speed) { const a = fx.range(0, Math.PI * 2), v = fx.range(200, 460) * k * shared.speed; system.emit({ x: x + Math.cos(a) * 26 * k, y: y + Math.sin(a) * 16 * k, vx: Math.cos(a) * v, vy: Math.sin(a) * v * 0.6, life: 0.75, trail: 0.06 + 0.07 * shared.boost }); }
                 if (shared.boost > 0.5 && !kicked) { kicked = true; effects.shockwave(fx, [x, y], { k, size: 260, life: 520, color: WHITE, width: 3, flat: 0.6 }); }
                 if (shared.boost < 0.1) kicked = false;
             }));
