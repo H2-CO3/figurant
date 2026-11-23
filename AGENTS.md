@@ -56,6 +56,7 @@ starts it, and lists what each module of `atelier/page/` is for:
 | `page/talk.js`, `assistant.js` | The one box to write in, questions, orders; whether an assistant listens and what it shows. |
 | `page/versions.js`, `export.js`, `thumbs.js` | Earlier versions from git; Export (folder and GIF); the small pictures of the lists. |
 | `page/styles.js`, `custom.js`, `pins.js`, `whiteboard.js` | Styles and the page's colours; an emoji or a picture for a head; pointing at a spot; the sheet to draw on. |
+| `atelier.css`, `css/` | How the page looks: one file per part of the page; `atelier.css` says which. |
 | `i18n.js` | Every word shown, in French and English: a word used with no entry fails a test. |
 | `orders.js`, `board.js`, `film.js`, `gif.js`, `theme.js`, `hold.js`, `where.js` | Logic with no page in it, tested in Node. New logic that can be tested belongs here, not in `page/`. |
 | `stage.html`, `show.html`, `bench.html`, `thumbs.html` | The pages shown inside the work zone: one animation, one scene in time, one character or prop on a bench, the pictures of the lists. |

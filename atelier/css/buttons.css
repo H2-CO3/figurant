@@ -1,0 +1,93 @@
+/* Buttons: toys, not form controls. A thick outline, a hard shadow under each like a key on
+   its base; it rises under the pointer and goes down when pressed. What is chosen stays down,
+   in colour. Buttons that belong to one part of the page (the sections, the list, "New", the
+   transport…) are with that part. */
+/* One shape for all. */
+button {
+    font: inherit;
+    cursor: pointer;
+    padding: 6px 12px;
+    border: 2.5px solid var(--edge);
+    border-radius: 16px;
+    background: var(--paper);
+    color: var(--ink);
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    box-shadow: 0 5px 0 var(--edge);
+    transition: transform 0.08s ease-out, box-shadow 0.08s ease-out, background 0.12s;
+}
+.bar button { font-weight: 700; }
+button:hover { border-color: var(--soft); }
+button:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+button:disabled {
+    opacity: 0.55;
+    box-shadow: 0 2px 0 var(--edge);
+    transform: translateY(3px);
+    cursor: default;
+}
+button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 7px 0 var(--edge);
+    filter: none;
+}
+button:active:not(:disabled) { transform: translateY(5px); box-shadow: 0 0 0 var(--edge); }
+/* What is chosen stays down, in colour. */
+button[aria-pressed="true"],
+button[aria-current="true"],
+button[aria-selected="true"],
+button[aria-checked="true"] {
+    transform: translateY(4px);
+    box-shadow: 0 1px 0 var(--edge);
+    background: var(--accent);
+}
+button.primary {
+    font-weight: 900;
+    font-size: 17px;
+    padding: 12px 22px;
+    border-radius: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    background: var(--accent);
+    border-color: var(--edge);
+    box-shadow: 0 5px 0 var(--edge);
+}
+/* Words that are only links stay words. */
+button.quiet {
+    color: var(--soft);
+    padding: 6px 8px;
+    border: 0;
+    box-shadow: none;
+    background: none;
+    transform: none;
+    font-weight: 700;
+    text-decoration: underline dotted 2px;
+    text-underline-offset: 4px;
+}
+button.quiet:hover { color: var(--ink); }
+button.quiet:hover:not(:disabled) {
+    transform: none;
+    box-shadow: none;
+    color: var(--accent);
+}
+/* The bright colour belongs to the style; what is written on it is chosen to be read (--on-
+   accent comes with the style). */
+button[aria-pressed="true"],
+button[aria-current="true"],
+button[aria-selected="true"],
+button[aria-checked="true"],
+button.primary {
+    color: var(--on-accent);
+}
+/* What is chosen does not rise under the pointer. (After the quiet buttons on purpose: a quiet
+   one that is pressed follows this rule.) */
+button[aria-pressed="true"]:hover:not(:disabled),
+button[aria-current="true"]:hover:not(:disabled),
+button[aria-selected="true"]:hover:not(:disabled),
+button[aria-checked="true"]:hover:not(:disabled) {
+    transform: translateY(4px);
+    box-shadow: 0 1px 0 var(--edge);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    button { transition: none; }
+}

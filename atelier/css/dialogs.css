@@ -1,0 +1,240 @@
+/* Dialogs: the detailed order ("composer"), the styles to pick from, and the form that edits
+   one style. */
+
+/* Every dialog: a sheet of paper over a dimmed page, a title, and its buttons in a row at the
+   foot. */
+dialog {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--paper);
+    color: var(--ink);
+    width: min(540px, calc(100vw - 32px));
+    padding: 24px;
+    box-shadow: 0 20px 60px rgb(0 0 0 / 0.18);
+}
+dialog::backdrop { background: rgb(15 17 22 / 0.4); }
+dialog h2 { margin-bottom: 14px; }
+fieldset {
+    border: 0;
+    padding: 0;
+    margin: 0 0 10px;
+}
+legend {
+    padding: 0;
+    font-size: 14px;
+    margin-bottom: 4px;
+    color: var(--ink);
+}
+fieldset label {
+    display: inline-flex;
+    gap: 5px;
+    align-items: center;
+    margin: 0 12px 4px 0;
+    color: var(--ink);
+    font-size: 14px;
+}
+fieldset input[type="text"] { margin-top: 2px; }
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+    align-items: center;
+}
+#compose-error { color: var(--bad); }
+#compose-error, #style-status {
+    font-size: 13px;
+    min-height: 1.3em;
+    margin: 6px 0 0;
+}
+.actions .spacer { flex: 1; }
+dialog button.primary, dialog .add, #style-list .pick { box-shadow: 0 5px 0 var(--edge); }
+
+/* Styles: one card each, with one of its characters on its own paper. A click works in that
+   style. */
+#style {
+    width: min(820px, calc(100vw - 32px));
+    padding: 28px;
+    border: 2.5px solid var(--edge);
+    border-radius: 26px;
+    box-shadow: 0 10px 0 var(--edge);
+}
+.hint {
+    font-size: 13px;
+    color: var(--soft);
+    margin: -6px 0 14px;
+}
+#style-status { color: var(--soft); }
+#style-list {
+    display: grid;
+    margin-bottom: 6px;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 18px;
+}
+#style-list .card {
+    gap: 2px;
+    position: relative;
+    display: block;
+}
+#style-list .pick {
+    border: 2.5px solid var(--edge);
+    background: var(--paper);
+    color: var(--ink);
+    display: grid;
+    gap: 0;
+    padding: 0;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 20px;
+    text-align: center;
+}
+#style-list .pick[aria-checked="true"] {
+    border-color: var(--accent);
+    color: var(--ink);
+    box-shadow: 0 5px 0 var(--edge), 0 0 0 5px var(--accent);
+    background: var(--paper);
+}
+#style-list .pick:hover:not(:disabled) { transform: translateY(-4px) rotate(-1deg); }
+#style-list .sample {
+    position: relative;
+    display: grid;
+    place-items: center;
+    height: 150px;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    justify-content: center;
+}
+#style-list .sample b, #style-sample b { line-height: 1; font-weight: 800; }
+#style-list .sample b { font-size: 44px; }
+#style-list .sample i, #style-sample i {
+    width: 34px;
+    height: 12px;
+    border-radius: 999px;
+    display: block;
+}
+#style-list .name {
+    padding: 10px 8px;
+    font-size: 16px;
+    font-weight: 900;
+    border-top: 2.5px solid var(--edge);
+    background: var(--paper);
+    color: var(--ink);
+}
+#style-list .used {
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: var(--pop);
+    color: var(--on-pop);
+    border: 2px solid var(--edge);
+    font-size: 11px;
+}
+#style-list .edit {
+    justify-self: start;
+    box-shadow: none;
+    transform: none;
+    font-weight: 700;
+    text-underline-offset: 4px;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: var(--paper);
+    color: var(--ink);
+    border: 2px solid var(--edge);
+    font-size: 12px;
+    text-decoration: none;
+}
+#style-list .edit:hover {
+    transform: none;
+    box-shadow: none;
+    color: var(--accent);
+}
+#style-list .add {
+    color: var(--accent);
+    font-weight: 700;
+    background: none;
+    border: 2.5px dashed var(--edge);
+    box-shadow: none;
+    min-height: 196px;
+    border-radius: 20px;
+    font-size: 16px;
+}
+#style-list .sample u, #style-sample u {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    display: block;
+    margin-left: auto;
+    margin-right: 6px;
+    text-decoration: none;
+}
+#style-list .sample img { width: 112px; height: 112px; }
+#style-list .swatches {
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+    display: flex;
+    gap: 4px;
+}
+#style-list .swatches i {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid color-mix(in srgb, currentColor 55%, transparent);
+}
+#style-list .pick[aria-checked="true"] .name { background: var(--accent); color: var(--on-accent); }
+
+/* One style, edited in a form apart: its name, its four colours with a sample beside them, its
+   words. */
+#style-edit { width: min(560px, calc(100vw - 32px)); }
+#style-sample {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 10px;
+    border-radius: 9px;
+    border: 1px solid var(--line);
+    width: 120px;
+    height: 44px;
+    margin-left: auto;
+    align-items: center;
+}
+#style-sample b { font-size: 24px; }
+#style-edit label { display: block; margin-bottom: 12px; }
+.colours {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: center;
+    margin: 4px 0 16px;
+}
+.colours label {
+    margin: 0 !important;
+    display: flex !important;
+    align-items: center;
+    gap: 8px;
+}
+.colours input {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: none;
+    cursor: pointer;
+}
+#style-edit-status {
+    color: var(--soft);
+    font-size: 13px;
+    min-height: 1.3em;
+    margin: 6px 0 0;
+}
+button.danger { color: var(--bad); }
+button.danger[data-sure] { border-color: var(--bad); font-weight: 700; }

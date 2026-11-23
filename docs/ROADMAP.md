@@ -31,8 +31,6 @@ Where Figurant is going. Nothing here is promised for a date.
 - **Variants**: try another take of an animation next to the first.
 - GIFs of a character alone and of a prop.
 - Names shown in the person's language.
-- The atelier's stylesheet was written in layers: about a fifth of it is
-  rules overridden further down. To be rewritten as one sheet.
 
 ## Later
 

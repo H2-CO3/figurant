@@ -1,0 +1,121 @@
+/* The atelier's own look, from the ground up: the colours of the style in use, the reset,
+   titles, form fields, and the two small parts used everywhere (the state dot, the spinner).
+   Colours always come from the style in use, never from here. */
+
+/* Three colours make a theme (each style has its own); the rest is drawn from them. */
+:root {
+    --paper: #ffffff;
+    --ink: #16181d;
+    --panel: color-mix(in srgb, var(--ink) 4%, var(--paper));
+    --line: color-mix(in srgb, var(--ink) 11%, var(--paper));
+    --soft: color-mix(in srgb, var(--ink) 58%, var(--paper));
+    --accent: #3b5bdb;
+    --ok: #2f9e6b;
+    --wait: #d9822b;
+    --bad: #c0392b;
+    --radius: 10px;
+    --edge: var(--ink);
+    --pop: #ffd23f;
+    --on-pop: #16181d;
+    --on-accent: #ffffff;
+}
+
+/* Nothing shows a scrollbar; everything that overflows scrolls. */
+* { box-sizing: border-box; scrollbar-width: none; }
+*::-webkit-scrollbar { display: none; }
+[hidden] { display: none !important; }
+
+/* Titles. */
+h2 {
+    margin: 0 0 2px;
+    font-size: 24px;
+    font-weight: 900;
+    letter-spacing: -0.03em;
+}
+h3 {
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0 0 4px;
+}
+
+/* Fields. */
+select, textarea, input[type="text"], input:not([type]) {
+    font: inherit;
+    color: inherit;
+    width: 100%;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    padding: 8px 10px;
+}
+select, input[type="text"], input:not([type]) { border-radius: 8px; }
+select:focus-visible, textarea:focus-visible, input:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+textarea {
+    resize: vertical;
+    display: block;
+    border-width: 2px;
+    border-radius: 14px;
+    font-size: 16px;
+}
+label {
+    display: block;
+    font-size: 13px;
+    color: var(--soft);
+    margin: 0 0 10px;
+}
+label > select, label > input {
+    margin-top: 4px;
+    color: var(--ink);
+    font-size: 15px;
+}
+
+/* Two small parts used everywhere: the state dot and the spinner. */
+.dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--line);
+    flex: none;
+}
+.dot.on, .dot.approved { background: var(--ok); }
+.dot.checked { background: var(--accent); }
+.dot.asked, .dot.todo { background: var(--wait); }
+.spinner {
+    width: 16px;
+    height: 16px;
+    flex: none;
+    border-radius: 50%;
+    border: 2px solid var(--line);
+    border-top-color: var(--accent);
+    animation: spin 0.8s linear infinite;
+}
+.dot.working { background: var(--accent); animation: pulse 1s ease-in-out infinite; }
+.spinner.big {
+    width: 74px;
+    height: 74px;
+    border-width: 8px;
+    border-color: color-mix(in srgb, var(--accent) 22%, transparent);
+    border-top-color: var(--accent);
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@keyframes pulse { 50% { opacity: 0.3; } }
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --paper: #15161a;
+        --ink: #eceef2;
+        --accent: #8ea2ff;
+        --ok: #5cc99a;
+        --wait: #f0a95a;
+        --bad: #f08a7c;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .spinner, .dot.working { animation: none; }
+}

@@ -1,0 +1,333 @@
+/* The column on the right of the picture. It is not a block: two blocks stand in it. The
+   settings are short and never scroll; the versions take what is left, and scroll. A character
+   also gets the block where its face is chosen. (The pens of the whiteboard stand here too:
+   see board.css.) */
+
+/* The column itself. */
+#side {
+    border: 0 !important;
+    position: sticky;
+    top: 12px;
+    grid-column: 3;
+    align-content: start;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: none;
+    box-shadow: none;
+    backdrop-filter: none;
+    border-radius: 0;
+    padding: 0 4px 6px 0;
+    gap: 14px;
+    grid-row: 1 / span 2;
+    align-self: start;
+    max-height: calc(100vh - 96px);
+}
+/* With the settings open the column scrolls with the page. */
+.layout.wide #side { position: static; }
+#side > section {
+    flex: 0 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+/* The settings: a block of what can be done at this moment, then the fine settings. */
+#side #advanced, #customise {
+    margin: 0;
+    border: 2.5px solid var(--edge);
+    border-radius: 18px;
+    background: color-mix(in srgb, var(--accent) 9%, var(--paper));
+    display: grid;
+}
+#side > #advanced {
+    flex: none;
+    overflow: visible;
+    min-height: 0;
+    padding: 10px 12px;
+    gap: 6px;
+}
+#advanced:not([hidden]) { min-height: 0; }
+#advanced h2 { font-size: 18px; }
+#advanced details { margin-top: 12px; }
+#side #advanced > *, #side #customise > * { margin: 0; min-width: 0; }
+.status {
+    color: var(--soft);
+    font-size: 13px;
+    margin: 0 0 14px;
+    align-items: center;
+    gap: 7px;
+}
+#context {
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0 0 6px;
+    font-size: 12px;
+}
+/* In the panel, only what can be done: what it is called and its state are said elsewhere. */
+#context, #scene-name, .status { display: none; }
+#context span {
+    border-radius: 999px;
+    background: var(--panel);
+    color: var(--soft);
+    font-weight: 700;
+    font-size: 12px;
+    padding: 4px 10px;
+}
+#context .kind {
+    font-weight: 600;
+    background: var(--accent);
+    color: var(--paper);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Going to a moment holds the picture there: the block says which moment, and offers to go on
+   or start again. */
+#moment-bar {
+    display: flex;
+    gap: 10px;
+    margin: 0;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+}
+#moment { font-weight: 900; font-size: 18px; }
+#resume, #restart { grid-column: 1 / -1; }
+#panel-close { grid-column: 2; grid-row: 1; }
+
+/* Rows of controls. A word before each group, so that nobody has to guess what "÷2" divides. */
+#pin[aria-pressed="true"] { color: var(--accent); font-weight: 600; }
+#every {
+    display: block;
+    font-size: 13px;
+    padding-left: 10px;
+}
+.bar .tag {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--soft);
+    margin-left: 6px;
+}
+#side .bar {
+    display: grid;
+    gap: 8px;
+    justify-items: stretch;
+    margin: 0;
+}
+#side .bar .spacer { display: none; }
+#side .bar .tag { margin: 4px 0 -4px; }
+#side button { font-size: 13px; }
+#side button.quiet {
+    justify-self: start;
+    text-align: left;
+    padding: 2px 0;
+}
+#advanced .bar { gap: 5px; }
+#advanced .bar .tag { font-size: 12px; margin: 2px 0 -3px; }
+
+/* A group of choices is one key cut in parts. */
+.segment {
+    border: 2.5px solid var(--edge);
+    border-radius: 14px;
+    box-shadow: 0 4px 0 var(--edge);
+    overflow: hidden;
+    background: var(--paper);
+    display: flex;
+}
+.segment button { color: var(--soft); font-weight: 700; }
+#side .segment button {
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    transform: none;
+    flex: 1;
+}
+#side #advanced .segment button { font-size: 11px; padding: 5px 2px; }
+.segment button[aria-pressed="true"] {
+    background: var(--panel);
+    color: var(--ink);
+    font-weight: 600;
+}
+.segment button:hover:not(:disabled) {
+    transform: none;
+    box-shadow: none;
+    background: color-mix(in srgb, var(--accent) 22%, var(--paper));
+}
+.segment button + button { border-left: 2.5px solid var(--edge); }
+#widths { flex-direction: row; }
+#side #widths button + button { border-top: 0; border-left: 2.5px solid var(--edge); }
+#side .tag:has(+ #widths[hidden]) { display: none; }
+
+/* What folds: the elements of a scene to tick, the sliders of a pose. */
+details > summary {
+    cursor: pointer;
+    color: var(--soft);
+    font-size: 13px;
+    padding: 6px 0;
+}
+details[open] > summary { color: var(--ink); }
+.check {
+    display: inline-flex;
+    gap: 6px;
+    align-items: center;
+    color: var(--ink);
+}
+#sliders {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 4px 20px;
+}
+#sliders, #advanced .picks { max-height: 150px; overflow-y: auto; }
+#sliders label {
+    display: grid;
+    grid-template-columns: 64px minmax(0, 1fr) 40px;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+}
+#sliders input { min-width: 0; width: 100%; }
+#sliders output { font-variant-numeric: tabular-nums; text-align: right; }
+.picks label {
+    display: inline-flex;
+    gap: 5px;
+    align-items: center;
+    margin: 0 12px 4px 0;
+    color: var(--ink);
+    font-size: 14px;
+}
+.picks { display: flex; flex-wrap: wrap; }
+
+/* Versions: every state the item went through, newest first. */
+#side #versions {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 0;
+    padding: 12px;
+    overflow: hidden;
+    border: 2.5px solid var(--edge);
+    border-radius: 18px;
+    background: color-mix(in srgb, var(--accent) 9%, var(--paper));
+}
+#side > #versions {
+    flex: 0 1 auto;
+    min-height: 190px;
+    max-height: 420px;
+}
+#version-list {
+    list-style: none;
+    margin: 0;
+    display: grid;
+    gap: 6px;
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: none;
+    overflow-y: auto;
+    padding: 2px 2px 6px;
+}
+#version-list button {
+    width: 100%;
+    display: grid;
+    gap: 1px;
+    text-align: left;
+    padding: 6px 10px;
+    border-radius: 12px;
+    border-width: 2px;
+    box-shadow: 0 2px 0 var(--edge);
+    background: var(--paper);
+    color: var(--ink);
+}
+#version-list button[aria-current="true"] { background: var(--accent); color: var(--on-accent); }
+#version-list button b { font-size: 12px; }
+#version-list button span {
+    font-size: 11px;
+    font-weight: 500;
+    opacity: 0.8;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+#version-restore {
+    justify-self: stretch;
+    background: var(--pop);
+    color: var(--on-pop);
+    order: -1;
+    flex: none;
+}
+#versions .tag {
+    order: -2;
+    margin: 0;
+    flex: none;
+}
+
+/* The faces to choose for a character: a grid of emoji, glyphs typed by hand, or a picture. */
+#customise { padding: 12px; gap: 10px; }
+#side #emoji-grid button { font-size: 20px; padding: 4px; }
+#side h3 { font-size: 14px; }
+#side input[type="file"] { width: 100%; font-size: 12px; }
+#emoji-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    margin: 0;
+    justify-content: space-between;
+}
+#emoji-grid button {
+    line-height: 1;
+    border: 0;
+    box-shadow: none;
+    background: none;
+    transform: none;
+    font-weight: 700;
+    text-underline-offset: 4px;
+    text-decoration: none;
+    border-radius: 10px;
+}
+#emoji-grid button[aria-pressed="true"] {
+    border-color: var(--ink);
+    background: var(--accent);
+    transform: none;
+    box-shadow: none;
+    color: inherit;
+}
+#emoji-grid button:hover:not(:disabled) { transform: scale(1.35); box-shadow: none; }
+.custom-row {
+    flex-wrap: wrap;
+    align-items: end;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin: 0;
+}
+.custom-row label {
+    margin: 0;
+    font-size: 12px;
+    display: grid;
+    gap: 2px;
+}
+.glyph {
+    font-size: 20px !important;
+    text-align: center;
+    padding: 4px !important;
+    width: 100% !important;
+}
+#custom-status {
+    color: var(--soft);
+    font-size: 13px;
+    min-height: 1.4em;
+    margin: 8px 0 0;
+}
+.custom-row > button, .file, #image-name { grid-column: 1 / -1; }
+
+@media (max-width: 1000px) {
+    #side {
+        position: static;
+        grid-column: 1;
+        display: grid;
+        overflow: visible;
+        grid-row: auto;
+        max-height: none;
+    }
+    #side > #versions { flex: none; }
+    #version-list { max-height: 240px; }
+}

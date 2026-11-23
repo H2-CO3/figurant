@@ -1,0 +1,323 @@
+/* The conversation: the assistant's voice and hand. It comes out from under the work zone,
+   like a drawer: tied to it, with nothing in between. */
+
+/* The drawer. */
+#dock {
+    padding: 16px 18px;
+    grid-column: 2;
+    grid-row: 2;
+    position: relative;
+    inset: auto;
+    left: auto;
+    bottom: auto;
+    transform: none;
+    width: auto;
+    max-height: none;
+    overflow: visible;
+    z-index: 1;
+    margin: -26px 26px 0;
+    padding-top: 42px;
+    border-radius: 0 0 32px 32px;
+    border: 2.5px solid var(--edge) !important;
+    border-top: 0 !important;
+    box-shadow: 0 8px 0 var(--edge);
+    background: color-mix(in srgb, var(--paper) 86%, var(--accent));
+    backdrop-filter: none;
+}
+
+/* The thread: everything said, shown when "History" is pressed. */
+#thread {
+    list-style: none;
+    display: grid;
+    overflow: auto;
+    padding: 0;
+    gap: 10px;
+    max-height: 38vh;
+    margin: 0 0 10px;
+}
+#thread:empty { display: block; min-height: 0; }
+#thread li {
+    padding: 10px 12px;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    background: var(--panel);
+    font-size: 15px;
+    border-radius: 16px 16px 16px 4px;
+    margin-right: 34px;
+}
+#thread li.person {
+    background: color-mix(in srgb, var(--accent) 12%, var(--paper));
+    border: 0;
+    border-radius: 16px 16px 4px 16px;
+    margin: 0 0 0 34px;
+}
+#thread .who {
+    font-size: 12px;
+    color: var(--soft);
+    display: block;
+    margin-bottom: 2px;
+    font-weight: 700;
+}
+#thread .about {
+    padding: 0;
+    font: inherit;
+    color: var(--accent);
+    border: 0;
+    box-shadow: none;
+    background: none;
+    transform: none;
+    font-weight: 700;
+    text-decoration: underline dotted 2px;
+    text-underline-offset: 4px;
+}
+#thread .about:hover {
+    transform: none;
+    box-shadow: none;
+    color: var(--accent);
+}
+
+/* While the assistant works, the form steps aside: one message at a time. */
+#working {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 0;
+    background: var(--ink);
+    color: var(--paper);
+    font-weight: 800;
+    margin: 0 0 8px;
+    padding: 10px 14px;
+    font-size: 15px;
+    border-radius: 16px;
+}
+#working.idle .spinner { animation: none; border-color: var(--wait); }
+#working .spinner {
+    width: 24px;
+    height: 24px;
+    border-width: 4px;
+    border-color: color-mix(in srgb, var(--paper) 30%, transparent);
+    border-top-color: var(--paper);
+}
+
+/* The assistant's answer is read whole: as many lines as it takes, and it scrolls past six. */
+#last-word {
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.35;
+    margin: 0 8px 10px;
+    display: block;
+    -webkit-line-clamp: unset;
+    overflow-y: auto;
+    max-height: 8.2em;
+}
+#last-word::before { content: '💬 '; }
+
+/* Questions take a line each: the words, then Yes / No. */
+#questions:not(:empty) {
+    border-radius: 18px;
+    border: 0;
+    background: none;
+    padding: 0 4px;
+    margin-bottom: 6px;
+}
+#questions::before {
+    content: attr(data-title);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: 900;
+    display: none;
+}
+#questions:empty::before { display: none; }
+#questions .question { justify-content: space-between; }
+#dock #questions .question {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 3px 0;
+    border: 0;
+}
+#questions .question + .question { border-top: 1px solid var(--line); }
+#questions .question p {
+    flex: 1;
+    margin: 0;
+    font-weight: 600;
+    font-size: 16px;
+}
+#questions .choices {
+    display: inline-flex;
+    border: 2.5px solid var(--edge);
+    box-shadow: 0 4px 0 var(--edge);
+    overflow: hidden;
+    background: var(--paper);
+}
+#dock #questions .choices {
+    border-width: 1.5px;
+    border-radius: 999px;
+    flex: none;
+}
+#questions .choices button {
+    font-weight: 900;
+    text-transform: uppercase;
+    font-size: 14px;
+    padding: 6px 16px;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    transform: none;
+}
+#questions .choices button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+#questions .choices button:hover:not(:disabled) {
+    transform: none;
+    box-shadow: none;
+    background: color-mix(in srgb, var(--accent) 22%, var(--paper));
+}
+#questions .choices button + button { border-left: 2.5px solid var(--edge); }
+
+/* Export sits under the questions, away from the button that sends. */
+#export-row {
+    display: flex;
+    justify-content: flex-end;
+    margin: 0 4px 8px;
+}
+#export-row:has(#export[hidden]) { display: none; }
+#export {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 38px;
+    padding: 0 16px;
+    border-radius: 19px;
+    font-size: 13px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    background: var(--paper);
+    color: var(--ink);
+    border: 2.5px solid var(--edge);
+    box-shadow: 0 3px 0 var(--edge);
+}
+
+/* One row of small controls: what the words are about, what was just saved, the history. */
+#saved {
+    min-height: 1.5em;
+    flex: 1;
+    min-width: 0;
+    margin: 0 6px;
+    font-size: 12px;
+    color: var(--soft);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#history { margin-top: 18px; }
+#about {
+    display: flex;
+    gap: 6px;
+    margin: 0;
+    flex: 0 1 auto;
+    min-width: 0;
+    flex-wrap: wrap;
+    row-gap: 8px;
+}
+#about button {
+    border-radius: 999px;
+    font-weight: 700;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 13px;
+    padding: 5px 12px;
+    border-width: 2px;
+    box-shadow: 0 3px 0 var(--edge);
+}
+#about button[aria-pressed="true"] {
+    border-color: var(--ink);
+    background: var(--ink);
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 var(--edge);
+    color: var(--paper);
+}
+.row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin: 0 0 6px 4px;
+    min-width: 0;
+}
+#dock .row > button {
+    font-size: 12px;
+    padding: 2px 8px;
+    flex: none;
+}
+
+/* One line to write in, and the button that sends. */
+.speak {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    position: static;
+}
+.speak textarea {
+    flex: 1;
+    max-height: 30vh;
+    resize: none;
+    field-sizing: content;
+    background: var(--paper);
+    font-size: 19px;
+    padding: 16px 22px;
+    min-height: 62px;
+    border-radius: 31px;
+    border: 2.5px solid var(--edge);
+    box-shadow: inset 0 4px 0 color-mix(in srgb, var(--ink) 10%, transparent);
+}
+/* While something new is being asked for, the line to write in is lit: that is where to say
+   what. */
+body:has(#blank:not([hidden])) .speak textarea {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 25%, transparent);
+}
+.speak button[type="submit"] {
+    flex: none;
+    padding: 0;
+    line-height: 1;
+    box-shadow: none;
+    text-transform: none;
+    letter-spacing: 0;
+    width: 62px;
+    height: 62px;
+    font-size: 26px;
+    border-radius: 50%;
+}
+.speak button[data-decision="redo"]:disabled { opacity: 0.45; }
+
+/* A low screen: everything around the picture gets shorter, so that the picture keeps its
+   room. */
+@media (max-height: 880px) {
+    #last-word { font-size: 16px; max-height: 6.8em; }
+    .speak textarea { min-height: 54px; padding: 12px 20px; }
+    .speak button[type="submit"] { width: 54px; height: 54px; }
+}
+
+/* On a low screen the answer keeps to three lines and scrolls: the page itself must not. */
+@media (max-height: 820px) {
+    #last-word { max-height: 4.2em; font-size: 15px; }
+    #about { flex-wrap: nowrap; }
+    #about button { font-size: 12px; padding: 4px 9px; }
+}
+
+@media (max-width: 1000px) {
+    #dock {
+        grid-column: 1;
+        grid-row: auto;
+        margin: 0;
+        padding-top: 16px;
+        border-radius: 26px;
+    }
+    #last-word { -webkit-line-clamp: unset; }
+}

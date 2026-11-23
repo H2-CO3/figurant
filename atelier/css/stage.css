@@ -1,0 +1,393 @@
+/* The work zone, in the middle: the stage where the picture plays, what is laid over it, the
+   transport under it, the moves and the timeline. */
+
+/* The work zone: a card of paper, no bigger than its picture. */
+/* Same outline as the conversation, so that they read as made of the same stuff. */
+main {
+    border: 0 !important;
+    border-radius: 26px;
+    padding: 18px;
+    background: var(--paper);
+    backdrop-filter: none;
+    grid-column: 2;
+    grid-row: 1;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 8px 0 var(--edge);
+}
+
+/* The stage, and the loader over it. */
+#viewport {
+    overflow: hidden;
+    height: min(58vh, 620px);
+    position: relative;
+    border: 0;
+    margin: 0 auto;
+    background: none;
+    box-shadow: none;
+    border-radius: 16px;
+}
+#frame {
+    border: 0;
+    transform-origin: 0 0;
+    position: absolute;
+    left: 0;
+    top: 0;
+    background: #fff;
+}
+#busy {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 14px;
+    text-align: center;
+    padding: 24px;
+    background: color-mix(in srgb, var(--paper) 78%, transparent);
+    backdrop-filter: blur(5px);
+}
+#busy strong {
+    font-size: clamp(28px, 4.4vw, 54px);
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    text-transform: uppercase;
+    line-height: 1;
+}
+#busy-say {
+    font-size: 20px;
+    font-weight: 600;
+    max-width: 28ch;
+}
+#loading {
+    position: absolute;
+    left: calc(50% - 37px);
+    top: calc(50% - 37px);
+    z-index: 1;
+}
+
+/* The stage while something new is being asked for: a blank slate that points at the
+   conversation. */
+#blank {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 12px;
+    text-align: center;
+    padding: 24px;
+    background: repeating-linear-gradient(45deg, transparent 0 18px, color-mix(in srgb, var(--accent) 7%, transparent) 18px 36px), var(--paper);
+}
+#blank strong {
+    font-size: clamp(30px, 5vw, 64px);
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    text-transform: uppercase;
+    line-height: 1;
+}
+#blank span { font-size: 22px; font-weight: 600; }
+#blank b {
+    font-size: 60px;
+    line-height: 1;
+    color: var(--accent);
+    animation: nudge 0.9s ease-in-out infinite alternate;
+}
+/* Whatever else lies over the stage is out of sight meanwhile. */
+#blank:not([hidden]) ~ * { visibility: hidden; }
+
+/* Before and after: two small stages in the corners, each playing the version a click goes to. */
+#version-name {
+    font-size: 13px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--ink);
+    color: var(--paper);
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    z-index: 4;
+}
+#version-name:empty { display: none; }
+.mini {
+    position: absolute;
+    bottom: 12px;
+    z-index: 4;
+    padding: 0;
+    overflow: hidden;
+    border-radius: 14px;
+    background: var(--paper);
+    width: 180px;
+    height: 116px;
+}
+.mini:hover:not(:disabled) { transform: translateY(-3px) scale(1.04); }
+#older { left: 10px; }
+#newer { right: 10px; }
+.mini iframe {
+    position: absolute;
+    left: 0;
+    top: 0;
+    border: 0;
+    transform-origin: 0 0;
+    pointer-events: none;
+    width: 600px;
+    height: 386px;
+    transform: scale(0.3);
+}
+.mini span {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 3px 0;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: var(--ink);
+    color: var(--paper);
+}
+#newer span { background: var(--pop); color: var(--on-pop); }
+/* Going back plays the item as it was, for real; the stage then wears a frame, so that an old
+   version is never taken for the present one. */
+#viewport.past { outline: 5px dashed var(--ink); outline-offset: -5px; }
+
+/* Pins: numbered marks put on the picture to say where. */
+#pins {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+#pins.on { pointer-events: auto; cursor: crosshair; }
+#pins .pin {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    margin: -9px 0 0 -9px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    display: grid;
+    place-items: center;
+    box-shadow: 0 0 0 3px rgb(255 255 255 / 0.9);
+}
+
+/* The timeline is the control: play, replay and a bar to click or drag. */
+.bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    margin-top: 12px;
+}
+main .bar { margin-top: 12px; justify-content: center; }
+#transport {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 10px;
+    margin-top: 14px;
+    justify-content: stretch;
+}
+#clock {
+    flex: none;
+    text-align: right;
+    font-weight: 800;
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink);
+    margin: 0;
+    width: 128px;
+    min-width: 128px;
+    white-space: nowrap;
+}
+#pause, #replay {
+    flex: none;
+    border-width: 2.5px;
+    border-color: var(--edge);
+    border-radius: 14px;
+    width: 52px;
+    height: 46px;
+    padding: 0;
+    font-size: 20px;
+    line-height: 1;
+}
+#pause { background: var(--pop); color: var(--on-pop); }
+#more {
+    font-weight: 700;
+    flex: none;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    border-radius: 50%;
+    font-size: 18px;
+}
+#more[aria-expanded="true"] { color: var(--ink); }
+#scrub {
+    flex: 1;
+    position: relative;
+    height: 30px;
+    border: 2.5px solid var(--edge);
+    border-radius: 999px;
+    background: var(--paper);
+    box-shadow: inset 0 3px 0 color-mix(in srgb, var(--ink) 10%, transparent);
+    cursor: pointer;
+    touch-action: none;
+}
+#scrub:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+#scrub-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 0;
+    border-radius: 999px 0 0 999px;
+    background: var(--accent);
+    pointer-events: none;
+}
+#scrub-head {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 26px;
+    height: 38px;
+    margin: -19px 0 0 -13px;
+    border: 2.5px solid var(--edge);
+    border-radius: 10px;
+    background: var(--pop);
+    box-shadow: 0 3px 0 var(--edge);
+    pointer-events: none;
+}
+#scrub:hover #scrub-head { transform: scale(1.1); }
+/* While the picture catches up with the playhead, the playhead says so; the bar itself never
+   goes away. */
+#scrub.waiting #scrub-head { animation: pulse 0.7s ease-in-out infinite; }
+#scrub.waiting #scrub-fill { opacity: 0.6; }
+
+/* The moves a character knows, as keys under the picture. */
+#moves {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 12px;
+}
+#moves button {
+    font-weight: 700;
+    border-radius: 12px;
+    font-size: 13px;
+    padding: 6px 12px;
+}
+#moves:empty { display: none; }
+
+/* The timeline of a scene: one track per character, a block per clip, a playhead. */
+#timeline {
+    position: relative;
+    margin-top: 14px;
+    display: grid;
+    gap: 6px;
+}
+#timeline .track {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    align-items: center;
+    gap: 10px;
+}
+#timeline .who {
+    font-weight: 800;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+#timeline .lane {
+    position: relative;
+    height: 34px;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--ink) 7%, transparent);
+    overflow: hidden;
+}
+#timeline .lane, #timeline .ruler { cursor: pointer; touch-action: none; }
+#timeline .clip {
+    position: absolute;
+    top: 3px;
+    bottom: 3px;
+    border-radius: 8px;
+    background: var(--accent);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    overflow: hidden;
+    min-width: 6px;
+    pointer-events: none;
+    color: var(--on-accent);
+}
+#timeline .clip.play { background: var(--ink); color: var(--paper); }
+#timeline .head {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 120px;
+    right: 0;
+    pointer-events: none;
+}
+#timeline .head i {
+    position: absolute;
+    top: -3px;
+    bottom: -3px;
+    border-radius: 2px;
+    width: 4px;
+    background: var(--ink);
+}
+#timeline .ruler {
+    grid-column: 2;
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--soft);
+    font-variant-numeric: tabular-nums;
+}
+
+/* What went wrong, in words. */
+#problems {
+    color: var(--bad);
+    white-space: pre-wrap;
+    margin: 10px 0 0;
+}
+#problems:empty { display: none; }
+
+@keyframes nudge { to { transform: translateX(18px); } }
+
+/* A low screen: everything around the picture gets shorter, so that the picture keeps its
+   room. */
+@media (max-height: 880px) {
+    main { padding: 12px; }
+    main .bar { margin-top: 8px; }
+}
+
+@media (max-width: 1000px) {
+    main {
+        min-width: 0;
+        padding: 12px;
+        grid-column: 1;
+        grid-row: auto;
+    }
+    #blank b { transform: rotate(90deg); animation: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #blank b { animation: none; }
+    #scrub.waiting #scrub-head { animation: none; }
+}

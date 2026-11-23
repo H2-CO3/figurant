@@ -1,0 +1,262 @@
+/* The list on the left of the picture: what there is to choose from in the section in use. It
+   is as tall as the work zone (--zone, set by atelier.js) and scrolls inside. */
+
+/* The column: who plays, the list, and "New" at its foot. */
+/* On the same axis as the settings: the list and the column on the right are as wide as each
+   other, so the picture is in the middle. */
+#strip {
+    align-items: stretch;
+    align-content: start;
+    margin: 0;
+    grid-column: 1;
+    grid-row: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    height: var(--zone, 60vh);
+    max-height: none;
+    overflow: visible;
+    padding: 0;
+    mask-image: none;
+}
+
+/* Who plays, pictured beside their name. */
+#cast-label {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--soft);
+    order: -1;
+    flex: none;
+    top: 0;
+    z-index: 1;
+    position: static;
+}
+#cast-label select {
+    font-size: 16px;
+    padding: 10px;
+    text-transform: none;
+    letter-spacing: 0;
+    background: var(--paper);
+    border: 2.5px solid var(--edge);
+    box-shadow: 0 4px 0 var(--edge);
+    border-radius: 14px;
+    font-weight: 800;
+}
+#cast-pick {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+}
+#cast-pick select { flex: 1; min-width: 0; }
+#cast-face {
+    flex: none;
+    width: 46px;
+    height: 46px;
+    display: grid;
+    place-items: center;
+    border: 2.5px solid var(--edge);
+    border-radius: 12px;
+    background: var(--paper);
+    box-shadow: 0 3px 0 var(--edge);
+    overflow: hidden;
+}
+#cast-face img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* The list: cards on their base, each with a moment of what it is; the one on show stays down,
+   in colour. */
+#items {
+    min-width: 0;
+    scroll-snap-type: x proximity;
+    display: grid;
+    overflow: visible;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 4px 6px 26px 4px;
+    align-content: start;
+    mask-image: linear-gradient(#000 calc(100% - 30px), transparent);
+    gap: 12px;
+}
+#items button {
+    font-weight: 600;
+    flex: 0 0 auto;
+    display: grid;
+    align-content: center;
+    border-radius: 16px;
+    scroll-snap-align: start;
+    width: 100%;
+    min-width: 0;
+    min-height: 64px;
+    grid-auto-flow: column;
+    grid-template-columns: 44px minmax(0, 1fr);
+    justify-content: start;
+    justify-items: start;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    text-align: left;
+    border: 2.5px solid var(--edge);
+    background: var(--paper);
+    box-shadow: 0 5px 0 var(--edge);
+}
+#items button:hover {
+    background: var(--paper);
+    border-color: var(--ink);
+    transform: translateX(3px);
+}
+#items button[aria-current="true"] {
+    font-weight: 600;
+    background: var(--accent);
+    border-color: var(--edge);
+    transform: translateY(4px);
+    box-shadow: 0 1px 0 var(--edge);
+    color: var(--on-accent);
+}
+#items button:hover:not(:disabled):not([aria-current="true"]) {
+    transform: translateY(-2px);
+    background: var(--paper);
+    box-shadow: 0 7px 0 var(--edge);
+}
+#items .name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: none;
+    font-weight: 800;
+    line-height: 1.2;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    font-size: 14px;
+}
+#items .tag {
+    font-size: 12px;
+    color: var(--soft);
+    font-weight: 400;
+    display: none;
+}
+#items .tag:empty { display: none; }
+#items .thumb {
+    flex: none;
+    object-fit: contain;
+    background: var(--paper);
+    width: 44px;
+    height: 44px;
+    border: 2px solid var(--edge);
+    border-radius: 10px;
+}
+#items button[aria-current="true"] .tag { color: color-mix(in srgb, var(--paper) 70%, transparent); }
+#items .dot {
+    width: 12px;
+    height: 12px;
+    margin: 0 16px;
+}
+#items .thumb-wait {
+    border-width: 4px;
+    width: 26px;
+    height: 26px;
+    margin: 9px;
+}
+#items button.film {
+    grid-auto-flow: row;
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: stretch;
+    gap: 6px;
+    padding: 8px;
+}
+#items button.film .thumb {
+    width: 100%;
+    height: 58px;
+    object-fit: contain;
+}
+#items button.film .thumb-wait { justify-self: center; }
+
+/* "New" stands at the foot of the list and stays there; the list scrolls above it. */
+#new {
+    padding: 12px;
+    text-align: center;
+    display: grid;
+    justify-items: center;
+    align-content: center;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    order: 0;
+    grid-auto-flow: column;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    font-size: 18px;
+    flex: none;
+    width: 100%;
+    min-height: 60px;
+    margin: 0;
+    border: 2.5px solid var(--edge);
+    background: var(--pop);
+    color: var(--on-pop);
+    box-shadow: 0 6px 0 var(--edge);
+    border-radius: 18px;
+}
+#new:hover {
+    color: var(--paper);
+    filter: brightness(1.08);
+    transform: translateY(-2px) scale(1.03);
+}
+#new[aria-pressed="true"] {
+    outline-offset: 2px;
+    outline: 0;
+    background: var(--pop);
+    transform: translateY(5px);
+    box-shadow: 0 1px 0 var(--edge);
+    color: var(--on-pop);
+}
+#new:hover:not(:disabled) {
+    transform: translateY(-3px) rotate(-1.5deg);
+    box-shadow: 0 9px 0 var(--edge);
+}
+#new b {
+    line-height: 0.9;
+    font-weight: 900;
+    font-size: 38px;
+}
+
+/* A low screen: everything around the picture gets shorter, so that the picture keeps its
+   room. */
+@media (max-height: 880px) {
+    #cast-label select { padding: 7px; }
+    #items button { min-height: 52px; }
+    #new { font-size: 15px; }
+    #new b { font-size: 28px; }
+}
+
+/* On a phone the list is a row that slides sideways. */
+@media (max-width: 1000px) {
+    #strip {
+        flex-wrap: wrap;
+        grid-column: 1;
+        grid-row: auto;
+        flex-direction: row;
+        height: auto;
+    }
+    #cast-label { flex: 0 0 130px; }
+    #items {
+        display: flex;
+        flex: 1;
+        overflow-x: auto;
+        mask-image: none;
+        padding: 4px;
+    }
+    #items button {
+        width: auto;
+        flex: 0 0 auto;
+        min-width: 150px;
+    }
+    #new { width: auto; flex: 0 0 110px; }
+}

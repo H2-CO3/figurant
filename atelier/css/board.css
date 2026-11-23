@@ -1,0 +1,110 @@
+/* The whiteboard: the work zone is a sheet. What plays animations steps aside; the pens are in
+   the column on the right. */
+
+/* The sheet, laid over the stage. */
+#board {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    background: #fff;
+    border-radius: inherit;
+}
+#sheet {
+    width: 100%;
+    height: 100%;
+    display: block;
+    touch-action: none;
+    cursor: crosshair;
+}
+#sheet.erasing { cursor: cell; }
+#board-hint {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    margin: 0;
+    font-size: 26px;
+    font-weight: 900;
+    color: #c9ccd3;
+    pointer-events: none;
+}
+
+/* While the board is open, what plays animations steps aside. */
+.layout.board #viewport {
+    width: 100% !important;
+    height: min(520px, calc(100vh - 380px)) !important;
+    min-height: 240px;
+    outline: 2.5px dashed var(--edge);
+    outline-offset: -2px;
+}
+.layout.board #frame,
+.layout.board #transport,
+.layout.board #moves,
+.layout.board #timeline,
+.layout.board #advanced,
+.layout.board #customise,
+.layout.board #older,
+.layout.board #newer,
+.layout.board #version-name,
+.layout.board #blank,
+.layout.board #loading,
+.layout.board #problems,
+.layout.board #about,
+.layout.board #questions,
+.layout.board #export,
+.layout.board #history {
+    display: none !important;
+}
+.layout.board #strip { visibility: hidden; }
+.layout.board #export-row { display: none; }
+
+/* Under the sheet: undo, clear, and the button that gives the drawing its legs. */
+#board-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 12px;
+}
+#board-legs {
+    font-size: 17px;
+    padding: 12px 22px;
+    background: var(--pop);
+    color: var(--on-pop);
+}
+
+/* The pens, in the column on the right: colours, sizes, the eraser. */
+#board-tools {
+    display: grid;
+    gap: 10px;
+    padding: 12px;
+    border: 2.5px solid var(--edge);
+    border-radius: 18px;
+    background: color-mix(in srgb, var(--accent) 9%, var(--paper));
+}
+#board-colours, #board-sizes {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+}
+#board-colours button {
+    aspect-ratio: 1;
+    padding: 0;
+    border-radius: 50%;
+    border: 2.5px solid var(--edge);
+    box-shadow: 0 3px 0 var(--edge);
+}
+#board-colours button[aria-checked="true"] { outline: 4px solid var(--accent); outline-offset: 2px; }
+#board-sizes button {
+    aspect-ratio: 1;
+    padding: 0;
+    display: grid;
+    place-items: center;
+    background: var(--paper);
+}
+#board-sizes button[aria-checked="true"] { background: var(--pop); }
+#board-sizes button i {
+    display: block;
+    border-radius: 50%;
+    background: var(--ink);
+}
+#board-eraser { justify-self: stretch; }
