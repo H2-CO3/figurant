@@ -1,6 +1,7 @@
-// The race without end: two riders in neon, followed from behind down a
-// motorway that runs to the horizon, under a striped sun. One animation,
-// played by both; it goes on for as long as it is left to.
+// The race without end: two runners of light, followed from behind down a
+// circuit that is a tunnel of lines, bending and twisting, each trailing a
+// beam of its colour. One animation, played by both; it goes on for as long
+// as it is left to.
 
 export const neonRide = {
     title: 'The race without end',

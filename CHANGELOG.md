@@ -6,7 +6,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
-- Neon at night: a rider on a motorbike seen from behind (`neon-rider`) and the race without end (`race-neon-rider`, scene `neon-ride`): two riders followed down a motorway that runs to the horizon, a striped sun, mountains, lamps and a grid coming at you. It replaces the side view.
+- Neon at night: a runner on a light machine seen from behind (`neon-rider`, low and angular) and the race without end (`race-neon-rider`, scene `neon-ride`): two of them followed down a circuit that is a tunnel of lines, eight-sided, bending and twisting, with frames rushing by, panels on the walls, pulses along the edges, a core at the far end; they ride up the walls, trail a beam each, throw sparks when they brush, and the whole thing kicks forward every few seconds.
 - The tug of war is three against three with a referee: both hands on the rope, heaves in time, sweat, the losers hauled over the line.
 - The welcome says its example as the game does, in each language ("Simon says", « Jacques a dit »): there only.
 - An **Effects** workshop in the atelier: the special effects a project lists under `effects` in its config, each played on the bench, and ordered like anything else. Four new ready-made effects in the engine (`shockwave`, `flash`, `bolt`, `wave`), eight in the library (`library/common/effects.js`).
