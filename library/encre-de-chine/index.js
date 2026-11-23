@@ -6,13 +6,16 @@ import { frog } from './characters/frog.js';
 import { inkstone } from './props/inkstone.js';
 import { lotusLeaf } from './props/lotus-leaf.js';
 import { mayfly } from './props/mayfly.js';
-import { oneStrokeCalligraphyBrush } from './scenes/calligraphy-brush/one-stroke.js';
+import { easel } from './props/easel.js';
+import { inkRock } from './props/rock.js';
+import { heavenAndEarthCalligraphyBrush } from './scenes/calligraphy-brush/heaven-and-earth.js';
+import { watchFrog } from './scenes/frog/watch.js';
 import { stillPondFrog } from './scenes/frog/still-pond.js';
 
-import { pond } from './compositions/pond.js';
+import { heavenAndEarth } from './compositions/heaven-and-earth.js';
 export const style = 'encre-de-chine';
 export const characters = { 'calligraphy-brush': calligraphyBrush, frog };
-export const props = { inkstone, 'lotus-leaf': lotusLeaf, mayfly };
-export const scenes = { 'one-stroke-calligraphy-brush': oneStrokeCalligraphyBrush, 'still-pond-frog': stillPondFrog };
+export const props = { inkstone, 'lotus-leaf': lotusLeaf, mayfly, easel, 'ink-rock': inkRock };
+export const scenes = { 'heaven-and-earth-calligraphy-brush': heavenAndEarthCalligraphyBrush, 'still-pond-frog': stillPondFrog, 'watch-frog': watchFrog };
 /** Scenes: several characters, each on its track in time. */
-export const compositions = { pond };
+export const compositions = { 'heaven-and-earth': heavenAndEarth };
