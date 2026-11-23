@@ -6,6 +6,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+- Line and gold: a pirate captain, who is the stick figure in costume (`pirate`: the model for dressing a stick figure), his landfall on the masthead of a sinking boat, the harbour keeper's toll, and their scene (`landfall`).
 - Ink wash: the brush writes 天 and 地 on an easel, stroke by stroke in the order they are written, its point on the paper all the way, and a frog on a rock watches (`heaven-and-earth`). The brush is redrawn (three lengths of bamboo, a carved cap, a tassel, a fuller tuft); a new easel and rock. This replaces the pond scene and the single stroke.
 - Default style: a ballpoint pen without its cap (`ballpoint`), the common gesture `high-five`, a tap dance for the pen and one for the highlighter, and the scene where they meet (`pen-pals`).
 - Neon at night: a runner on a light machine seen from behind (`neon-rider`, low and angular) and the race without end (`race-neon-rider`, scene `neon-ride`): two of them followed down a circuit that is a tunnel of lines, eight-sided, bending and twisting, with frames rushing by, panels on the walls, pulses along the edges, a core at the far end; they ride up the walls, trail a beam each, throw sparks when they brush, and the whole thing kicks forward every few seconds.
