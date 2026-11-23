@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<!-- A project may import the engine by name, as it would once installed. -->
+<script type="importmap">{ "imports": { "figurant": "/__figurant/engine/index.js" } }</script>
+<title>Figurant atelier</title>
+<link rel="icon" type="image/svg+xml" href="/__figurant/atelier/favicon.svg">
+<link rel="stylesheet" href="atelier.css">
+</head>
+<body>
+<div class="wallpaper" aria-hidden="true"><i></i><i></i><i></i></div>
+<div id="progress" hidden></div>
+<header>
+  <h1>Figurant</h1>
+  <div class="tools">
+    <span id="listening" role="status"></span>
+    <button type="button" id="style-open"></button>
+    <span class="lang" role="group" data-t-label="language"><button type="button" data-lang="fr">FR</button><button type="button" data-lang="en">EN</button></span>
+  </div>
+</header>
+<div class="layout">
+  <nav class="tabs" role="tablist">
+    <button role="tab" data-shop="scenes"><b aria-hidden="true">▶</b><span data-t="tab.scenes"></span></button>
+    <button role="tab" data-shop="characters"><b aria-hidden="true">☻</b><span data-t="tab.characters"></span></button>
+    <button role="tab" data-shop="emoji"><b aria-hidden="true">🙂</b><span data-t="tab.emoji"></span></button>
+    <button role="tab" data-shop="props"><b aria-hidden="true">◆</b><span data-t="tab.props"></span></button>
+    <button role="tab" data-shop="compositions"><b aria-hidden="true">🎬</b><span data-t="tab.compositions"></span></button>
+    <button role="tab" id="board-open"><b aria-hidden="true">✏️</b><span data-t="tab.board"></span></button>
+  </nav>
+  <div id="strip">
+      <label id="cast-label"><span data-t="character"></span> <select id="cast"></select></label>
+      <div id="items"></div>
+    <button type="button" id="new"><b aria-hidden="true">+</b><span data-t="new"></span></button>
+  </div>
+  <main>
+    <div id="viewport"><iframe id="frame" title="Figurant"></iframe><div id="pins"></div><div id="board" hidden><svg id="sheet" viewBox="0 0 900 520" preserveAspectRatio="xMidYMid meet" role="img" data-t-label="tab.board"></svg><p id="board-hint" data-t="board.hint"></p></div><div id="blank" hidden><strong data-t="fresh.title"></strong><span id="blank-say"></span><b aria-hidden="true">→</b></div><span id="loading" class="spinner big" hidden></span><div id="busy" hidden><span class="spinner big"></span><strong id="busy-title"></strong><span id="busy-say"></span></div><button type="button" id="older" class="mini" hidden><iframe tabindex="-1" title=""></iframe><span></span></button><span id="version-name" hidden></span><button type="button" id="newer" class="mini" hidden><iframe tabindex="-1" title=""></iframe><span></span></button></div>
+    <div id="transport" class="bar">
+      <button id="pause" data-t-title="pause.title"></button>
+      <button id="replay" data-t="replay" data-t-title="replay.title"></button>
+      <div id="scrub" role="slider" tabindex="0" data-t-label="scrub.label" aria-valuemin="0"><i id="scrub-fill"></i><i id="scrub-head"></i></div>
+      <span id="clock"></span>
+      <button type="button" id="more" aria-expanded="false" data-t-title="more.title">⚙</button>
+    </div>
+    <div id="board-bar" class="bar" hidden>
+      <button type="button" id="board-undo" data-t="board.undo"></button>
+      <button type="button" id="board-clear" data-t="board.clear"></button>
+      <span class="spacer"></span>
+      <button type="button" id="board-legs" class="primary" data-t="board.legs"></button>
+    </div>
+    <div id="moves"></div>
+    <div id="timeline" hidden></div>
+    <pre id="problems"></pre>
+  </main>
+  <aside id="side">
+    <section id="board-tools" hidden>
+      <span class="tag" data-t="board.colour"></span>
+      <div id="board-colours" role="radiogroup" data-t-label="board.colour"></div>
+      <span class="tag" data-t="board.size"></span>
+      <div id="board-sizes" role="radiogroup" data-t-label="board.size"></div>
+      <button type="button" id="board-eraser" aria-pressed="false" data-t="board.eraser"></button>
+    </section>
+    <section id="advanced" hidden>
+      <div class="bar" id="moment-bar">
+        <strong id="moment"></strong>
+        <button type="button" id="resume" data-t="resume"></button>
+        <button type="button" id="restart" data-t="restart"></button>
+        <span class="spacer"></span>
+        <button type="button" class="quiet" id="panel-close" data-t="style.close"></button>
+      </div>
+
+      <p id="context"></p>
+      <h2 id="scene-name"></h2>
+      <p class="status"><span id="status-dot" class="dot"></span> <span id="status"></span></p>
+      <div class="bar">
+        <button id="step" class="quiet" data-t="step" data-t-title="step.title"></button>
+        <span class="tag" data-t="speed.label"></span>
+        <span class="segment" role="group" data-t-label="speed.label">
+          <button data-speed="1" data-t="speed.full"></button><button data-speed="0.5">÷2</button><button data-speed="0.25">÷4</button>
+        </span>
+        <span class="tag" data-t="width.label"></span>
+        <span class="segment" role="group" data-t-label="width.label" id="widths">
+          <button data-width="360" data-t="width.phone"></button><button data-width="768" data-t="width.tablet"></button><button data-width="1440" data-t="width.desktop"></button>
+        </span>
+        <button id="pin" class="quiet" data-t="pin" aria-pressed="false"></button>
+      </div>
+      <details id="elements">
+        <summary data-t="elements.title"></summary>
+        <div id="pick-props" class="picks"></div>
+        <div id="pick-cast" class="picks"></div>
+      </details>
+      <section id="bench-tools" hidden>
+        <details>
+          <summary data-t="sliders.title"></summary>
+          <label class="check"><input type="checkbox" id="marks"> <span data-t="marks"></span></label>
+          <div id="sliders"></div>
+        </details>
+      </section>
+      <div id="versions" hidden>
+        <span class="tag" data-t="versions.title"></span>
+        <ol id="version-list"></ol>
+        <button type="button" id="version-restore" data-t="version.restore" data-t-title="version.restore.title" hidden></button>
+      </div>
+      <div class="bar">
+        <button type="button" class="quiet" id="detailed" data-t="detailed"></button>
+        <button type="button" class="quiet" id="every" hidden></button>
+      </div>
+    </section>
+    <section id="customise" hidden>
+        <h3 data-t="custom.title"></h3>
+        <div id="emoji-grid" role="group" data-t-label="custom.title"></div>
+        <div class="custom-row">
+          <label><span data-t="custom.face"></span> <input id="face" class="glyph" maxlength="16"></label>
+          <label><span data-t="custom.blink"></span> <input id="face-blink" class="glyph" maxlength="16"></label>
+          <label><span data-t="custom.wide"></span> <input id="face-wide" class="glyph" maxlength="16"></label>
+          <label><span data-t="custom.squint"></span> <input id="face-squint" class="glyph" maxlength="16"></label>
+          <button type="button" id="face-save" data-t="custom.apply"></button>
+        </div>
+        <div class="custom-row">
+          <label class="file"><span data-t="custom.image"></span> <input type="file" id="image-file" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml"></label>
+          <span id="image-name"></span>
+          <button type="button" class="quiet" id="image-remove" data-t="custom.remove" hidden></button>
+        </div>
+        <p id="custom-status" role="status"></p>
+      </section>
+  </aside>
+<aside id="dock">
+    <ol id="thread" aria-live="polite" hidden></ol>
+  <p id="working" role="status" hidden><span class="spinner"></span> <span id="working-text"></span></p>
+  <p id="last-word"></p>
+  <form id="say">
+    <div id="questions"></div>
+    <div class="row">
+      <div id="about" role="group" data-t-label="about.label">
+        <button type="button" id="about-this" aria-pressed="true"></button>
+        <button type="button" id="about-new" aria-pressed="false" data-t="about.new"></button>
+      </div>
+      <span id="saved" role="status"></span>
+      <button type="button" class="quiet" id="history" aria-expanded="false" data-t="history"></button>
+    </div>
+    <div class="speak">
+      <textarea id="note" rows="1" data-t-label="note"></textarea>
+      <button type="submit" data-decision="redo" class="primary" data-t-title="redo.title">➤</button>
+      <button type="button" id="export" data-t-title="export.title"><b aria-hidden="true">⬇</b><span data-t="export"></span></button>
+    </div>
+  </form>
+</aside>
+</div>
+<dialog id="composer">
+  <form method="dialog" id="compose">
+    <h2 id="compose-title"></h2>
+    <label><span data-t="new.name"></span> <input id="new-name" required maxlength="80" data-t-placeholder="new.name.placeholder"></label>
+    <div id="new-scene-fields">
+      <label><span data-t="character"></span> <select id="new-cast"></select></label>
+      <fieldset><legend data-t="new.props"></legend><div id="new-props" class="picks"></div></fieldset>
+      <label><span data-t="new.on"></span> <select id="new-on">
+        <option value="attention" data-t="on.attention"></option>
+        <option value="idle" data-t="on.idle"></option>
+        <option value="view" data-t="on.view"></option>
+        <option value="click" data-t="on.click"></option>
+      </select></label>
+      <label><span data-t="new.mood"></span> <select id="new-mood"><option value="free" data-t="mood.free"></option><option value="solemn" data-t="mood.solemn"></option></select></label>
+    </div>
+    <fieldset id="new-cast-pick"><legend data-t="new.cast"></legend><div id="new-cast-list" class="picks"></div></fieldset>
+    <label id="new-drawing-label"><span data-t="new.drawing"></span> <input type="file" id="new-drawing" accept="image/svg+xml,image/png,image/jpeg,image/webp"></label>
+    <label for="new-text" data-t="new.text"></label>
+    <textarea id="new-text" rows="5" required data-t-placeholder="new.text.placeholder"></textarea>
+    <p id="compose-error" role="alert"></p>
+    <div class="actions"><button type="submit" value="send" class="primary" data-t="order"></button><button type="button" class="quiet" id="compose-cancel" data-t="cancel"></button></div>
+  </form>
+</dialog>
+<dialog id="style">
+  <h2 data-t="style.title"></h2>
+  <p class="hint" data-t="style.hint"></p>
+  <div id="style-list" role="radiogroup" data-t-label="style.title"></div>
+  <p id="style-status" role="status"></p>
+  <div class="actions">
+    <button type="button" class="primary" id="style-cancel" data-t="style.close"></button>
+  </div>
+</dialog>
+<dialog id="style-edit">
+  <form method="dialog" id="style-form">
+    <h2 id="style-edit-title"></h2>
+    <label><span data-t="style.name"></span> <input id="style-name" maxlength="60" required></label>
+    <div class="colours">
+      <label><input type="color" id="style-paper"> <span data-t="style.paper"></span></label>
+      <label><input type="color" id="style-ink"> <span data-t="style.ink"></span></label>
+      <label><input type="color" id="style-accent"> <span data-t="style.accent"></span></label>
+      <label><input type="color" id="style-pop"> <span data-t="style.pop"></span></label>
+      <span id="style-sample" aria-hidden="true"><b data-t="style.sample"></b><u></u><i></i></span>
+    </div>
+    <label><span data-t="style.prompt"></span>
+      <textarea id="style-text" rows="6" data-t-placeholder="style.placeholder"></textarea></label>
+    <p id="style-edit-status" role="status"></p>
+    <div class="actions">
+      <button type="submit" class="primary" data-t="style.save"></button>
+      <button type="button" class="quiet" id="style-back" data-t="style.back"></button>
+      <span class="spacer"></span>
+      <button type="button" class="quiet danger" id="style-delete"></button>
+    </div>
+  </form>
+</dialog>
+<script type="module" src="atelier.js"></script>
+</body>
+</html>

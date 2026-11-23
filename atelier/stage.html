@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<!-- A project may import the engine by name, as it would once installed. -->
+<script type="importmap">{ "imports": { "figurant": "/__figurant/engine/index.js" } }</script>
+<title>Figurant stage</title>
+<link rel="icon" type="image/svg+xml" href="/__figurant/atelier/favicon.svg">
+<style>
+  :root { --fig-ink: #1c1c1c; --fig-paper: #faf9f6; --fig-accent: #b8860b; }
+  html, body { margin: 0; height: 100%; background: var(--fig-paper); color: var(--fig-ink); font: 14px/1.4 system-ui, sans-serif; overflow: hidden; }
+  #floor { position: absolute; left: 6%; right: 6%; top: 66%; height: 30%; border-top: 2px solid color-mix(in srgb, var(--fig-ink) 22%, var(--fig-paper)); }
+  #problems { position: absolute; left: 12px; top: 10px; right: 12px; color: #a3341c; white-space: pre-wrap; font: 12px/1.4 ui-monospace, monospace; }
+</style>
+</head>
+<body>
+<div id="problems"></div>
+<div id="floor"></div>
+<script type="module">
+// One scene, on a neutral page, on a clock the atelier drives: it can slow it
+// down, hold it, and step it frame by frame.
+import { createClock, createStage, createDirector, createFx, describeProblems } from '/__figurant/engine/index.js';
+
+const params = new URLSearchParams(location.search);
+// The style in use lends its colours to the stage: the page's ink, paper and accent.
+for (const key of ['paper', 'ink', 'accent']) {
+    const colour = params.get(key);
+    if (/^#[0-9a-f]{6}$/i.test(colour ?? '')) document.documentElement.style.setProperty(`--fig-${key}`, colour);
+}
+const say = text => { document.getElementById('problems').textContent = text; };
+const stage = { ready: false, problems: [], speed: Number(params.get('speed')) || 1, playing: true, time: 0, played: 0, began: 0, length: 0 };
+window.stage = stage;
+
+try {
+    const { configAddress } = await import('./where.js');
+    const config = (await import(configAddress(location.search))).default;
+    const sceneName = params.get('scene');
+    const everyone = { ...config.cast, ...config.emoji };
+    const castName = params.get('cast') || Object.keys(everyone)[0];
+    const scene = config.scenes?.[sceneName];
+    const member = everyone[castName];
+    if (!scene) throw new Error(`No scene named "${sceneName}" in the configuration.`);
+    if (!member) throw new Error(`No character named "${castName}" in the configuration.`);
+
+    const floor = document.getElementById('floor');
+    Object.entries({ 'data-fig-spot': 'stage', 'data-fig-scene': sceneName, 'data-fig-on': 'view', 'data-fig-enter': 'none', 'data-fig-at': params.get('at') || '0.5' })
+        .forEach(([name, value]) => floor.setAttribute(name, value));
+
+    const clock = createClock();
+    const svg = createStage();
+    // The scene is counted each time it starts, so the atelier can tell a loop from an ending.
+    // … and timed: once it has played through, the atelier knows how long it is and when it began.
+    const counted = { ...scene, play: async (c, ctx) => { stage.played++; const began = clock.now; if (stage.played === 1) stage.began = began; await scene.play(c, ctx); if (!stage.length) stage.length = clock.now - began; } };
+    const director = createDirector({
+        stage: svg, clock, fx: createFx({ stage: svg, clock }),
+        cast: { default: { ...member, home: undefined } },
+        scenes: { [sceneName]: counted },
+    }).start();
+    stage.problems = describeProblems(director.problems);
+    say(stage.problems.join('\n'));
+
+    let last = performance.now();
+    const loop = now => {
+        const dt = Math.min(50, now - last);
+        last = now;
+        if (stage.playing) { clock.tick(dt * stage.speed); stage.time = clock.now; }
+        requestAnimationFrame(loop);
+    };
+    requestAnimationFrame(loop);
+    /** Advances the held clock by one frame. */
+    stage.step = (ms = 1000 / 60) => { stage.playing = false; clock.tick(ms); stage.time = clock.now; };
+    // Going to a moment: time is run forward to it, out of sight, letting each step of the
+    // scene happen on the way; then it holds there. Going back starts again from the beginning.
+    const breath = () => new Promise(done => { const channel = new MessageChannel(); channel.port1.onmessage = () => done(); channel.port2.postMessage(0); });
+    let seeking = 0;
+    stage.seek = async ms => {
+        const mine = ++seeking;
+        stage.playing = false; stage.seeking = true;
+        document.documentElement.style.visibility = 'hidden';
+        for (let guard = 0; clock.now < ms && guard < 20000 && mine === seeking; guard++) { clock.tick(Math.min(50, ms - clock.now)); await breath(); }
+        if (mine !== seeking) return;
+        stage.time = clock.now;
+        document.documentElement.style.visibility = '';
+        stage.seeking = false;
+    };
+    const start = Number(params.get('seek'));
+    if (start > 0) await stage.seek(start);
+    stage.director = director;
+    stage.ready = true;
+} catch (error) {
+    stage.problems = [String(error.message || error)];
+    say(stage.problems[0]);
+}
+</script>
+</body>
+</html>

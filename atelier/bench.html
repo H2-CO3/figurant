@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<!-- A project may import the engine by name, as it would once installed. -->
+<script type="importmap">{ "imports": { "figurant": "/__figurant/engine/index.js" } }</script>
+<title>Figurant bench</title>
+<link rel="icon" type="image/svg+xml" href="/__figurant/atelier/favicon.svg">
+<style>
+  :root { --fig-ink: #1c1c1c; --fig-paper: #faf9f6; --fig-accent: #b8860b; }
+  html, body { margin: 0; height: 100%; background: var(--fig-paper); color: var(--fig-ink); font: 14px/1.4 system-ui, sans-serif; overflow: hidden; }
+  #floor { position: absolute; left: 6%; right: 6%; top: 72%; border-top: 2px solid color-mix(in srgb, var(--fig-ink) 22%, var(--fig-paper)); }
+  #problems { position: absolute; left: 12px; top: 10px; right: 12px; color: #a3341c; white-space: pre-wrap; font: 12px/1.4 ui-monospace, monospace; }
+  .mark { fill: #c0392b; } .mark-label { fill: #c0392b; font: 11px ui-monospace, monospace; }
+</style>
+</head>
+<body>
+<div id="problems"></div>
+<div id="floor"></div>
+<script type="module">
+// The bench: one character or one prop, standing still, so that it can be
+// looked at closely, posed number by number, and put through the stock moves.
+import { createClock, createStage, createFigure, createActor, createProp, moves, checkCharacter, describeProblems } from '/__figurant/engine/index.js';
+
+const params = new URLSearchParams(location.search);
+// The style in use lends its colours to the stage: the page's ink, paper and accent.
+for (const key of ['paper', 'ink', 'accent']) {
+    const colour = params.get(key);
+    if (/^#[0-9a-f]{6}$/i.test(colour ?? '')) document.documentElement.style.setProperty(`--fig-${key}`, colour);
+}
+const say = text => { document.getElementById('problems').textContent = text; };
+const bench = { ready: false, problems: [], numbers: [], moves: [], marks: false, speed: 1, playing: true };
+window.bench = bench;
+
+// How far each known number may sensibly go. Anything else is taken as 0..1.
+const RANGES = {
+    scale: [0.3, 2], tilt: [-30, 30], squash: [-1, 1], crouch: [0, 20], legs: [0, 1], arms: [0, 1], walk: [0, 1],
+    sit: [0, 1], seat: [0, 1], stretch: [0, 1], wave: [0, 1], breath: [0, 1], rope: [0, 1], shadow: [0, 1],
+    gazeX: [-1, 1], gazeY: [-1, 1], pupil: [0.5, 1.5], draw: [0, 1], flip: [-1, 1],
+};
+const HIDDEN = ['x', 'y', 'phase', 'dir', 'clock', 'floor', 'ropeTop'];
+
+try {
+    const { configAddress } = await import('./where.js');
+    const config = (await import(configAddress(location.search))).default;
+    const kind = params.get('kind') || 'character', name = params.get('name');
+    const size = Number(params.get('size')) || 2.4;
+    const svg = createStage();
+    const clock = createClock();
+    const floor = document.getElementById('floor');
+    const ground = () => { const r = floor.getBoundingClientRect(); return [r.left + r.width / 2, r.top]; };
+    const marks = svg.layer('marks');
+    let state, points = () => [];
+
+    if (kind === 'prop') {
+        const description = config.props?.[name];
+        if (!description) throw new Error(`No prop named "${name}" in the configuration.`);
+        // A prop made of layers is shown whole.
+        const layers = (description.layers || [description]).map(layer => createProp({ stage: svg, prop: { points: description.points, ...layer }, unit: size }));
+        state = layers[0].state;
+        clock.onFrame(() => layers.forEach(layer => { Object.assign(layer.state, state); layer.render([ground()[0], ground()[1] - (description.points?.grip ? 110 : 0)]); }));
+        points = () => Object.keys(description.points || {}).map(key => [key, layers[0].point(key)]);
+    } else {
+        const member = { ...config.cast, ...config.emoji }[name];
+        if (!member) throw new Error(`No character named "${name}" in the configuration.`);
+        bench.problems = describeProblems(checkCharacter(member.character));
+        const figure = createFigure({ stage: svg, character: member.character, unit: size });
+        Object.assign(figure.state, { legs: 1, arms: 1, shadow: 1, ...member.state });
+        figure.state.y = -figure.standHeight();
+        const actor = createActor({ figure, clock, anchor: ground }).show();
+        state = figure.state;
+        const stand = () => -figure.standHeight();
+        const run = sequence => actor.play(async c => { await moves.recover(c, stand()); await sequence(c); await moves.recover(c, stand()); await c.tween({ x: 0 }, 300); });
+        const all = {
+            blink: c => moves.blink(c),
+            glance: async c => { await moves.glance(c, -1, 0.3, 500); await moves.glance(c, 1, -0.4, 500); await moves.glance(c, 0, 0, 100); },
+            hop: c => moves.hop(c, 26),
+            walk: async c => { await moves.walkTo(c, 150 * figure.k / size); await moves.walkTo(c, -150 * figure.k / size); await moves.walkTo(c, 0); },
+            wave: async c => { await c.tween({ wave: 1 }, 220); await c.wait(900); await c.tween({ wave: 0 }, 220); },
+            sit: async c => { await moves.sitOnEdge(c, stand()); await c.wait(1500); },
+            surprise: async c => { c.also({ wide: 1, pupil: 0.7 }, 90); await moves.hop(c, 14); await c.wait(500); await c.tween({ wide: 0, pupil: 1 }, 300); },
+        };
+        if (member.character.sits === false) delete all.sit;
+        bench.moves = Object.keys(all);
+        bench.play = move => run(all[move]);
+        points = () => {
+            const p = figure.points, out = [['top', p.top], ['centre', p.centre]];
+            for (const [key, limb] of [['hip L', p.legL?.hip], ['hip R', p.legR?.hip], ['shoulder L', p.armL?.shoulder], ['shoulder R', p.armR?.shoulder]]) if (limb) out.push([key, limb]);
+            return out;
+        };
+    }
+
+    const numeric = () => Object.keys(state).filter(key => typeof state[key] === 'number' && !HIDDEN.includes(key));
+    bench.numbers = numeric().map(key => ({ key, min: (RANGES[key] || [0, 1])[0], max: (RANGES[key] || [0, 1])[1] }));
+    bench.get = key => state[key];
+    bench.set = (key, value) => { clock.release(state); state[key] = Number(value); };
+    bench.values = () => Object.fromEntries(numeric().map(key => [key, state[key]]));
+
+    // Attachment points and named points, shown on demand.
+    clock.onFrame(() => {
+        marks.replaceChildren();
+        if (!bench.marks) return;
+        for (const [label, [x, y]] of points()) {
+            svg.el('circle', marks, { class: 'mark', cx: x, cy: y, r: 3.5 });
+            svg.el('text', marks, { class: 'mark-label', x: x + 6, y: y - 6 }).textContent = label;
+        }
+    });
+
+    let last = performance.now();
+    const loop = now => { const dt = Math.min(50, now - last); last = now; if (bench.playing) clock.tick(dt * bench.speed); requestAnimationFrame(loop); };
+    requestAnimationFrame(loop);
+    bench.step = (ms = 1000 / 60) => { bench.playing = false; clock.tick(ms); };
+    say(bench.problems.join('\n'));
+    bench.ready = true;
+} catch (error) {
+    bench.problems = [String(error.message || error)];
+    say(bench.problems[0]);
+}
+</script>
+</body>
+</html>

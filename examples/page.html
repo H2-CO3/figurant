@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Figurant · on a page</title>
+<style>
+  :root { --fig-ink: #1c1c1c; --fig-paper: #faf9f6; }
+  body { margin: 0; font: 16px/1.5 system-ui, sans-serif; color: #1c1c1c; background: #faf9f6; }
+  header { position: sticky; top: 0; z-index: 60; padding: 14px 16px; background: #faf9f6ee; border-bottom: 1px solid #e3dfd5; }
+  main { max-width: 860px; margin: 0 auto; padding: 0 16px 60vh; }
+  section { padding-top: 46vh; }
+  h2 { margin: 0 0 14px; font-size: 20px; }
+  .frame { height: 240px; border: 2px solid #c9c4b8; border-radius: 4px; background: #f0ede5; }
+  .text { border-top: 2px solid #c9c4b8; padding-top: 14px; max-width: 60ch; color: #4f4a40; }
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; border-top: 2px solid #c9c4b8; padding-top: 0; }
+  .card { height: 150px; border: 2px solid #c9c4b8; border-top: 0; border-radius: 0 0 4px 4px; padding: 12px; background: #fff; }
+  .quiet { border-top: 2px solid #8a8577; padding: 18px 0; color: #4f4a40; }
+  #problems { color: #a3341c; white-space: pre-wrap; font: 13px/1.4 ui-monospace, monospace; }
+  @media (max-width: 600px) { .cards { grid-template-columns: 1fr; border-top: 0; } .card { border-top: 2px solid #c9c4b8; border-radius: 4px; } }
+</style>
+</head>
+<body>
+<header>Scroll down. The character follows the page; hover the middle card (or centre it on a phone).</header>
+<main>
+  <div id="problems"></div>
+
+  <section>
+    <h2>A picture: it drops onto the frame</h2>
+    <div class="frame" data-fig-spot="picture" data-fig-at="0.8" data-fig-enter="drop"></div>
+  </section>
+
+  <section>
+    <h2>A text: it comes down a thread and may sit on the edge</h2>
+    <p class="text" data-fig-spot="text" data-fig-at="0.5" data-fig-enter="rope">
+      Each place is an ordinary element with a few <code>data-fig-*</code> attributes.
+      Nothing here depends on the page's own classes.
+    </p>
+  </section>
+
+  <section>
+    <h2>Cards: it walks along the row; one card has a scene</h2>
+    <div class="cards" data-fig-spot="cards" data-fig-at="0.05">
+      <div class="card">A plain card.</div>
+      <div class="card" data-fig-scene="notes" data-fig-at="0.12">Hover me: it sits down and takes notes.</div>
+      <div class="card">Another plain card.</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>A heavy subject: it walks in and stands quietly</h2>
+    <p class="quiet" data-fig-spot="quiet" data-fig-at="0.3" data-fig-mood="solemn">
+      Here the page says <code>data-fig-mood="solemn"</code>: no drop, no thread, no joke.
+    </p>
+  </section>
+</main>
+<script type="importmap">{ "imports": { "figurant": "../src/index.js" } }</script>
+<script type="module">
+import { createClock, driveWithAnimationFrame, advance, createStage, createDirector, stickman, describeProblems } from '../src/index.js';
+import { takeNotesScene } from '../library/common/scenes/stickman/notes.js';
+
+const manual = new URLSearchParams(location.search).has('manual');
+const clock = createClock();
+if (!manual) driveWithAnimationFrame(clock);
+
+const director = createDirector({
+    stage: createStage(),
+    clock,
+    clearance: 56, // the sticky header
+    cast: { default: { character: stickman, unit: () => (innerWidth < 600 ? 1.05 : 1.5), scale: 0.75 } },
+    scenes: { notes: takeNotesScene },
+}).start();
+
+// Mistakes in the markers are shown, each with its fix.
+document.getElementById('problems').textContent = describeProblems(director.problems).join('\n');
+
+window.figurant = { clock, director, step: ms => advance(clock, ms) };
+</script>
+</body>
+</html>

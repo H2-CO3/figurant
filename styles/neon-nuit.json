@@ -1,0 +1,10 @@
+{
+  "name": "Néon de nuit",
+  "prompt": "Neon at night. On a dark background, shapes are drawn as glowing tubes: a bright core line with a soft halo of the same colour. Two or three neon colours per character (cyan, magenta, amber). No fill, or a very dark one; the glow is the volume. Eyes are two small bright points.",
+  "theme": {
+    "paper": "#0f1220",
+    "ink": "#e8ecff",
+    "accent": "#36e0c2",
+    "pop": "#ff4fd8"
+  }
+}

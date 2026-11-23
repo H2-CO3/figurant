@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Figurant · hand seals</title>
+<style>
+  body { margin: 0; font: 15px/1.4 system-ui, sans-serif; color: #1c1c1c; background: #faf9f6; }
+  main { max-width: 760px; margin: 0 auto; padding: 24px 16px; }
+  .floor { height: 300px; border-bottom: 2px solid #c9c4b8; }
+  .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding-top: 16px; }
+  button, select { font: inherit; padding: 8px 14px; border: 1px solid #b9b3a5; border-radius: 6px; background: #fff; color: inherit; }
+  button { cursor: pointer; }
+  p { color: #6b6558; }
+</style>
+</head>
+<body>
+<main>
+  <div class="floor" id="floor"></div>
+  <div class="controls">
+    <button data-element="fire">Fire</button>
+    <button data-element="water">Water</button>
+    <button data-element="lightning">Lightning</button>
+    <button data-element="wind">Wind</button>
+    <button data-element="earth">Earth</button>
+    <button id="interrupt">Interrupt</button>
+    <label>Speed
+      <select id="pace">
+        <option value="1">normal</option>
+        <option value="2">half</option>
+        <option value="5">slow motion</option>
+      </select>
+    </label>
+  </div>
+  <p>Eighteen two-handed signs while an aura builds, then an elemental release. “Interrupt” cuts the sequence
+  wherever it is and sends the figure back to rest.</p>
+</main>
+<script type="module">
+import { createClock, driveWithAnimationFrame, advance } from '../src/core/clock.js';
+import { createStage } from '../src/stage/stage.js';
+import { createFigure } from '../src/figure/figure.js';
+import { createActor } from '../src/actor/actor.js';
+import { stickman } from '../src/characters/stickman.js';
+import { createFx } from '../src/fx/fx.js';
+import { handSeals } from './hand-seals.js';
+
+const manual = new URLSearchParams(location.search).has('manual');
+const clock = createClock();
+if (!manual) driveWithAnimationFrame(clock);
+
+const stage = createStage();
+const fx = createFx({ stage, clock, seed: 7 }); // created first: drawn behind the figure
+const figure = createFigure({ stage, character: stickman, unit: 2.2 });
+Object.assign(figure.state, { legs: 1, arms: 1, shadow: 1, breath: 1 });
+figure.state.y = -figure.standHeight();
+const actor = createActor({ figure, clock, anchor: stage.on(document.getElementById('floor'), 0.26, 1) }).show();
+
+const rest = c => c.all(
+    c.hands({ left: null, right: null }, 200),
+    c.tween({ crouch: 0, squash: 0, tilt: 0, gazeX: 0, gazeY: 0, x: 0 }, 200),
+);
+const pace = () => Number(document.getElementById('pace').value);
+const play = (element = 'fire') => {
+    figure.state.x = 0;
+    return actor.play(c => handSeals(c, { fx, element, pace: pace() }));
+};
+for (const button of document.querySelectorAll('[data-element]')) {
+    button.onclick = () => play(button.dataset.element);
+}
+document.getElementById('interrupt').onclick = () => actor.play(rest);
+
+// With ?manual the clock only moves when a tool steps it: this is how frames
+// are captured at exact times, whatever the speed of the machine.
+window.figurant = { clock, actor, fx, play, step: ms => advance(clock, ms) };
+if (!manual) play();
+</script>
+</body>
+</html>

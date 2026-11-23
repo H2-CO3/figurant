@@ -1,0 +1,10 @@
+{
+  "name": "Encre de Chine",
+  "prompt": "Ink wash. Brush strokes in black ink that swell and thin, with a few grey washes for volume and a lot of empty paper. One touch of red at most, like a seal. Nothing is outlined all the way round: a shape is suggested by two or three strokes. Calm and precise.",
+  "theme": {
+    "paper": "#f1f2ee",
+    "ink": "#0b0b0b",
+    "accent": "#c1121f",
+    "pop": "#b4b9bd"
+  }
+}

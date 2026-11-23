@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script type="importmap">{ "imports": { "figurant": "/__figurant/engine/index.js" } }</script>
+<title>Figurant thumbnails</title>
+<link rel="icon" type="image/svg+xml" href="/__figurant/atelier/favicon.svg">
+<style>
+  :root { --fig-ink: #1c1c1c; --fig-paper: #faf9f6; --fig-accent: #b8860b; }
+  html, body { margin: 0; width: 420px; height: 420px; overflow: hidden; }
+</style>
+</head>
+<body>
+<script type="module">
+// Small pictures of characters and props, for the atelier's lists. One page
+// that loads the project once and draws each of them still, one after the
+// other: a page per picture took a second each.
+import { createStage, createFigure, createProp } from '/__figurant/engine/index.js';
+
+const thumbs = { ready: false };
+window.thumbs = thumbs;
+try {
+    const config = (await import('/figurant.config.js')).default;
+    /** @returns {string | null} the picture as an image address, or null when there is nothing to show */
+    thumbs.draw = (kind, name) => {
+        const stage = createStage();
+        try {
+            if (kind === 'prop') {
+                const description = config.props?.[name];
+                if (!description) return null;
+                for (const layer of description.layers || [description]) createProp({ stage, prop: { points: description.points, ...layer }, unit: 1.2 }).render([210, 300]);
+            } else {
+                const member = { ...config.cast, ...config.emoji }[name];
+                if (!member) return null;
+                const figure = createFigure({ stage, character: member.character, unit: 1.2 });
+                Object.assign(figure.state, { legs: 1, arms: 1, ...member.state });
+                figure.state.y = -figure.standHeight();
+                figure.render([210, 330], 16);
+            }
+            const boxes = [...stage.svg.querySelectorAll('[data-fig-layer]')].map(g => g.getBoundingClientRect()).filter(b => b.width > 1);
+            if (!boxes.length) return null;
+            const left = Math.min(...boxes.map(b => b.left)), top = Math.min(...boxes.map(b => b.top));
+            const right = Math.max(...boxes.map(b => b.right)), bottom = Math.max(...boxes.map(b => b.bottom));
+            const side = Math.max(right - left, bottom - top) + 12, cx = (left + right) / 2, cy = (top + bottom) / 2;
+            const picture = stage.svg.cloneNode(true);
+            picture.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+            picture.setAttribute('viewBox', `${cx - side / 2} ${cy - side / 2} ${side} ${side}`);
+            picture.setAttribute('width', '68'); picture.setAttribute('height', '68'); picture.removeAttribute('style');
+            // The picture stands alone: it carries the three colours the drawings ask for.
+            picture.setAttribute('style', '--fig-ink:#1c1c1c;--fig-paper:#faf9f6;--fig-accent:#b8860b');
+            return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(new XMLSerializer().serializeToString(picture));
+        } catch { return null; } finally { stage.svg.remove(); }
+    };
+} catch { thumbs.draw = () => null; }
+thumbs.ready = true;
+</script>
+</body>
+</html>

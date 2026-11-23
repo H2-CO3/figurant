@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Figurant · note taking</title>
+<style>
+  body { margin: 0; font: 15px/1.4 system-ui, sans-serif; color: #1c1c1c; background: #faf9f6; }
+  main { max-width: 760px; margin: 0 auto; padding: 24px 16px; }
+  .floor { height: 260px; border-bottom: 2px solid #c9c4b8; }
+  .controls { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 16px; }
+  button { font: inherit; padding: 8px 14px; border: 1px solid #b9b3a5; border-radius: 6px; background: #fff; color: inherit; cursor: pointer; }
+  p { color: #6b6558; }
+</style>
+</head>
+<body>
+<main>
+  <div class="floor" id="floor"></div>
+  <div class="controls">
+    <button id="play">Take notes</button>
+    <button id="leave">Stand up</button>
+  </div>
+  <p>A chair, an empty couch, a notebook and a pen. “Stand up” interrupts the
+  scene: the props leave with it.</p>
+</main>
+<script type="importmap">{ "imports": { "figurant": "../src/index.js" } }</script>
+<script type="module">
+import { createClock, driveWithAnimationFrame, advance } from '../src/core/clock.js';
+import { createStage } from '../src/stage/stage.js';
+import { createFigure } from '../src/figure/figure.js';
+import { createActor } from '../src/actor/actor.js';
+import { stickman } from '../src/characters/stickman.js';
+import { takeNotes } from '../library/common/scenes/stickman/notes.js';
+
+const manual = new URLSearchParams(location.search).has('manual');
+const clock = createClock();
+if (!manual) driveWithAnimationFrame(clock);
+
+const stage = createStage();
+const unit = Math.min(1.8, innerWidth / 300);
+const figure = createFigure({ stage, character: stickman, unit });
+Object.assign(figure.state, { legs: 1, arms: 1, shadow: 1, breath: 1 });
+figure.state.y = -figure.standHeight();
+const actor = createActor({ figure, clock, anchor: stage.on(document.getElementById('floor'), 0.2, 1) }).show();
+
+const standUp = c => c.all(
+    c.hands({ left: null, right: null }, 250),
+    c.tween({ seat: 0, squash: 0, tilt: 0, gazeX: 0, gazeY: 0 }, 300),
+);
+const play = () => actor.play(takeNotes);
+document.getElementById('play').onclick = play;
+document.getElementById('leave').onclick = () => actor.play(standUp);
+
+window.figurant = { clock, actor, play, step: ms => advance(clock, ms) };
+if (!manual) play();
+</script>
+</body>
+</html>

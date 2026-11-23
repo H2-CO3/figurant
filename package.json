@@ -1,0 +1,55 @@
+{
+  "name": "figurant",
+  "version": "0.1.0",
+  "description": "Give arms and legs to anything, and make it move by saying what you want: a local animation studio driven by a coding assistant, exporting GIFs and plain modules for the web.",
+  "type": "module",
+  "license": "MIT",
+  "author": "H2CO3",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "src",
+    "cli",
+    "atelier",
+    "library",
+    "styles",
+    "examples",
+    "scripts",
+    "docs",
+    "figurant.config.js",
+    "AGENTS.md",
+    "README.md",
+    "README.fr.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "test": "node --test tests/"
+  },
+  "engines": {
+    "node": ">=20.6"
+  },
+  "keywords": [
+    "animation",
+    "svg",
+    "character",
+    "gif",
+    "whiteboard",
+    "mascot",
+    "llm",
+    "claude-code",
+    "no-dependencies"
+  ],
+  "bin": {
+    "figurant": "./cli/figurant.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/H2-CO3/figurant.git"
+  },
+  "homepage": "https://github.com/H2-CO3/figurant#readme",
+  "bugs": {
+    "url": "https://github.com/H2-CO3/figurant/issues"
+  }
+}

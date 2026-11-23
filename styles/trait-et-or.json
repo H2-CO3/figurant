@@ -1,0 +1,10 @@
+{
+  "name": "Trait et or",
+  "prompt": "Line and gold. A gold contour on a body filled with the paper colour; details in thin ink; an ink dot where two pieces meet; at most one solid gold shape, where the eye should land. Three colours only, no gradient, no shadow. Elegant and spare, like an engraving.",
+  "theme": {
+    "paper": "#fdfcf8",
+    "ink": "#1c1c1c",
+    "accent": "#b8860b",
+    "pop": "#f4d35e"
+  }
+}

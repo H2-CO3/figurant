@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Figurant · poses</title>
+<style>
+  body { margin: 0; font: 14px/1.4 system-ui, sans-serif; color: #1c1c1c; background: #faf9f6; }
+  main { display: flex; flex-wrap: wrap; gap: 24px; padding: 24px; }
+  figure { margin: 0; width: 180px; }
+  .floor { height: 190px; border-bottom: 2px solid #c9c4b8; }
+  figcaption { padding-top: 8px; color: #6b6558; }
+</style>
+</head>
+<body>
+<main id="board"></main>
+<script type="module">
+import { createStage } from '../src/stage/stage.js';
+import { createFigure } from '../src/figure/figure.js';
+import { stickman } from '../src/characters/stickman.js';
+
+// Each pose is a function that sets the figure's state. `floor` is the anchor:
+// a point on the cell's bottom border.
+const poses = {
+    'standing': s => {},
+    'walking right': s => { s.walk = 1; s.phase = 0.9; },
+    'walking left': s => { s.walk = 1; s.phase = 2.4; s.dir = -1; },
+    'arms up': s => { s.stretch = 1; },
+    'waving': s => { s.wave = 1; s.gazeX = 0.8; },
+    'on a chair': s => { s.seat = 1; },
+    'on an edge': (s, fig) => { s.sit = 1; s.y = -fig.k * 22; },
+    'reaching': (s, fig, [x, y]) => { s.handR = { x: x + 45, y: y - 120, weight: 1, angle: 130, page: true }; s.gazeX = 1; s.gazeY = -0.6; },
+    'blinking': s => { s.lid = 0; },
+    'squashed': s => { s.squash = 1; s.crouch = 8; },
+    'small': (s, fig) => { s.scale = 0.6; s.y = -fig.standHeight(); },
+    'tilted': s => { s.tilt = 14; },
+};
+
+const stage = createStage();
+const board = document.getElementById('board');
+const actors = [];
+for (const [name, pose] of Object.entries(poses)) {
+    const cell = document.createElement('figure');
+    cell.innerHTML = `<div class="floor"></div><figcaption>${name}</figcaption>`;
+    board.appendChild(cell);
+    const anchor = stage.on(cell.firstChild, 0.5, 1);
+    const figure = createFigure({ stage, character: stickman });
+    Object.assign(figure.state, { legs: 1, arms: 1, shadow: 1 });
+    figure.state.y = -figure.standHeight();
+    pose(figure.state, figure, anchor());
+    actors.push({ figure, anchor });
+}
+const draw = () => actors.forEach(a => a.figure.render(a.anchor(), 16));
+draw();
+addEventListener('resize', draw);
+window.figurantReady = true;
+</script>
+</body>
+</html>

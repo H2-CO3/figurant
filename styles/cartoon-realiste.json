@@ -1,0 +1,10 @@
+{
+  "name": "Cartoon réaliste",
+  "prompt": "Realistic cartoon. Colour, volume and soft light: a dark outline, gradients that turn a shape into a material (porcelain, plastic, steel, fur), one patch of light from the upper left and one of shade. Eyes with a white, an iris and a glint. Each character has its own material and its own palette; no two look alike. Props share the style and the scale of the character that uses them.",
+  "theme": {
+    "paper": "#ffffff",
+    "ink": "#16181d",
+    "accent": "#2456f5",
+    "pop": "#ffcf24"
+  }
+}

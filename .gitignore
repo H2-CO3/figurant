@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.DS_Store
+# What the atelier writes for whoever is using it, and what it makes for elsewhere.
+/fiches/
+/assets/
+/exports/
+/STYLE.md
+/styles/.active
+# Working notes that are not part of the project.
+/.notes/

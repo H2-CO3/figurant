@@ -1,0 +1,10 @@
+{
+  "name": "Papier découpé",
+  "prompt": "Cut paper. Flat shapes with no outline, as if cut from coloured paper and layered: each layer casts a small soft shadow on the one below. A warm, slightly muted palette of five or six colours for the whole project. Edges a little irregular, never perfectly geometric. Eyes are simple dots or small cut shapes.",
+  "theme": {
+    "paper": "#fbe6d0",
+    "ink": "#2f4858",
+    "accent": "#2a9d8f",
+    "pop": "#f4a261"
+  }
+}
