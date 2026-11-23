@@ -11,6 +11,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 - The column on the right is two separate blocks: short settings that never scroll, and the versions, which do. Export sits under the questions, away from the button that sends; "Change the interface" is the middle one of the three buttons.
+- The atelier's server is split by concern: `cli/server.js` is the table of routes, and `cli/server/` holds the checks (`guard.js`), the access code (`door.js`), the files (`static.js`) and one module per part of the API. Nothing it answers has changed.
 
 ### Fixed
 - GIFs: a film stepped by 80 ms moved on by 50 ms only, so a GIF played slowed down and a scene was cut before its end.
