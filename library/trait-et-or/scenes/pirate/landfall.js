@@ -90,8 +90,11 @@ export const landfallPirate = {
         // In it comes, going down all the way: one hand on the hip, eyes on the town.
         await at(T.sail);
         c.animate(voyage, { x: -10, sunk: MAST - WATER }, T.land - T.sail, linear).catch(() => {});
-        await c.all(c.hands({ left: { x: -10, y: 10, angle: 30 } }, 500, easeInOut), c.tween({ gazeX: 0.9 }, 500));
-        for (let sway = 0; c.clock.now - start < T.land - 2600; sway++) await c.tween({ tilt: sway % 2 ? -3 : 3 }, 900, easeInOut);
+        // (A hand over the eyes first, to make out the town; then it stands there as if on a quarterdeck.)
+        await c.all(c.hands({ left: { x: -10, y: 10, angle: 30 }, right: { x: 9, y: -40, angle: -100 } }, 500, easeInOut), c.tween({ gazeX: 0.9, tilt: 4 }, 500));
+        await c.wait(1300);
+        await c.hands({ right: { x: 13, y: 6, angle: -20 } }, 500, easeInOut);
+        for (let sway = 0; c.clock.now - start < T.land - 2600; sway++) await c.tween({ tilt: sway % 2 ? -5 : 5 }, 760, easeInOut);
         // One look down at the water, where its boat used to be; and up again, untroubled.
         await c.tween({ tilt: 0, gazeX: 0.2, gazeY: 0.9 }, 500, easeInOut);
         await c.wait(700);
@@ -113,11 +116,24 @@ export const landfallPirate = {
 
         // Up the quay to the keeper, hands free, in no hurry.
         await at(T.walk);
-        await c.hands({ left: null }, 200);
-        await moves.walkTo(c, X(KEEPER - 54), 0.8);
+        // (Its walk is its own: it rolls from side to side as if the quay were still a deck, wrists loose, one hand held up.)
+        const swagger = async walk => {
+            let there = false;
+            walk.then(() => { there = true; }, () => { there = true; });
+            for (let roll = 0; !there; roll++) {
+                await c.all(c.tween({ tilt: roll % 2 ? -8 : 8 }, 250, easeInOut), c.hands({ left: { x: -15, y: roll % 2 ? -12 : -6, angle: 240 }, right: { x: 12, y: roll % 2 ? 6 : 12, angle: -30 } }, 250, easeInOut));
+            }
+            await c.tween({ tilt: 0 }, 200, easeInOut);
+        };
+        await swagger(moves.walkTo(c, X(KEEPER - 54), 0.8));
+        // One finger up: a moment. It pats one pocket, then the other.
+        await c.all(c.hands({ left: { x: -10, y: 10 }, right: { x: 8, y: -32, angle: -90 } }, 260, easeOut), c.tween({ gazeY: -0.3 }, 260));
+        await at(T.meet - 500);
+        await c.hands({ left: { x: -7, y: 13 }, right: { x: 7, y: 13 } }, 260, easeInOut);
+        await c.all(c.tween({ gazeY: 0.6, tilt: -4 }, 200), c.hands({ left: { x: -5, y: 9 } }, 200));
         await at(T.meet);
-        // A hand in the pocket, and the coin: flipped, it turns over in the air and lands in the open palm.
-        await c.hands({ right: { x: 6, y: 12 } }, 380, easeInOut);
+        // There it is. The coin: flipped, it turns over in the air and lands in the open palm.
+        await c.all(c.hands({ left: { x: -10, y: 10 }, right: { x: 6, y: 12 } }, 380, easeInOut), c.tween({ tilt: 0, gazeY: 0 }, 380));
         await c.hands({ right: { x: 15, y: -8, angle: -30 } }, 320, easeOut);
         await at(T.coin);
         const piece = c.prop(coin, { state: { draw: 1 } });
@@ -130,12 +146,13 @@ export const landfallPirate = {
         c.animate(piece.state, { draw: 0 }, 300).catch(() => {});
         // The hat lifted, a small bow; and it is ready to go.
         await at(T.hat);
-        await c.all(c.hands({ right: { x: 9, y: -47 } }, 320, easeInOut), c.tween({ gazeY: 0, tilt: 9, crouch: 2 }, 320, easeInOut));
+        await c.all(c.hands({ right: { x: 9, y: -47 }, left: { x: -22, y: -2, angle: 200 } }, 320, easeInOut), c.tween({ gazeY: 0, tilt: 11, crouch: 3 }, 320, easeInOut));
         await c.wait(380);
-        await c.all(c.hands({ right: null }, 320), c.tween({ tilt: 0, crouch: 0, gazeX: 0.9 }, 320, easeInOut));
+        await c.all(c.hands({ left: null, right: null }, 320), c.tween({ tilt: 0, crouch: 0, gazeX: 0.9 }, 320, easeInOut));
         await at(T.end);
-        // Past the keeper and off into town. (The harbour is this animation's: it stays for as long as it is walked through.)
-        await moves.walkTo(c, X(545), 0.9);
+        // Past the keeper and off into town, rolling as it goes. (The harbour is this animation's: it stays for as long as it is walked through.)
+        await swagger(moves.walkTo(c, X(545), 0.9));
+        await c.hands({ left: null, right: null }, 200);
         await c.wait(500);
     },
 };
