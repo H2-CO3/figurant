@@ -1,9 +1,10 @@
-// Made for the pirate: landfall. Out at sea it stands on the masthead of a
-// small boat that is going down under it, in the best of moods and none too
-// steady: it takes out its compass, turns about to find where the needle
-// means, shakes it, and points the way. The boat sinks all the while, at
-// exactly the pace that will bring the masthead level with the quay. Then the
-// harbour comes into sight (the quay draws itself in, the customs officer
+// Made for the pirate: landfall, in two parts. First it sails, standing on
+// the masthead of a small boat, in the best of moods and none too steady. The
+// boat springs a leak and begins to go down; it takes out its compass, taps
+// on it to make it say where the harbour is, and points the way. Then the
+// boat goes down faster, and it is a close thing: the masthead comes level
+// with the quay at the very moment it gets there. The harbour comes into
+// sight on the way (the quay draws itself in, the customs officer
 // walks down it): it steps off as one steps off a stair, and the boat goes on
 // to the bottom. It walks up the quay, flips a coin, lifts its hat, and
 // rolls off into town.
@@ -18,7 +19,7 @@ import { GOLD, INK, PAPER, goldShape, inkShape, dotShape } from '../../kit.js';
 
 const { easeOut, easeIn, easeInOut, linear } = easing;
 /** When each moment starts, in ms, for the pirate and for the officer (see ../customs-officer/toll.js). */
-export const T = { sail: 700, compass: 1800, point: 7400, quay: 9600, land: 14600, walk: 15500, meet: 17800, coin: 18800, hat: 19800, end: 21100 };
+export const T = { sail: 700, leak: 3200, compass: 5000, point: 10400, quay: 12200, land: 17200, walk: 18300, meet: 20600, coin: 21600, hat: 22600, end: 23900 };
 /** The mast above the boat's waterline; the water below the quay; where the keeper stands. */
 const MAST = 128, WATER = 36;
 export const KEEPER = 108;
@@ -74,7 +75,7 @@ export const landfallPirate = {
         const start = c.clock.now, at = ms => c.wait(Math.max(0, ms - (c.clock.now - start)));
         /** A place along the quay (from the foot of its first pile) as the figure's own number. */
         const X = place => home + (place - base) * k;
-        c.onLeave(() => { s.y = ground; s.squint = 0; c.feet({ left: null, right: null }, 1).catch(() => {}); c.hands({ left: null, right: null }, 1).catch(() => {}); });
+        c.onLeave(() => { s.y = ground; s.squint = 0; s.grin = 0.5; c.feet({ left: null, right: null }, 1).catch(() => {}); c.hands({ left: null, right: null }, 1).catch(() => {}); });
 
         // The harbour: the boat first, then the water over what of it is under, then the quay.
         const skiff = c.prop(boat, { behind: true, state: { draw: 0 } });
@@ -94,9 +95,18 @@ export const landfallPirate = {
 
         // Under way, going down all the way. In the best of moods: eyes half shut, rocking more than the boat does.
         await at(T.sail);
-        c.animate(voyage, { x: -10, sunk: MAST - WATER }, T.land - T.sail, linear).catch(() => {});
-        await c.all(c.hands({ left: { x: -10, y: 10, angle: 30 } }, 400, easeInOut), c.tween({ gazeX: 0.9, squint: 0.5, tilt: 6 }, 400));
-        await c.tween({ tilt: -5 }, 600, easeInOut);
+        c.animate(voyage, { x: -10 }, T.land - T.sail, linear).catch(() => {});
+        await c.all(c.hands({ left: { x: -10, y: 10, angle: 30 } }, 400, easeInOut), c.tween({ gazeX: 0.9, squint: 0.4, grin: 1, tilt: 6 }, 400));
+        for (let sway = 0; c.clock.now - start < T.leak - 500; sway++) await c.tween({ tilt: sway % 2 ? 6 : -5 }, 620, easeInOut);
+        // The leak: the boat drops a hand's breadth all at once, and goes on going down, slowly.
+        await at(T.leak);
+        await c.animate(voyage, { sunk: 0 }, 180, easeIn);
+        c.animate(voyage, { sunk: 38 }, T.quay - T.leak - 180, linear).then(() => c.animate(voyage, { sunk: MAST - WATER }, T.land - T.quay, easeIn)).catch(() => {});
+        c.also({ wide: 1, squint: 0, grin: 0.2 }, 120);
+        await c.tween({ tilt: 0, gazeX: 0.2, gazeY: 0.9 }, 300, easeOut);
+        await c.wait(700);
+        // Well. It has known worse.
+        await c.tween({ wide: 0, squint: 0.4, grin: 1, gazeX: 0.9, gazeY: 0, tilt: -4 }, 500, easeInOut);
         // The compass: out of the coat, held up, looked at closely.
         await at(T.compass);
         const needle = c.give('right', pocketCompass, { tilt: -10, state: { draw: 0 } });
@@ -107,7 +117,9 @@ export const landfallPirate = {
         await c.all(c.tween({ tilt: -8, gazeX: -0.6 }, 420, easeInOut), c.hands({ right: { x: -6, y: -12, angle: -120 } }, 420, easeInOut));
         await c.wait(300);
         await c.all(c.tween({ tilt: 7, gazeX: 0.8 }, 460, easeInOut), c.hands({ right: { x: 15, y: -12, angle: -60 } }, 460, easeInOut));
-        for (let shake = 0; shake < 4; shake++) { await c.hands({ right: { x: 17, y: -16, angle: -60 } }, 80, easeOut); await c.hands({ right: { x: 13, y: -9, angle: -60 } }, 80, easeIn); }
+        // Three taps of a finger on its glass, to wake it up.
+        for (let tap = 0; tap < 3; tap++) { await c.hands({ left: { x: 9, y: -22 } }, 130, easeOut); await c.hands({ left: { x: 12.5, y: -15 } }, 90, easeIn); await c.wait(110); }
+        await c.hands({ left: { x: -10, y: 10, angle: 30 } }, 260, easeInOut);
         await c.all(c.hands({ right: { x: 8, y: -24, angle: -80 } }, 320, easeInOut), c.tween({ gazeX: 0.3, gazeY: -0.2, squint: 0.9, tilt: 3 }, 320));
         await c.wait(650);
         // A hiccup. And there: that way, obviously.
@@ -124,11 +136,14 @@ export const landfallPirate = {
         await c.all(c.hands({ right: { x: 9, y: -40, angle: -100 } }, 400, easeInOut), c.tween({ gazeX: 0.9, tilt: 4 }, 400));
         await c.wait(1100);
         await c.hands({ right: { x: 13, y: 6, angle: -20 } }, 400, easeInOut);
-        for (let sway = 0; c.clock.now - start < T.land - 2400; sway++) await c.tween({ tilt: sway % 2 ? -6 : 6 }, 700, easeInOut);
-        // One look down at the water, where its boat used to be; and up again, untroubled.
-        await c.tween({ tilt: 0, gazeX: 0.2, gazeY: 0.9 }, 500, easeInOut);
-        await c.wait(600);
-        await c.tween({ gazeX: 0.9, gazeY: 0 }, 400, easeInOut);
+        for (let sway = 0; c.clock.now - start < T.land - 2700; sway++) await c.tween({ tilt: sway % 2 ? -6 : 6 }, 600, easeInOut);
+        // A close thing: a look down at the water coming up, up on its toes, a look at the quay, down again.
+        await c.tween({ tilt: 0, gazeX: 0.2, gazeY: 0.9, wide: 0.8, grin: 0.1, squint: 0 }, 300, easeOut);
+        await c.feet({ left: { x: -3, y: 5, pitch: 60 }, right: { x: 3, y: 5, pitch: 60 } }, 260, easeOut);
+        await c.tween({ gazeX: 1, gazeY: 0 }, 260);
+        await c.tween({ gazeX: 0.2, gazeY: 0.9 }, 260);
+        await c.tween({ gazeX: 1, gazeY: 0, tilt: 5 }, 260);
+        await c.wait(300);
 
         // Level with the quay at the very moment it gets there: it steps off, as off a stair.
         await at(T.land);
@@ -140,9 +155,13 @@ export const landfallPirate = {
             for (let i = 0; i < 9; i++) bubbles.emit({ x: c.figure.points.centre[0] + (X(voyage.x) - s.x) + fx.range(-10, 10) * k, y: c.figure.points.ground + WATER * k, vx: fx.range(-12, 12) * k, vy: -fx.range(20, 60) * k, life: fx.range(0.4, 0.9), trail: 0.02 });
             bubbles.close();
         }, () => {});
-        await c.all(c.feet({ right: { x: 15, y: 0 } }, 280, easeOut), c.tween({ x: X(8), tilt: 5 }, 340, easeOut));
-        await c.all(c.feet({ left: { x: 0, y: 0 }, right: { x: 0, y: 0 } }, 260, easeInOut), c.tween({ x: X(16), tilt: 0 }, 300, easeInOut));
+        await c.all(c.feet({ right: { x: 15, y: 0 }, left: { x: 0, y: 4, pitch: 50 } }, 220, easeOut), c.tween({ x: X(8), tilt: 5 }, 260, easeOut));
+        await c.all(c.feet({ left: { x: 0, y: 0 }, right: { x: 0, y: 0 } }, 240, easeInOut), c.tween({ x: X(16), tilt: 0, wide: 0 }, 280, easeInOut));
         await c.feet({ left: null, right: null }, 1);
+        // On dry planks. The back of a hand across the brow; and the smile is back.
+        await c.all(c.hands({ right: { x: 8, y: -40, angle: -100 } }, 220, easeOut), c.tween({ grin: 1, squint: 0.4, gazeY: 0 }, 220));
+        await c.hands({ right: { x: -4, y: -40, angle: -100 } }, 200, easeInOut);
+        await c.hands({ right: null }, 220);
 
         // Up the quay to the keeper, hands free, in no hurry.
         await at(T.walk);
