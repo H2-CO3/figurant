@@ -62,19 +62,33 @@ export const cheer = {
 };
 
 /**
- * It hauls on a rope: leaning back, it walks to where the scene says and holds there, still leaning.
+ * It hauls on a rope, like someone who means it: both hands on the rope in front of it, leaning far
+ * back, heels dug in, heaving in time with its team and sweating for it. It walks to where the scene
+ * says and goes on heaving there.
  * `data.to`: where to, in character units from where it stands (negative: to the left);
- * `data.lean`: how far it leans, in degrees (negative: to the left); `data.pace`.
+ * `data.lean`: how far it leans, in degrees (negative: to the left); `data.pace`;
+ * `data.beat`: how long one heave lasts, in ms (a whole team gives the same one).
  */
 export const haul = {
     room: { left: 80, right: 80, up: 100 },
     async play(c, ctx) {
-        const lean = ctx?.data?.lean ?? -14;
-        await c.tween({ tilt: lean, crouch: 6 }, 220, easeOut);
-        await moves.walkTo(c, c.state.x + (ctx?.data?.to ?? 0) * c.figure.k, ctx?.data?.pace ?? 0.5);
-        for (;;) {
-            await c.tween({ tilt: lean * 1.25, crouch: 8 }, 260, easeInOut);
-            await c.tween({ tilt: lean, crouch: 6 }, 260, easeInOut);
-        }
+        const s = c.state, way = s.dir || 1, lean = ctx?.data?.lean ?? -way * 24, beat = ctx?.data?.beat ?? 520, fx = ctx?.api?.fx ?? null;
+        const front = way > 0 ? 'right' : 'left', back = way > 0 ? 'left' : 'right';
+        c.onLeave(() => { c.hands({ left: null, right: null }, 1).catch(() => {}); });
+        /** Both hands on the rope, one before the other, at the height of the belt. */
+        const grip = (pull, ms) => c.hands({ [front]: { x: way * (22 - pull), y: 2 }, [back]: { x: way * (10 - pull), y: 3 } }, ms, easeInOut);
+        const sweat = () => { if (!fx || fx.random() > 0.5) return; const [x, y] = c.figure.points.top; const drops = fx.particles({ width: 1.6 }); for (let i = 0; i < 3; i++) drops.emit({ x: x - way * 6 * c.figure.k, y, vx: -way * fx.range(30, 90) * c.figure.k, vy: -fx.range(40, 110) * c.figure.k, ay: 420 * c.figure.k, life: 0.5, trail: 0.03 }); drops.close(); };
+        await c.all(grip(0, 200), c.tween({ tilt: lean, crouch: 7, squint: 0.7 }, 200, easeOut));
+        const walk = moves.walkTo(c, s.x + (ctx?.data?.to ?? 0) * c.figure.k, ctx?.data?.pace ?? 0.5);
+        // (The heaves go on while it walks: the body is the walk's, the arms and the lean are the heave's.)
+        const heave = async () => {
+            await c.all(grip(9, beat * 0.4), c.tween({ tilt: lean * 1.45, crouch: 11 }, beat * 0.4, easeOut));
+            sweat();
+            await c.all(grip(0, beat * 0.6), c.tween({ tilt: lean, crouch: 7 }, beat * 0.6, easeInOut));
+        };
+        let arrived = false;
+        walk.then(() => { arrived = true; }, () => { arrived = true; });
+        while (!arrived) await c.all(grip(9, beat * 0.4).then(() => grip(0, beat * 0.6)), c.wait(beat));
+        for (;;) await heave();
     },
 };

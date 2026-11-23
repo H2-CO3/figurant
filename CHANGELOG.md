@@ -6,7 +6,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
-- Neon at night: the stick figure's ride without end (`neon-ride-stickman`, and the scene `neon-ride`): a motorbike of light, a grid running under it, a skyline, a striped sun, a ribbon of light behind, jumps.
+- Neon at night: a rider on a motorbike seen from behind (`neon-rider`) and the race without end (`race-neon-rider`, scene `neon-ride`): two riders followed down a motorway that runs to the horizon, a striped sun, mountains, lamps and a grid coming at you. It replaces the side view.
+- The tug of war is three against three with a referee: both hands on the rope, heaves in time, sweat, the losers hauled over the line.
 - The welcome says its example as the game does, in each language ("Simon says", « Jacques a dit »): there only.
 - An **Effects** workshop in the atelier: the special effects a project lists under `effects` in its config, each played on the bench, and ordered like anything else. Four new ready-made effects in the engine (`shockwave`, `flash`, `bolt`, `wave`), eight in the library (`library/common/effects.js`).
 - The duel is written on one floor and one clock shared by its two parts: they cross the whole stage, eight clashes land where the blades are, and each moment leaves the one before it time to end. Auras when the blades light up, a ring and a star at each clash, lightning for the lift, dust under every landing.
