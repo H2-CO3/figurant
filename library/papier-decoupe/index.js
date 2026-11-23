@@ -9,11 +9,12 @@ import { paperMailbox, paperLetter } from './props/paper-mailbox.js';
 import { sunrisePaperSun } from './scenes/paper-sun/sunrise.js';
 import { postPaperHouse } from './scenes/paper-house/post.js';
 import { phasesPaperMoon } from './scenes/paper-moon/phases.js';
+import { spookPaperMoon } from './scenes/paper-moon/spook.js';
 
 import { morningPost } from './compositions/morning-post.js';
 export const style = 'papier-decoupe';
 export const characters = { 'paper-sun': paperSun, 'paper-house': paperHouse, 'paper-moon': paperMoon };
 export const props = { 'paper-hill': paperHill, 'paper-mailbox': paperMailbox, 'paper-letter': paperLetter };
-export const scenes = { 'sunrise-paper-sun': sunrisePaperSun, 'post-paper-house': postPaperHouse, 'phases-paper-moon': phasesPaperMoon };
+export const scenes = { 'sunrise-paper-sun': sunrisePaperSun, 'post-paper-house': postPaperHouse, 'phases-paper-moon': phasesPaperMoon, 'spook-paper-moon': spookPaperMoon };
 /** Scenes: several characters, each on its track in time. */
 export const compositions = { 'morning-post': morningPost };
