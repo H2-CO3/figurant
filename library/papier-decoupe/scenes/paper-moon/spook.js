@@ -1,7 +1,7 @@
 // The paper moon frightens. It waves, all sweetness. Then it goes out, cut by
 // cut, until only its two eyes are left in the dark; it looks left, right...
-// and BOO: red eyes, a row of teeth, claws up, its stars turned to bats, and
-// it shakes. A long hold. Then it cannot keep it up: it is itself again, and
+// and BOO: red eyes, a row of teeth, claws up, its stars turned to bats; and
+// it comes at you, bigger at every shake, until it fills the picture. A long hold. Then it cannot keep it up: it is itself again, and
 // laughs at its own joke.
 //
 // Stop-motion: poses held a few photographs each; the fright comes on a cut.
@@ -12,11 +12,11 @@ const steps = n => p => Math.min(1, Math.ceil(p * n) / n);
 
 export const spookPaperMoon = {
     character: 'paper-moon',
-    room: { left: 90, right: 90, up: 150 },
+    room: { left: 150, right: 150, up: 300 },
 
     async play(c) {
-        const s = c.state, usual = s.lit;
-        c.onLeave(() => { s.lit = usual; s.spook = 0; s.twinkle = 0; });
+        const s = c.state, usual = s.lit, size = s.scale;
+        c.onLeave(() => { s.lit = usual; s.spook = 0; s.twinkle = 0; s.scale = size; });
         const pose = (to, n = 1) => c.tween(to, n * FRAME, steps(n));
         const hold = n => c.wait(n * FRAME);
 
@@ -33,11 +33,12 @@ export const spookPaperMoon = {
         // BOO.
         s.spook = 1;
         await c.all(pose({ crouch: 0, wide: 1 }, 1), c.hands({ left: { x: -42, y: -34 }, right: { x: 42, y: -34 } }, FRAME, steps(1)));
-        for (let i = 0; i < 4; i++) { await pose({ tilt: 7 }, 1); await pose({ tilt: -7 }, 1); }
+        // It comes closer: a step bigger at every shake.
+        for (let i = 1; i <= 6; i++) { await pose({ tilt: 7, scale: size * (1 + 0.28 * i - 0.14) }, 1); await pose({ tilt: -7, scale: size * (1 + 0.28 * i) }, 1); }
         await pose({ tilt: 0 }, 1);
-        await hold(12);
+        await hold(10);
         // It cannot keep it up.
-        s.spook = 0; s.lit = usual;
+        s.spook = 0; s.lit = usual; s.scale = size;
         await c.all(pose({ wide: 0, squint: 1 }, 1), c.hands({ left: null, right: null }, 2 * FRAME, steps(2)));
         for (let i = 0; i < 4; i++) { await pose({ crouch: 4 }, 1); await pose({ crouch: 0 }, 1); }
         await pose({ squint: 0, lid: 0.8 }, 2);
