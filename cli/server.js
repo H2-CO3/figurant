@@ -203,16 +203,17 @@ export function createAtelierServer({ root, fiches = 'fiches', custom = {} }) {
                 if (path === '/__figurant/api/listening' && req.method === 'GET') {
                     // An assistant waiting on the fiches (figurant fiches --wait) leaves a fresh mark there.
                     const age = name => stat(join(ficheDir, name)).then(s => Date.now() - s.mtimeMs, () => Infinity);
-                    // At work: one that was waiting has been woken (it left a mark), and a fiche still waits for its answer.
-                    // … or it has just said where it is (figurant show), within the last ten minutes.
-                    let working = await age('.working') < 30 * 60_000;
-                    if (working && !(await age('.screen') < 10 * 60_000)) {
-                        const names = (await readdir(ficheDir).catch(() => [])).filter(f => f.endsWith('.md')).map(f => f.slice(0, -3)).filter(isFicheName);
-                        working = (await Promise.all(names.map(readFiche))).some(fiche => pending(fiche));
-                    }
-                    // Where the assistant says it is, and what it is doing (figurant show).
+                    // At work: one that was waiting has been woken (it left a mark), and a fiche still waits for its answer…
+                    const names = (await readdir(ficheDir).catch(() => [])).filter(f => f.endsWith('.md')).map(f => f.slice(0, -3)).filter(isFicheName);
+                    const waiting = (await Promise.all(names.map(readFiche))).some(fiche => pending(fiche));
+                    // … or it has just said where it is (figurant show), within the last ten minutes, and has not answered since:
+                    // once a fiche has been written after that and nothing waits, the work it spoke of is done.
+                    const shown = await age('.screen'), written = Math.min(Infinity, ...await Promise.all(names.map(name => age(`${name}.md`))));
+                    const showing = shown < 10 * 60_000 && (waiting || written > shown);
+                    const working = await age('.working') < 30 * 60_000 && (waiting || showing);
+                    // Where the assistant says it is, and what it is doing.
                     let screen = null;
-                    try {
+                    if (showing) try {
                         const said = JSON.parse(await readFile(join(ficheDir, '.screen'), 'utf8'));
                         if (/^(scenes|characters|emoji|props|compositions)(\/[a-z0-9][a-z0-9_-]{0,63})?$/i.test(said.see ?? '')) screen = { see: said.see, say: String(said.say ?? '').slice(0, 140), at: String(said.at ?? '') };
                     } catch { /* it said nothing */ }

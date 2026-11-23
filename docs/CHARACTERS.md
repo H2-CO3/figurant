@@ -21,13 +21,16 @@ export const teapot = {
 
 Read `docs/DESIGN.md` and the project's `STYLE.md` first: the style is the
 person's choice. The head contract below lets you draw anything; the
-library's characters use `library/default/cartoon-realiste/kit.js` for gradients, shade
-and eyes.
+library's characters use their style's own helpers, `library/<style>/kit.js`
+(for the realistic cartoon: gradients, shade and eyes).
 
 ## The quick way: a head described as data
 
 `shapeHead` takes SVG shapes and four attachment points. Units are yours:
-draw the head around (0, 0), y pointing down, about 60 to 160 units wide.
+draw the head around (0, 0), y pointing down, about 60 to 170 units wide
+(a stick figure's legs and arms are about 40 long: a head 80 wide is a
+small character, 150 a big one; size is drawn, there is no per-character
+scale in the library).
 
 ```js
 import { shapeHead } from 'figurant';

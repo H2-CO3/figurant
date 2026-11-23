@@ -17,7 +17,7 @@ If a person is at the atelier and wants things made, your job is in
 | --- | --- |
 | Create a character from a drawing | `docs/CHARACTERS.md` |
 | Write an animation (one character) or a scene (several, in time), or place one on a page | `docs/SCENES.md` |
-| Draw a character or a prop | the project's `STYLE.md` (the person's choice of style), `docs/DESIGN.md`, then the models in `library/default/cartoon-realiste/characters/` |
+| Draw a character or a prop | the project's `STYLE.md` (the person's choice of style), `docs/DESIGN.md`, then the characters already made in the style in use, `library/<style>/characters/` |
 | Put a scene, a character or a prop in front of a person and act on their directions | `docs/ATELIER.md` |
 | Add characters and scenes to an existing website | `docs/INTEGRATION.md` |
 | Put on a website something exported from the atelier (a folder `exports/<name>/`) | that folder's `EXPORT.md`, then its `INTEGRATION.md` |

@@ -594,3 +594,27 @@ test('a colour that comes late into a film rich in tones is still that colour', 
     const corner = [...read.frames[1].pixels.slice(0, 3)];
     assert.ok(corner.every((value, i) => Math.abs(value - first[i]) <= 24), `the shading around it holds (got ${corner})`);
 });
+
+test('the working sign over the stage goes away when the assistant has answered', async () => {
+    const { utimes } = await import('node:fs/promises');
+    const root = await mkdtemp(join(tmpdir(), 'figurant-sign-'));
+    await mkdir(join(root, 'fiches'));
+    const ask = '# tea\nstatus: draft\n\n## 2026-01-01T10:00:00Z person\ndecision: redo\nslower\n';
+    const answer = ask + '\n## 2026-01-01T10:05:00Z llm\nDone.\n? Better?\n';
+    const at = async (name, secondsAgo) => { const when = new Date(Date.now() - secondsAgo * 1000); await utimes(join(root, 'fiches', name), when, when); };
+    await writeFile(join(root, 'fiches', 'tea.md'), ask); await at('tea.md', 60);
+    await writeFile(join(root, 'fiches', '.working'), 'x'); await at('.working', 50);
+    await writeFile(join(root, 'fiches', '.screen'), JSON.stringify({ see: 'scenes/tea', say: 'Slowing it down', at: 'x' })); await at('.screen', 40);
+    const server = createAtelierServer({ root }).listen(0, '127.0.0.1');
+    await new Promise(done => server.once('listening', done));
+    const state = async () => (await fetch(`http://127.0.0.1:${server.address().port}/__figurant/api/listening`)).json();
+    try {
+        const during = await state();
+        assert.equal(during.working, true); assert.equal(during.screen?.say, 'Slowing it down');
+        // The assistant answers: nothing waits any more, and what it said it was doing is done.
+        await writeFile(join(root, 'fiches', 'tea.md'), answer);
+        const after = await state();
+        assert.equal(after.working, false, 'the sign is taken down');
+        assert.equal(after.screen, undefined, 'and the page is no longer held where the work was');
+    } finally { server.close(); await rm(root, { recursive: true, force: true }); }
+});

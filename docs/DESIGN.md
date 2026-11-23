@@ -20,8 +20,8 @@ of what a finished style looks like:
 - **Realistic cartoon** — the style of `library/`. Colour, volume and soft
   light: a dark outline, gradients that turn a shape into a material
   (porcelain, plastic, steel, fur), one patch of light and one of shade,
-  eyes with a white, an iris and a glint. `library/default/cartoon-realiste/kit.js` holds
-  the helpers; `teapot.js`, `highlighter.js`, `fork.js` and `cat.js` are the
+  eyes with a white, an iris and a glint. `library/cartoon-realiste/kit.js` holds
+  the helpers (an earlier set is in `library/default/cartoon-realiste/`); `teapot.js`, `highlighter.js`, `fork.js` and `cat.js` are the
   models. Props use flat colours with a patch of shade and one of light
   (`library/default/cartoon-realiste/props/teapot-study.js`).
 - **Line and gold** (`library/trait-et-or`) — a gold contour on a paper
@@ -66,7 +66,8 @@ Whatever the style, two things hold:
 - Emoji figures (`library/emoji/`) are a kind apart: a stick figure whose
   head is an emoji or an imported picture. Quick and friendly; never a
   substitute for a drawn character, and never mixed with them.
-- Draw the head 100 to 170 units wide, around (0, 0). Hips on the bottom
+- Draw the head 60 to 170 units wide, around (0, 0): 80 for a small
+  character, 150 for a big one. Hips on the bottom
   edge; shoulders on the outline, where an arm coming out from behind the
   body looks attached (`arms: 'front'` for a wide body).
 - The limbs are lines: give them a colour that belongs to the character

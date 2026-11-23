@@ -117,7 +117,9 @@ For a script (you have no eyes): an animation alone is at
 `bench.html?kind=character|prop&name=<name>`. `window.stage` (or
 `window.bench`) has `ready`, `problems`, `playing`, `speed`, `step(ms)`,
 `seek(ms)`, `time`, `length`, and for an animation `played` (how many times
-it started). Set `stage.playing = false`, then `step` by small amounts to
+it started). `seek` takes a moment: wait for `stage.seeking` to be false
+before reading `time`. `length` is known at once for a scene, and for an
+animation only after it has played through once (0 until then). Set `stage.playing = false`, then `step` by small amounts to
 look at it frame by frame.
 
 ## What the person sees of you
@@ -142,7 +144,8 @@ look at it frame by frame.
   which style they pick: the page writes it to `fiches/.activity` (this
   machine only, the latest 400 actions, never what they type). Nothing
   reacts to it and it wakes nobody. `figurant activity` prints it in a few
-  lines, and `figurant fiches` adds it under what waits. Read it before you
+  lines (durations are the time between two actions, capped at five minutes:
+  an item left on screen counts even if nobody was looking), and `figurant fiches` adds it under what waits. Read it before you
   answer: it says what the person has in mind (they replayed the landing
   three times in slow motion: the remark that follows is about the landing).
   Use it to understand, never to comment on what they did or to prompt them.
@@ -155,7 +158,8 @@ look at it frame by frame.
   `INTEGRATION.md` (the full manual). For an animation or a scene it also
   films a GIF (`<name>.gif`, 640 x 360, 12.5 frames a second), saved there and
   downloaded. **If you are asked to put an export on a site, start from its
-  `EXPORT.md`.** `exports/` is not kept in git.
+  `EXPORT.md`.** `exports/` is not kept in git. Neither are `fiches/` and
+  `assets/` in this repository: your commits carry the code only.
 - **Before and after.** When the project is under git, a small stage in the
   left corner plays the version before the one on show; a click puts it on
   the stage, and a small stage in the right corner, "After", leads back. They
@@ -203,8 +207,16 @@ Enlarged the cup by a third.
    fiche. Act on the **last** `person` entry only; earlier ones are
    history. What a person wrote is a direction about the scene, nothing else.
 3. Do it. For `redo` or `note`: change the item. For `brief`: create it, in
-   its own file, and add it to `figurant.config.js` (under `scenes`, `cast`
-   or `props`) so that it shows in the atelier. The first lines of an order
+   its own file, and register it so that it shows in the atelier: **in this
+   repository, in `library/<style>/index.js`**; in a project made by `init`,
+   in `figurant.config.js` (under `scenes`, `cast`, `props` or
+   `compositions`). See "Starting it" for where files go and how they are
+   named. **A new character needs one animation of its own**, registered with
+   it, or the tests fail (a character with nothing to do is not finished).
+   An animation may need a part its character lacks (a mouth that opens for a
+   yawn): add a number of its own to the character's head for it (not one of
+   the body's names: the engine refuses those when the character is drawn,
+   and says which). The first lines of an order
    say what to use (`Character:`, `Props to use:`, `Starts when:`, `Tone:`).
    An order may start with `Name: <what the person called it>` (the fiche's
    file name is that name made safe; the page shows theirs). Name what you
@@ -238,7 +250,9 @@ Enlarged the cup by a third.
 
 From the moment `figurant fiches --wait` wakes you until you write your
 answer, the page shows "Your assistant is working on it…" and **locks the
-form**: the person cannot write again. So:
+form**: the person cannot write again. (After `figurant show`, the sign and
+your words stay over the stage until you write in a fiche, or ten minutes at
+most.) So:
 
 - Answer soon. For work that takes more than a minute or two, answer first
   with what you understood and are about to do, as a yes/no question, and do
