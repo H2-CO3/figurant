@@ -19,6 +19,13 @@ Where Figurant is going. Nothing here is promised for a date.
   drives the page and hears about it without polling.
 - **One command to install** (npm), and `figurant` on the path.
 - **The timeline moves clips**: drag one to change when it starts.
+- **Sections a project declares**: a button and a page of its own in the
+  atelier, with the conversation, the versions and the export, without
+  touching the engine.
+- **Sound**: sound files on a scene's tracks and on an animation's gestures,
+  played in step with the clock, and an export to video. Figurant plays the
+  files; making them is the assistant's job, with whatever sound tool the
+  person has.
 - **Variants**: try another take of an animation next to the first.
 - GIFs of a character alone and of a prop.
 - Names shown in the person's language.
