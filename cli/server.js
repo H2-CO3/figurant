@@ -10,6 +10,7 @@ import { parseFiche, serializeFiche, addPersonEntry, isFicheName, pending } from
 import { noteActivity } from './activity.js';
 import { exportItem, locate } from './export.js';
 import { execFile } from 'node:child_process';
+import { timingSafeEqual } from 'node:crypto';
 import { themeVars, THEME_KEYS } from '../atelier/theme.js';
 
 const ENGINE = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -36,8 +37,15 @@ export function inside(base, path) {
  * @param {object} [options.custom] { character: 'path/to/name.custom.js' }: the
  *        characters a person may customise from the page, and the module
  *        each customisation is saved in
+ * @param {{ key: string, hosts: string[] }} [options.lan] opened to the local
+ *        network on purpose (`figurant atelier --lan`): the addresses of this
+ *        machine it may be asked by, and the access code a client that is not
+ *        this machine must give first
+ * @param {(req: object) => boolean} [options.local] whether a request comes
+ *        from this machine itself (for tests)
  */
-export function createAtelierServer({ root, fiches = 'fiches', custom = {} }) {
+const loopback = req => /^(127\.|::1$|::ffff:127\.)/.test(req.socket?.remoteAddress ?? '');
+export function createAtelierServer({ root, fiches = 'fiches', custom = {}, lan = null, local = loopback }) {
     root = resolve(root);
     const ficheDir = inside(root, fiches);
     if (!ficheDir) throw new Error(`The fiches folder "${fiches}" must be inside the project.`);
@@ -187,14 +195,42 @@ export function createAtelierServer({ root, fiches = 'fiches', custom = {} }) {
         return git(['show', `${commit}:${prefix}${relative(root, target).split(sep).join('/')}`]);
     };
 
+    // The access code, when the atelier is opened to the local network.
+    const misses = new Map();
+    const sameKey = given => { const a = Buffer.from(String(given).trim().toUpperCase()), b = Buffer.from(lan?.key ?? ''); return a.length === b.length && b.length > 0 && timingSafeEqual(a, b); };
+    const door = said => `<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Figurant</title>
+<style>body{font:18px system-ui,sans-serif;display:grid;place-items:center;min-height:100vh;margin:0;background:#f7f7f5;color:#16181d}form{display:grid;gap:14px;padding:28px;border:2.5px solid #16181d;border-radius:22px;background:#fff;box-shadow:0 8px 0 #16181d;width:min(340px,86vw)}h1{font-size:22px;margin:0}input{font:inherit;font-size:26px;letter-spacing:.2em;text-align:center;text-transform:uppercase;padding:10px;border:2.5px solid #16181d;border-radius:12px}button{font:inherit;font-weight:800;padding:12px;border:2.5px solid #16181d;border-radius:12px;background:#ffcf24;cursor:pointer}p{margin:0;color:#c0392b;min-height:1.2em}small{color:#5c6470}</style>
+<form method="post" action="/__figurant/key"><h1>Figurant</h1><small>Access code / Code d’accès</small><input name="key" maxlength="12" autocomplete="off" autofocus required><p>${said}</p><button>Enter / Entrer</button></form></html>`;
+
     return createServer(async (req, res) => {
         try {
             // Asked for by its own name only. A page elsewhere can get a name of its own to point
             // at this machine (DNS rebinding) and would then read the project and write to it as
             // if it were the atelier: what is written here is read by an assistant that can act.
-            if (!/^(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/i.test(req.headers.host ?? '')) return send(res, 403, 'This server answers to localhost only.');
+            const host = (req.headers.host ?? '').replace(/:\d+$/, '').toLowerCase();
+            if (!/^(localhost|127\.0\.0\.1|\[::1\])$/.test(host) && !lan?.hosts.includes(host)) return send(res, 403, 'This server answers to localhost only.');
             const url = new URL(req.url, 'http://localhost');
             const path = url.pathname;
+
+            // Opened to the local network: whoever is not at this machine gives the access code first.
+            // What they write is read by an assistant that can act, so nothing is served or written without it.
+            if (lan && !local(req)) {
+                const from = req.socket?.remoteAddress ?? '?', now = Date.now();
+                const tries = (misses.get(from) ?? []).filter(when => now - when < 5 * 60_000);
+                if (path === '/__figurant/key' && req.method === 'POST') {
+                    if (req.headers.origin && new URL(req.headers.origin).host !== req.headers.host) return send(res, 403, 'Cross-site request refused.');
+                    if (tries.length >= 5) return send(res, 429, 'Too many wrong codes: wait five minutes.');
+                    const given = new URLSearchParams(await body(req)).get('key') ?? '';
+                    if (!sameKey(given)) { misses.set(from, [...tries, now]); return send(res, 401, door('That is not the code.'), TYPES['.html'], true); }
+                    misses.delete(from);
+                    res.writeHead(303, { location: '/__figurant/', 'set-cookie': `figurant_key=${lan.key}; Path=/; HttpOnly; SameSite=Strict; Max-Age=43200`, 'cache-control': 'no-store' });
+                    return res.end();
+                }
+                const cookie = /(?:^|;\s*)figurant_key=([^;]*)/.exec(req.headers.cookie ?? '')?.[1] ?? '';
+                if (!sameKey(cookie)) return path.startsWith('/__figurant/api/') || !/text\/html/.test(req.headers.accept ?? 'text/html') && !path.startsWith('/__figurant/atelier') && path !== '/__figurant/' && path !== '/__figurant'
+                    ? send(res, 401, 'The access code first: open /__figurant/ in a browser.')
+                    : send(res, 401, door(''), TYPES['.html'], true);
+            }
 
             // Fiches are only written from the atelier page itself.
             if (path.startsWith('/__figurant/api/')) {

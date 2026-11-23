@@ -618,3 +618,48 @@ test('the working sign over the stage goes away when the assistant has answered'
         assert.equal(after.screen, undefined, 'and the page is no longer held where the work was');
     } finally { server.close(); await rm(root, { recursive: true, force: true }); }
 });
+
+test('opened to the local network on purpose: only by this machine\'s own addresses, and only with the access code', async () => {
+    const { request } = await import('node:http');
+    const root = await mkdtemp(join(tmpdir(), 'figurant-lan-'));
+    await writeFile(join(root, 'secret.txt'), 'the project');
+    const KEY = 'ABCD2345';
+    // (Every client of a test comes from this machine: `local` says who counts as being at this machine's own screen.)
+    const open = (lan, local) => new Promise(done => { const server = createAtelierServer({ root, lan, local }).listen(0, '127.0.0.1'); server.once('listening', () => done(server)); });
+    const asker = server => (path, { host = `192.168.1.20:${server.address().port}`, method = 'GET', cookie, body, type } = {}) => new Promise(done => {
+        const call = request({ host: '127.0.0.1', port: server.address().port, path, method, headers: { host, ...(cookie ? { cookie } : {}), ...(body ? { 'content-type': type ?? 'application/x-www-form-urlencoded', origin: `http://${host}` } : {}) } },
+            res => { let text = ''; res.on('data', part => { text += part; }); res.on('end', () => done({ status: res.statusCode, text, cookie: (res.headers['set-cookie'] ?? [])[0] ?? '', location: res.headers.location })); });
+        if (body) call.write(body); call.end();
+    });
+    const lan = { key: KEY, hosts: ['192.168.1.20'] };
+    const far = await open(lan, () => false);
+    try {
+        const ask = asker(far);
+        // Without the code: a door, and nothing of the project behind it.
+        const door = await ask('/__figurant/atelier/');
+        assert.equal(door.status, 401); assert.match(door.text, /<form/); assert.ok(!/importmap/.test(door.text));
+        assert.equal((await ask('/secret.txt')).status, 401);
+        assert.equal((await ask('/__figurant/api/fiches')).status, 401);
+        assert.equal((await ask('/__figurant/api/fiches/tea', { method: 'POST', body: '{"decision":"note","note":"hello"}', type: 'application/json' })).status, 401, 'nothing is written without it');
+        assert.equal((await ask('/secret.txt', { cookie: 'figurant_key=WRONG234' })).status, 401);
+        // A name that is not this machine's is still refused, code or not.
+        assert.equal((await ask('/secret.txt', { host: 'evil.example', cookie: `figurant_key=${KEY}` })).status, 403);
+        // The code opens it, as a cookie a script cannot read and another site cannot send.
+        const entered = await ask('/__figurant/key', { method: 'POST', body: `key=${KEY.toLowerCase()}` });
+        assert.equal(entered.status, 303); assert.match(entered.cookie, /^figurant_key=ABCD2345;/); assert.match(entered.cookie, /HttpOnly/); assert.match(entered.cookie, /SameSite=Strict/);
+        assert.equal((await ask('/secret.txt', { cookie: `figurant_key=${KEY}` })).text, 'the project');
+        assert.equal((await ask('/__figurant/atelier/', { cookie: `figurant_key=${KEY}` })).status, 200);
+    } finally { far.close(); }
+    // The code cannot be guessed by trying: a few wrong ones, and that address waits.
+    const guessed = await open(lan, () => false);
+    try {
+        const ask = asker(guessed);
+        for (let i = 0; i < 5; i++) assert.equal((await ask('/__figurant/key', { method: 'POST', body: 'key=AAAA2222' })).status, 401);
+        assert.equal((await ask('/__figurant/key', { method: 'POST', body: `key=${KEY}` })).status, 429, 'even the right one, for a while');
+    } finally { guessed.close(); }
+    // At this machine's own screen nothing changes; and without --lan no other address is answered at all.
+    const near = await open(lan, () => true);
+    try { assert.equal((await asker(near)('/secret.txt', { host: `localhost:${near.address().port}` })).text, 'the project'); } finally { near.close(); }
+    const closed = await open(undefined, () => false);
+    try { assert.equal((await asker(closed)('/secret.txt')).status, 403); } finally { closed.close(); await rm(root, { recursive: true, force: true }); }
+});

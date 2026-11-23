@@ -101,7 +101,8 @@ files and the engine as plain modules, with no build step.
 A character or an animation is **code**: it runs in the page, and
 `figurant.config.js` runs in Node when a command starts. Open only projects
 and libraries you trust, as you would any program. The atelier's server
-listens on this machine only, answers to `localhost` only, never serves
+listens on this machine only (unless you start it with `--lan`, which lets
+your local network in with an access code), answers to `localhost` only, never serves
 hidden files, and writes nowhere but inside the project.
 
 ## Where it stands

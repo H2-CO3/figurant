@@ -54,7 +54,13 @@ registered in `library/<style>/index.js`, under a name of the form
 files go in `characters/`, `props/`, `scenes/` and are registered in
 `figurant.config.js`.
 
-The server listens on this machine only and answers to `localhost` only. It
+The server listens on this machine only and answers to `localhost` only.
+`figurant atelier --lan` opens it to the local network on purpose, for
+someone at another machine to try it while you answer: it prints the
+addresses to give and an access code made for that run, asked once per
+browser. Whoever has the code can read the project and write messages you
+will act on, so it is for people the owner trusts; everyone shares the same
+fiches and the same assistant, and `figurant show` moves every open page. It
 serves the project folder, and writes only inside it: the fiches, the
 activity log (`fiches/.activity`), imported pictures and drawings
 (`assets/`), exports (`exports/`), the style in use (`styles/`, `STYLE.md`)

@@ -3,6 +3,15 @@
 All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased]
+
+### Added
+- `figurant atelier --lan`: the atelier opened to the local network on purpose, behind an access code made for each run (asked once per browser, five wrong tries lock an address out for five minutes).
+
+### Fixed
+- GIFs: each frame brings its own palette, so a colour that comes late into a film rich in tones is no longer replaced by a neighbour.
+- The working sign over the stage is taken down as soon as the assistant has answered.
+
 ## [0.1.0]
 
 First public version.

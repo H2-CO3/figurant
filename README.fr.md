@@ -106,7 +106,8 @@ Un personnage ou une animation, c'est **du code** : il s'exécute dans la
 page, et `figurant.config.js` s'exécute dans Node au lancement d'une
 commande. N'ouvrez que des projets et des bibliothèques en qui vous avez
 confiance, comme pour n'importe quel programme. Le serveur de l'atelier
-n'écoute que sur cette machine, ne répond qu'à `localhost`, ne sert jamais
+n'écoute que sur cette machine (sauf lancé avec `--lan`, qui ouvre votre
+réseau local avec un code d'accès), ne répond qu'à `localhost`, ne sert jamais
 les fichiers cachés et n'écrit nulle part ailleurs que dans le projet.
 
 ## Où il en est

@@ -4,6 +4,7 @@
 //
 //   figurant init [folder]                    make a new project
 //   figurant atelier [folder] [--port 4173]   open the local atelier
+//                    [--lan]                  …and let the local network in, with an access code
 //   figurant check [folder]                   check characters and scenes
 //   figurant take <files...> --to <folder>    copy characters, props and scenes
 //                                             into a website, with the engine
@@ -18,6 +19,8 @@ import { resolve, join } from 'node:path';
 import { register } from 'node:module';
 import { writeFile, mkdir, access, rm } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
+import { networkInterfaces } from 'node:os';
+import { randomBytes } from 'node:crypto';
 import { readdir, readFile } from 'node:fs/promises';
 import { createAtelierServer } from './server.js';
 import { parseFiche, pending, isFicheName } from './fiche.js';
@@ -39,6 +42,7 @@ const flag = name => { const i = rest.indexOf(`--${name}`); return i < 0 ? undef
 const port = Number(flag('port') ?? 4173);
 const to = flag('to');
 const wait = rest.includes('--wait') && !!rest.splice(rest.indexOf('--wait'), 1);
+const onLan = rest.includes('--lan') && !!rest.splice(rest.indexOf('--lan'), 1);
 // `take` is run from the project folder and lists files; the others take a folder.
 const root = resolve(['take', 'inspect', 'show'].includes(command) ? '.' : rest[0] ?? '.');
 
@@ -54,7 +58,14 @@ const loadConfig = async () => {
 const commands = {
     async atelier() {
         const config = await loadConfig();
-        const server = createAtelierServer({ root, fiches: config?.fiches ?? 'fiches', custom: config?.custom ?? {} });
+        // --lan: other machines of the local network may open the atelier, with an access code made for this run.
+        let lan = null;
+        if (onLan) {
+            const hosts = Object.values(networkInterfaces()).flat().filter(address => address && !address.internal && address.family === 'IPv4').map(address => address.address);
+            const letters = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            lan = { hosts, key: [...randomBytes(8)].map(byte => letters[byte % letters.length]).join('') };
+        }
+        const server = createAtelierServer({ root, fiches: config?.fiches ?? 'fiches', custom: config?.custom ?? {}, lan });
         server.on('error', error => {
             console.error(error.code === 'EADDRINUSE' ? `Port ${port} is taken: try --port ${port + 1}.` : error.message);
             process.exit(1);
@@ -68,7 +79,12 @@ const commands = {
                 await writeFile(join(root, 'STYLE.md'), `# Style: ${style.name}\n\n${String(style.prompt).trim()}\n`);
             } catch { /* no such style: the person picks one in the atelier */ }
         }
-        server.listen(port, '127.0.0.1', () => console.log(`Atelier: http://localhost:${port}/__figurant/  (Ctrl+C to stop)`));
+        server.listen(port, lan ? '0.0.0.0' : '127.0.0.1', () => {
+            console.log(`Atelier: http://localhost:${port}/__figurant/  (Ctrl+C to stop)`);
+            if (!lan) return;
+            if (!lan.hosts.length) return console.log('--lan: this machine has no address on a local network.');
+            console.log(`\nOpened to the local network. Whoever has the code can read this project and write\nmessages that your assistant will act on: give it only to people you trust.\n${lan.hosts.map(host => `  http://${host}:${port}/__figurant/`).join('\n')}\n  Access code: ${lan.key}\n`);
+        });
     },
 
     async check() {
