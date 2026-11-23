@@ -142,3 +142,10 @@ npm test
 ```
 
 There is nothing to install. A bug gets a test that fails first.
+
+## Who made it
+
+Figurant is by H2CO3, written together with Claude (Anthropic) in Claude Code:
+the direction, the eye and every decision are a person's; most of the code and
+the tests were written by the assistant, which is named as co-author on the
+commits.

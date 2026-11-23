@@ -148,3 +148,10 @@ npm test
 ```
 
 Il n'y a rien à installer. Un bug reçoit d'abord un test qui échoue.
+
+## Qui l'a fait
+
+Figurant est de H2CO3, écrit avec Claude (Anthropic) dans Claude Code : la
+direction, le regard et chaque décision sont ceux d'une personne ; l'essentiel
+du code et des tests a été écrit par l'assistant, nommé co-auteur sur les
+enregistrements.

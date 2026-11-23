@@ -5,6 +5,7 @@
   "type": "module",
   "license": "MIT",
   "author": "H2CO3",
+  "contributors": ["Claude (Anthropic), with Claude Code"],
   "exports": {
     ".": "./src/index.js"
   },
