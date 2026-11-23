@@ -105,6 +105,15 @@ listens on this machine only (unless you start it with `--lan`, which lets
 your local network in with an access code), answers to `localhost` only, never serves
 hidden files, and writes nowhere but inside the project.
 
+## Make it something else
+
+Figurant comes with a direction (legs for drawings, animated by talking), and
+it is a sandbox: no build step, no dependency, plain files you and your
+assistant can read and change, under the MIT licence. Ask for another kind of
+animation, another interface, a game, a tool of your own. The button **Change
+the interface** in the atelier is there for that: say what you want the page
+itself to become. [AGENTS.md](AGENTS.md) tells the assistant it may.
+
 ## Where it stands
 
 It works, and it is young. Known limits:

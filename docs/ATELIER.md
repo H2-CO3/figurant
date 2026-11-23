@@ -115,9 +115,11 @@ the drawer shows two lines of them.
 Above the line to write in, three keys say what the next message is about:
 **Change "<item>"** (what is on show), **Something new** (an order), and
 **Change the interface**: a remark about the page itself, kept in
-`fiches/atelier-interface.md` with where the person was. In this repository,
-act on it in `atelier/` (and test it); in a project made by `init` the page
-belongs to the engine: answer that, and what they can do instead.
+`fiches/atelier-interface.md` with where the person was. Act on it: the
+page is plain files in the engine's `atelier/` folder (HTML, CSS, modules, no
+build step), and the copy on this machine is the person's to change. Test
+what you change, commit it in the engine's folder, and tell the person to
+reload. See "Making it something else" in `AGENTS.md`.
 
 Each item has its own fiche (`<animation>.md`, `character-<name>.md`,
 `emoji-<name>.md`, `prop-<name>.md`, `scene-<name>.md`). An item you have

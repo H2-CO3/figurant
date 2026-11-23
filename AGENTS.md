@@ -65,6 +65,28 @@ Only what `src/index.js` exports is public.
   the motion is good: say plainly what a person has not watched yet.
 - If a drawing cannot be rigged, or you do not know, say so.
 
+## Making it something else
+
+Figurant comes with a direction: arms and legs for drawings, animated by
+talking. It is a sandbox, not a fence. The person may want to take it
+somewhere else (another kind of animation, a game, a tool of their own), and
+nothing here is to be defended against them:
+
+- Everything is plain files with no build step: the engine (`src/`), the page
+  (`atelier/`), the server and commands (`cli/`). Change any of them when the
+  person asks, as you would change their own project. The licence is MIT.
+- The rules above (and the tests) describe the direction the project came
+  with. When the person changes direction, change the rule and its test on
+  purpose, and say which ones you changed; do not bend the request to fit
+  them, and do not break them by accident either.
+- What is general and reusable as it is: the clock, easing and springs
+  (`src/core`), the SVG stage, interruptible sequences (`src/actor`), props
+  and effects, scenes in time (`src/director/composition.js`), the GIF writer
+  (`atelier/gif.js`), the conversation by files (`cli/fiche.js`), versions
+  from git and the whiteboard. A body with legs is one use of them.
+- Keep their changes easy to keep: work on a branch of their copy, so that a
+  later `git pull` of the original can be merged or declined.
+
 ## Commands
 
 - `npm test` runs the test suite (Node's built-in runner, nothing to install).

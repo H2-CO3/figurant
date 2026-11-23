@@ -110,6 +110,16 @@ n'écoute que sur cette machine (sauf lancé avec `--lan`, qui ouvre votre
 réseau local avec un code d'accès), ne répond qu'à `localhost`, ne sert jamais
 les fichiers cachés et n'écrit nulle part ailleurs que dans le projet.
 
+## En faire autre chose
+
+Figurant arrive avec une direction (des pattes pour les dessins, animés en
+parlant), et c'est un bac à sable : pas de compilation, pas de dépendance,
+des fichiers lisibles que vous et votre assistant pouvez modifier, sous
+licence MIT. Demandez un autre genre d'animation, une autre interface, un
+jeu, un outil à vous. Le bouton **Changer l'interface** de l'atelier est là
+pour ça : dites ce que la page elle-même doit devenir.
+[AGENTS.md](AGENTS.md) dit à l'assistant qu'il en a le droit.
+
 ## Où il en est
 
 Il fonctionne, et il est jeune. Limites connues :
