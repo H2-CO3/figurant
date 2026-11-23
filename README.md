@@ -13,6 +13,7 @@ GIF, or as a folder ready to drop into a website.
 |---|---|
 | ![A neon cup and a cassette at night](docs/media/open-all-night.gif) | ![A tabby cat does a backflip](docs/media/backflip-tabby.gif) |
 | ![An owner and a dog on a lead](docs/media/walk-the-dog.gif) | ![A compass and a pair of scales, in line and gold](docs/media/cabinet.gif) |
+| ![A paper moon turns frightening, with bats](docs/media/spook.gif) | ![A paper moon goes through its phases](docs/media/phases.gif) |
 
 - **No dependency, nothing to install.** Plain JavaScript modules and SVG.
   Node 20.6 or later is all it needs.

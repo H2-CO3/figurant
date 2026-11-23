@@ -14,6 +14,7 @@ site web.
 |---|---|
 | ![Une tasse et une cassette en néon, la nuit](docs/media/open-all-night.gif) | ![Un chat tigré fait un salto arrière](docs/media/backflip-tabby.gif) |
 | ![Un maître et son chien en laisse](docs/media/walk-the-dog.gif) | ![Une boussole et une balance, au trait et à l'or](docs/media/cabinet.gif) |
+| ![Une lune de papier se met à faire peur, avec des chauves-souris](docs/media/spook.gif) | ![Une lune de papier passe par ses phases](docs/media/phases.gif) |
 
 - **Aucune dépendance, rien à installer.** Des modules JavaScript et du SVG.
   Il suffit de Node 20.6 ou plus récent.
