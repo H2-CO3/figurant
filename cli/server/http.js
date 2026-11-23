@@ -9,6 +9,8 @@ export const TYPES = {
     '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8',
     '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8', '.svg': 'image/svg+xml',
     '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.gif': 'image/gif',
+    // Sound files, for the sounds of a scene.
+    '.mp3': 'audio/mpeg', '.wav': 'audio/wav', '.ogg': 'audio/ogg', '.oga': 'audio/ogg', '.opus': 'audio/ogg', '.m4a': 'audio/mp4', '.aac': 'audio/aac', '.flac': 'audio/flac', '.webm': 'audio/webm',
     '.woff2': 'font/woff2', '.md': 'text/plain; charset=utf-8', '.txt': 'text/plain; charset=utf-8',
 };
 
@@ -16,8 +18,8 @@ export const TYPES = {
 export const typeOf = path => TYPES[extname(path).toLowerCase()] || 'application/octet-stream';
 
 /** Answers. `own`: the page is one of the atelier's own. */
-export function send(res, status, body, type = 'text/plain; charset=utf-8', own = false) {
-    const headers = { 'content-type': type, 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' };
+export function send(res, status, body, type = 'text/plain; charset=utf-8', own = false, more = {}) {
+    const headers = { 'content-type': type, 'cache-control': 'no-store', 'x-content-type-options': 'nosniff', ...more };
     if (type === TYPES['.svg']) headers['content-security-policy'] = DRAWING_POLICY;
     if (type === TYPES['.html']) headers['content-security-policy'] = own ? OWN_PAGE_POLICY : PAGE_POLICY;
     res.writeHead(status, headers);

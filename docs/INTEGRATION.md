@@ -142,6 +142,9 @@ when it is created. After a navigation that replaces the content, call
 
 ## Rules for a sound integration
 
+("Sound" as in solid. A scene that plays sound files brings them in `site/`,
+at the paths it names; a browser plays none before the visitor's first click.)
+
 - **Load it only where it is used**, and after the content: it is
   decoration. A dynamic `import()` when the first marked element exists is
   ideal.

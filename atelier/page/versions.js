@@ -30,7 +30,7 @@ export function before() {
         const button = $(id), show = !gone && to !== undefined;
         button.hidden = !show;
         if (!show) { button.dataset.to = ''; button.querySelector('iframe').removeAttribute('src'); return; }
-        const src = address(to === null ? null : past.steps[to]);
+        const src = address(to === null ? null : past.steps[to], { mute: 1 }); // a small stage is looked at, not listened to
         if (button.dataset.src !== src) { button.dataset.src = src; button.querySelector('iframe').src = src; }
         button.dataset.to = String(to);
         button.querySelector('span').textContent = words;

@@ -37,6 +37,7 @@ Only what `src/index.js` exports is public.
 | `src/actor` | Interruptible sequences (`c.tween`, `c.hands`, `c.feet`, `c.prop`...), stock moves. |
 | `src/props` | Objects described as data, held or placed. |
 | `src/fx` | Particles and temporary shapes. |
+| `src/sound` | Sound files played in step with a scene's time. Makes no sound of its own. |
 | `src/director` | Reads `data-fig-*` markers, takes characters from place to place, starts scenes when they fit. `scene.js` is the scene format and its checker. |
 | `src/stage` | The SVG layer laid over the page. |
 | `library` | Characters, props and scenes ready to take into a site, **one folder per style**, all built the same way (`characters/`, `props/`, `scenes/`, `kit.js`, `index.js`); `library/default/` holds earlier work in several styles, each in a sub-folder (its `cartoon-realiste/characters/` are the models to draw from); `library/common/` holds what belongs to every style, `library/emoji/` the emoji figures, a kind apart. Each file imports only `'figurant'` and its neighbours. |

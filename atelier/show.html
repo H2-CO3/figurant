@@ -52,6 +52,8 @@ try {
     const unit = () => Math.min(1.6, (innerWidth * 0.92) / (composition.width ?? 600));
     const show = playComposition({
         stage: svg, clock, composition, ...project, fx: createFx({ stage: svg, clock }), unit: unit(),
+        // Its sounds are files of the project; a stage that is only looked at (a thumbnail, a film, a version in a corner) plays none.
+        sound: params.get('mute') ? false : { base: location.origin + '/' },
         origin: () => { const box = floor.getBoundingClientRect(); return [box.left + box.width / 2, box.top]; },
     });
     stage.length = compositionLength(composition);
@@ -60,6 +62,8 @@ try {
         const dt = Math.min(50, now - last);
         last = now;
         if (stage.playing) { clock.tick(dt * stage.speed); stage.time = show.time(); }
+        // What is heard follows what is seen: held, slowed down, taken to a moment.
+        show.sound({ playing: stage.playing && !stage.seeking, speed: stage.speed });
         requestAnimationFrame(loop);
     };
     requestAnimationFrame(loop);

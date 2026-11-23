@@ -18,6 +18,7 @@
 //       dog:   [{ at: 300, walk: 130 }, { at: 3000, move: 'hop' }],
 //     },
 //     loop: true,                             // optional: start again at the end
+//     sounds: [{ at: 4200, src: 'assets/hello.mp3' }],  // optional: sound files, played in step with the scene (see ../sound/soundtrack.js)
 //   }
 //
 // A clip starts at `at` (milliseconds) and replaces whatever its character was
@@ -35,6 +36,7 @@ import { createProp } from '../props/prop.js';
 import { createRandom } from '../core/random.js';
 import { blink, walkTo, hop, glance, recover } from '../actor/moves.js';
 import { playableBy } from './scene.js';
+import { createSoundtrack, checkSounds } from '../sound/soundtrack.js';
 
 const CLIPS = ['walk', 'play', 'move', 'set', 'exit', 'fly'];
 const MOVES = ['hop', 'blink', 'wave', 'look-left', 'look-right', 'look-front', 'turn'];
@@ -92,6 +94,7 @@ export function checkComposition(name, composition, { characters = {}, animation
             if (clip.set !== undefined && (!clip.set || typeof clip.set !== 'object')) report(`${at}.set`, clip.set, 'has a "set" that is not a list of numbers.', 'Write set: { tilt: 8 }, over: 400.');
         });
     }
+    problems.push(...checkSounds(name, composition.sounds));
     return problems;
 }
 
@@ -112,9 +115,10 @@ export function compositionLength(composition) {
  * @param {() => [number, number]} options.origin the middle of the floor, in page pixels
  * @param {number} [options.unit] pixels per character unit
  * @param {object} [options.fx] effects, handed to animations
- * @returns {{ actors: object, time: () => number, stop: () => void }}
+ * @param {false | { open?: Function, base?: string }} [options.sound] `false`: the scene's sounds are not played; `base`: the address their paths start from
+ * @returns {{ actors: object, time: () => number, sound: (now?: { playing?: boolean, speed?: number }) => void, stop: () => void }}
  */
-export function playComposition({ stage, clock, composition, characters, animations = {}, props = {}, origin, unit = 1, fx = null, seed = 1 }) {
+export function playComposition({ stage, clock, composition, characters, animations = {}, props = {}, origin, unit = 1, fx = null, seed = 1, sound }) {
     const random = createRandom(seed);
     const width = (composition.width ?? 600) * unit;
     const actors = {};
@@ -257,17 +261,24 @@ export function playComposition({ stage, clock, composition, characters, animati
             Object.assign(figure.state, { x: member.at * unit, dir: member.dir ?? 1, tilt: 0 }, member.state);
         }
         ride();
-        {
-        }
     };
     schedule();
 
+    // Its sounds, set on every frame to where the scene is. A page that holds or slows
+    // the clock says so (`sound({ playing: false })`): a held clock makes no frame to tell them.
+    const track = createSoundtrack({ sounds: sound === false ? [] : composition.sounds, open: sound?.open, base: sound?.base });
+    const heard = { playing: true, speed: 1 };
+    const voice = (now = {}) => { Object.assign(heard, now); if (running) track.sync({ time: clock.now - started, ...heard }); };
+    if (track.count) stops.push(clock.onFrame(() => voice()));
+
     return {
         actors,
+        sound: voice,
         /** Milliseconds since the scene (or its current loop) began. */
         time: () => clock.now - started,
         stop() {
             running = false;
+            track.stop();
             for (const stop of stops) stop();
             for (const { actor } of Object.values(actors)) actor.destroy();
             for (const layer of scenery) layer.destroy();

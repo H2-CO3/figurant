@@ -100,7 +100,7 @@ export function createAtelierServer({ root, fiches: ficheFolder = 'fiches', cust
         [ANY, '/__figurant/atelier/index.html',      atelier],
         [ANY, /^\/__figurant\/atelier\/(.*)$/s,      (req, res, [, asked]) => file(res, join(ENGINE, 'atelier'), asked, true)],
         [ANY, /^\/__figurant\/engine\/(.*)$/s,       (req, res, [, asked]) => file(res, join(ENGINE, 'src'), asked)],
-        [ANY, /^.*$/s,                               (req, res, [asked]) => file(res, root, asked)],   // the project's own files
+        [ANY, /^.*$/s,                               (req, res, [asked]) => file(res, root, asked, false, req.headers.range)],   // the project's own files
     ];
 
     return createServer(async (req, res) => {

@@ -27,6 +27,11 @@ export function timeline() {
             }));
             return el('div', { className: 'track' }, el('span', { className: 'who', textContent: `${member.id}` , title: member.character }), lane);
         }),
+        // Its sounds, on a track of their own: each from its start to the next one's.
+        ...(composition.sounds?.length ? [el('div', { className: 'track' }, el('span', { className: 'who', textContent: '♪' }), el('div', { className: 'lane' }, ...[...composition.sounds].sort((a, b) => a.at - b.at).map((cue, i, all) => {
+            const end = all[i + 1]?.at ?? length;
+            return el('span', { className: 'clip', textContent: String(cue.src).split('/').pop(), title: `${(cue.at / 1000).toFixed(1)} s · ${cue.src}`, style: `left:${100 * cue.at / length}%;width:${Math.max(1.2, 100 * (end - cue.at) / length - 0.4)}%` });
+        })))] : []),
         el('div', { className: 'track' }, el('span'), el('div', { className: 'ruler' }, ...[0, 0.25, 0.5, 0.75, 1].map(part => el('span', { textContent: `${(length * part / 1000).toFixed(1)} s` })))),
         el('div', { className: 'head' }, el('i', { id: 'playhead' })),
     );

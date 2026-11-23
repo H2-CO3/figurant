@@ -584,6 +584,14 @@ test('an item is exported as a folder a site can take: its files, the engine, a 
         const story = await exportItem({ root, shop: 'compositions', name: 'bakery', title: 'The bakery', needles: [{ kind: 'composition', key: 'bakery', text: "title: 'The bakery'" }, ...needles.slice(0, 2)] });
         const play = await readFile(join(root, story.folder, 'start.js'), 'utf8');
         assert.match(play, /import \{ bakery \} from '\.\/site\/stories\/bakery\.js'/); assert.match(play, /playComposition/); assert.match(play, /animations: \{ 'rise-bun': riseBun \}/);
+        // A scene's sounds go with it, at the same paths: sound files only, and only from inside the project.
+        await mkdir(join(root, 'assets'), { recursive: true });
+        await writeFile(join(root, 'assets/bell.mp3'), 'ID3'); await writeFile(join(root, 'assets/notes.txt'), 'private'); await writeFile(join(root, '.hidden.mp3'), 'x');
+        const heard = await exportItem({ root, shop: 'compositions', name: 'bakery', title: 'The bakery', needles: [{ kind: 'composition', key: 'bakery', text: "title: 'The bakery'" }, ...needles.slice(0, 2)], sounds: ['assets/bell.mp3', 'assets/notes.txt', '../outside.mp3', '.hidden.mp3', 'assets/absent.wav', 7] });
+        assert.equal(await readFile(join(root, heard.folder, 'site/assets/bell.mp3'), 'utf8'), 'ID3');
+        assert.deepEqual(heard.files.filter(file => !file.endsWith('.js')), ['assets/bell.mp3'], 'the sound file, and nothing else that was named');
+        assert.deepEqual(heard.missing.filter(name => /wav$/.test(name)), ['assets/absent.wav'], 'one that is not there is said to be missing');
+        assert.match(await readFile(join(root, heard.folder, 'start.js'), 'utf8'), /sound: \{ base: new URL\('\.\/site\/', import\.meta\.url\)\.href \}/);
         // Two drawings begun from the same model hold the same first lines: the name tells which file is meant.
         await writeFile(join(root, 'characters/roll.js'), (await readFile(join(root, 'characters/bun.js'), 'utf8')).replaceAll('bun', 'roll').replace('other', 'another'));
         const twin = await exportItem({ root, shop: 'characters', name: 'roll', needles: [{ kind: 'character', key: 'roll', text: 'create({ stage, layer }) { return { state: { lid: 1 }', hint: 'roll' }] });

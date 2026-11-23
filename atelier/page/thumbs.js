@@ -25,7 +25,7 @@ async function stillOf(kind, name, cast) {
         document.body.append(stillFrame);
     }
     const loaded = new Promise(done => stillFrame.addEventListener('load', done, { once: true }));
-    stillFrame.src = `${kind === 'show' ? 'show' : 'stage'}.html?${new URLSearchParams({ scene: name, ...(cast ? { cast } : {}), ...stageTheme(), seek: 1 })}`;
+    stillFrame.src = `${kind === 'show' ? 'show' : 'stage'}.html?${new URLSearchParams({ scene: name, ...(cast ? { cast } : {}), ...stageTheme(), seek: 1, mute: 1 })}`;
     await loaded;
     const page = stillFrame.contentWindow;
     for (let i = 0; i < 160 && !(page.stage?.ready && !page.stage.seeking) && !page.stage?.problems?.length; i++) await new Promise(done => setTimeout(done, 50));

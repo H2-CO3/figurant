@@ -34,7 +34,7 @@ $('export').addEventListener('click', async () => {
     const shop = view.shop, name = current(), say = words => { $('saved').textContent = words; };
     try {
         say(t('export.doing'));
-        const done = await api('export', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ shop, name, title: label(shop, name), needles: needles(shop, name) }) });
+        const done = await api('export', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ shop, name, title: label(shop, name), needles: needles(shop, name), sounds: shop === 'compositions' ? (config.compositions?.[name]?.sounds ?? []).map(cue => cue.src) : [] }) });
         let film = '';
         if (shop === 'scenes' || shop === 'compositions') {
             const gif = await filmGif({ src: address(null, { speed: 1 }), onProgress: part => say(t('export.film', { n: Math.round(part * 100) })) });

@@ -4,11 +4,12 @@
 // person or a coding assistant) puts it on the site. The GIF made by the page
 // is saved beside them.
 
-import { readFile, writeFile, mkdir, rm, readdir, cp } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, rm, readdir, cp, realpath } from 'node:fs/promises';
 import { resolve, dirname, join, relative, sep, extname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { take } from './take.js';
 import { isFicheName } from './fiche.js';
+import { inside, hidden } from './server/guard.js';
 
 const ENGINE = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const posix = path => path.split(sep).join('/');
@@ -76,9 +77,10 @@ export async function locate(root, needles = []) {
  * @param {Array<{ kind: 'scene' | 'character' | 'prop' | 'composition', key: string, text: string, hint?: string }>} options.needles
  *        the item and all it uses, each with a piece of its source, by which its file is found
  *        (`hint`: its name, to tell apart two files that hold the same lines)
+ * @param {string[]} [options.sounds] the sound files a scene plays, as paths from the project's folder: they go with it
  * @returns {Promise<{ folder: string, files: string[], missing: string[] }>}
  */
-export async function exportItem({ root, shop, name, title, needles = [] }) {
+export async function exportItem({ root, shop, name, title, needles = [], sounds = [] }) {
     root = resolve(root);
     if (!isFicheName(name)) throw new Error('The name of what is exported is letters, digits, "-" and "_".');
     const { found, missing } = await locate(root, needles);
@@ -89,6 +91,20 @@ export async function exportItem({ root, shop, name, title, needles = [] }) {
     await rm(folder, { recursive: true, force: true });
     await mkdir(folder, { recursive: true });
     const taken = await take({ root, files: [...new Set(found.map(item => item.file))], to: join(folder, 'site'), within: true });
+    // The sounds of a scene go with it, at the same paths: only sound files, only from inside the project.
+    const heard = [];
+    for (const src of [...new Set(sounds)].slice(0, 100)) {
+        const from = typeof src === 'string' && /\.(mp3|wav|ogg|oga|opus|m4a|aac|flac|webm)$/i.test(src) && !hidden(src) ? inside(root, src) : null;
+        if (!from) continue;
+        try {
+            const [real, home] = await Promise.all([realpath(from), realpath(root)]);
+            if (!real.startsWith(home + sep) || hidden(relative(home, real))) continue;
+            const to = join(folder, 'site', relative(root, from));
+            await mkdir(dirname(to), { recursive: true });
+            await cp(real, to);
+            heard.push(posix(relative(root, from)));
+        } catch { missing.push(String(src)); }
+    }
     await cp(join(ENGINE, 'docs', 'INTEGRATION.md'), join(folder, 'INTEGRATION.md'));
 
     const of = kind => found.filter(item => item.kind === kind);
@@ -112,7 +128,11 @@ export function play(element = document.querySelector('[data-figurant-scene="${n
         // Smaller on a narrow element: the scene says how wide it wants to be.
         unit: Math.min(1.6, element.getBoundingClientRect().width * 0.92 / (${scene.as}.width ?? 600)),
         origin: () => { const box = element.getBoundingClientRect(); return [box.left + box.width / 2 + scrollX, box.bottom + scrollY]; },
+        // Its sounds, if it has any, are beside it in site/ (a browser plays none before the visitor's first click).
+        sound: { base: new URL('./site/', import.meta.url).href },
     });
+    // A tab out of sight stops its pictures: its sounds stop with them.
+    document.addEventListener('visibilitychange', () => show.sound({ playing: !document.hidden }));
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) return show;
     let last = performance.now();
     const frame = now => { clock.tick(Math.min(50, now - last)); last = now; requestAnimationFrame(frame); };
@@ -208,5 +228,5 @@ ${missing.length ? `\nNot in the project's files, so not copied: ${missing.map(k
 
 Then check it as \`INTEGRATION.md\` says (section "Before saying it is done"): on a phone width, with reduced motion, and that nothing of the site moved.
 `);
-    return { folder: posix(relative(root, folder)), files: taken.files, missing };
+    return { folder: posix(relative(root, folder)), files: [...taken.files, ...heard], missing };
 }

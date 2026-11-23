@@ -11,6 +11,9 @@ Where Figurant is going. Nothing here is promised for a date.
   coding assistant, a timeline to seek, versions from git, styles, export to
   GIF and to a folder for a website.
 - The whiteboard: draw, give the drawing legs, or have a character made of it.
+- Sound on a scene: files played in step with it. Figurant plays them; making
+  them is the person's business, or their assistant's with whatever sound
+  tool they have.
 - A library in six styles.
 
 ## Next
@@ -22,10 +25,9 @@ Where Figurant is going. Nothing here is promised for a date.
 - **Sections a project declares**: a button and a page of its own in the
   atelier, with the conversation, the versions and the export, without
   touching the engine.
-- **Sound**: sound files on a scene's tracks and on an animation's gestures,
-  played in step with the clock, and an export to video. Figurant plays the
-  files; making them is the assistant's job, with whatever sound tool the
-  person has.
+- **Sound, further**: a scene plays sound files in step with its time
+  (done); still to come, sound on a single animation's gestures and an export
+  to video, a GIF having none.
 - **Variants**: try another take of an animation next to the first.
 - GIFs of a character alone and of a prop.
 - Names shown in the person's language.

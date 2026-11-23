@@ -732,3 +732,23 @@ test('a request the server cannot make sense of is refused for what it is, not a
         assert.equal(await ask('/endless.bin'), 404, 'a link out of the project, refused before it is read');
     } finally { server.close(); await rm(root, { recursive: true, force: true }); }
 });
+
+test('a part of a file is served when a part is asked for: a browser needs it to go to a moment of a sound', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'figurant-'));
+    await writeFile(join(root, 'figurant.config.js'), 'export default {};');
+    await mkdir(join(root, 'assets'));
+    await writeFile(join(root, 'assets/tone.wav'), '0123456789');
+    const server = createAtelierServer({ root }).listen(0, '127.0.0.1');
+    await new Promise(done => server.once('listening', done));
+    const ask = async range => { const r = await fetch(`http://127.0.0.1:${server.address().port}/assets/tone.wav`, { headers: range ? { range } : {} }); return { status: r.status, type: r.headers.get('content-type'), span: r.headers.get('content-range'), accepts: r.headers.get('accept-ranges'), text: await r.text() }; };
+    try {
+        const whole = await ask();
+        assert.deepEqual([whole.status, whole.type, whole.accepts, whole.text], [200, 'audio/wav', 'bytes', '0123456789']);
+        assert.deepEqual(await ask('bytes=2-5'), { status: 206, type: 'audio/wav', span: 'bytes 2-5/10', accepts: 'bytes', text: '2345' });
+        assert.deepEqual([(await ask('bytes=7-')).text, (await ask('bytes=7-')).span], ['789', 'bytes 7-9/10'], 'from a place to the end');
+        assert.deepEqual([(await ask('bytes=-3')).text, (await ask('bytes=-3')).span], ['789', 'bytes 7-9/10'], 'the last three');
+        assert.deepEqual([(await ask('bytes=4-99')).text], ['456789'], 'an end past the file is the file\'s end');
+        assert.equal((await ask('bytes=20-30')).status, 416, 'a part that is not in the file');
+        assert.equal((await ask('bytes=a-b')).status, 200, 'a Range that makes no sense is no Range');
+    } finally { server.close(); await rm(root, { recursive: true, force: true }); }
+});

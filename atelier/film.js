@@ -21,7 +21,7 @@ export async function filmGif({ src, width = 640, height = 360, every = 80, long
     frame.setAttribute('aria-hidden', 'true');
     frame.style.cssText = 'position:fixed;left:-99999px;top:0;border:0;visibility:hidden';
     // Held at its very start: `seek` stops the page's own clock.
-    frame.src = `${src}${src.includes('?') ? '&' : '?'}seek=1`;
+    frame.src = `${src}${src.includes('?') ? '&' : '?'}seek=1&mute=1`;
     document.body.append(frame);
     try {
         for (let i = 0; i < 400 && !(frame.contentWindow?.stage?.ready && !frame.contentWindow.stage.seeking); i++) await new Promise(done => setTimeout(done, 50));

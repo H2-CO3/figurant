@@ -21,5 +21,6 @@ export { createDirector } from './director/director.js';
 export * as moves from './actor/moves.js';
 export { start } from './start.js';
 export { playComposition, checkComposition, compositionLength } from './director/composition.js';
+export { createSoundtrack, checkSounds } from './sound/soundtrack.js';
 export * as anatomy from './body/anatomy.js';
 export { checkProp, checkProps } from './props/check.js';

@@ -6,6 +6,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+- Sound on a scene: `sounds: [{ at, src, volume, loop }]` plays sound files in step with the scene's time (paused, slowed down, taken to a moment and looped with it). The atelier shows them as a track on the timeline, an export carries them. Figurant makes no sound: the files are the person's, or made by their assistant with whatever tool they have.
 - `figurant atelier --lan`: the atelier opened to the local network on purpose, behind an access code made for each run (asked once per browser, five wrong tries lock an address out for five minutes).
 - The lists show a picture of each animation (its most telling moment) and of each scene (a band over its name), with a loader while they are drawn; the character who plays is pictured beside their name.
 

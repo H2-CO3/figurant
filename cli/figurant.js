@@ -98,6 +98,14 @@ const commands = {
                 animations: config?.scenes ?? {}, props: config?.props ?? {},
             })),
         ];
+        // A sound a scene names must be a file of the project: this command can look, the page cannot.
+        for (const [name, composition] of Object.entries(config?.compositions ?? {})) {
+            for (const [i, cue] of (Array.isArray(composition?.sounds) ? composition.sounds : []).entries()) {
+                if (typeof cue?.src !== 'string' || problems.some(problem => problem.composition === name && problem.field === `sounds[${i}].src`)) continue;
+                const there = await access(resolve(root, cue.src)).then(() => true, () => false);
+                if (!there) problems.push({ composition: name, field: `sounds[${i}].src`, value: cue.src, message: `plays "${cue.src}", a file the project does not have.`, fix: 'Put the sound file there, or correct the path: it starts from the project\'s folder.' });
+            }
+        }
         const counts = `${Object.keys({ ...config?.cast, ...config?.emoji }).length} character(s), ${Object.keys(config?.scenes ?? {}).length} scene(s), ${Object.keys(config?.props ?? {}).length} prop(s), ${Object.keys(config?.compositions ?? {}).length} composed scene(s)`;
         if (!problems.length) return console.log(`Nothing wrong found in ${counts}. This says they are well formed, not that the motion is good.`);
         console.log(describeProblems(problems).join('\n'));

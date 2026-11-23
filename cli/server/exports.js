@@ -16,7 +16,7 @@ export function createExports(root) {
             if (req.method !== 'POST') return send(res, 405, 'POST.');
             let asked;
             try { asked = await readJson(req, 2_000_000); } catch { return send(res, 400, 'Send JSON: { shop, name, needles }.'); }
-            try { return json(res, 200, await exportItem({ root, shop: String(asked?.shop), name: String(asked?.name), title: typeof asked?.title === 'string' ? asked.title.slice(0, 120) : undefined, needles: Array.isArray(asked?.needles) ? asked.needles : [] })); }
+            try { return json(res, 200, await exportItem({ root, shop: String(asked?.shop), name: String(asked?.name), title: typeof asked?.title === 'string' ? asked.title.slice(0, 120) : undefined, needles: Array.isArray(asked?.needles) ? asked.needles : [], sounds: Array.isArray(asked?.sounds) ? asked.sounds : [] })); }
             catch (error) { return send(res, 400, error.message); }
         },
 

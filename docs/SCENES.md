@@ -290,6 +290,39 @@ const show = playComposition({
 // show.stop() removes everything.
 ```
 
+### Sound
+
+A scene may play sound files, each at its time:
+
+```js
+sounds: [
+    { at: 0, src: 'assets/morning-birds.ogg', volume: 0.4, loop: true },
+    { at: 4200, src: 'assets/hello.mp3' },
+],
+```
+
+`src` is a path from the project's folder (mp3, wav, ogg, m4a, flac or
+webm); `volume` goes from 0 to 1; `loop` goes round until the scene ends.
+Figurant makes no sound: it plays the file mechanically, in step with the
+scene, so that pausing, slowing down, going to a moment on the timeline or
+looping does the same to what is heard. Where the file comes from is not its
+business: the person provides it, or you make it with whatever sound tool
+they have (a text-to-speech or music service, a local program) and save it
+under `assets/`. Never name a file that does not exist: `figurant check`
+reports it; in the page, a missing file is simply silent.
+
+- The atelier shows the sounds as a track marked ♪ on the timeline. An
+  export carries them in its folder; a GIF has no sound.
+- A browser plays no sound before the visitor's first click on the page. In
+  the atelier that click has always happened; on a website, do not rely on
+  sound for the first seconds.
+- You cannot hear. Say so, and ask the person whether the sound falls where
+  it should: give them the times you chose.
+- A page that holds or slows its clock tells the scene: `show.sound({
+  playing: false })`, `show.sound({ speed: 0.5 })`. `sound: false` in
+  `playComposition` plays none.
+- Sound is for scenes. A single animation has none yet.
+
 Writing a good one:
 
 - **Stagger.** Nobody starts, arrives or reacts at the same millisecond:
