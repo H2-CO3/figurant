@@ -182,6 +182,7 @@ export function createFigure({ stage, character, unit: initialUnit = 1 }) {
         standHeight: () => state.scale * unit * (head.frame(state).hipY + body.reach),
         /** Pixels per character unit at the current scale. */
         get k() { return state.scale * unit; },
-        destroy() { layer.remove(); },
+        // (A head that drew outside its own layer takes that away itself.)
+        destroy() { head.destroy?.(); layer.remove(); },
     };
 }

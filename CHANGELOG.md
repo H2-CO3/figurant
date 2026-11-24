@@ -7,7 +7,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 - Cut paper: two dancers, him and her (stick figures dressed in paper), and their first dance: they meet, step together, she spins under his arm, runs, jumps, and he holds her up (`first-dance`).
-- Line and gold: a pirate captain and a customs officer in a blue three-cornered hat, both the stick figure in costume (`pirate`, `customs-officer`: the models for dressing a stick figure), and `landfall`: out at sea on the masthead of a sinking boat, finding the way by a compass that will not agree; the quay and its officer come into sight; a step onto the quay as the boat goes down, a flipped coin, a lifted hat. It replaces the stick figure at sea.
+- Line and gold: a pirate captain and a customs officer in a blue three-cornered hat, both the stick figure in costume (`pirate`, `customs-officer`: the models for dressing a stick figure), and `landfall`, a scene written as data: three tracks (the boat, the pirate, the officer) and twenty clips, each a short animation or a plain move. Fair sailing; the boat takes in water; up on the boom and round the mast, the compass tapped until it agrees; the quay reached with the water at its heels, one stride off the masthead as the boat goes under; a coin for the officer. The sailing boat of the style carries it: it learns to founder (`sunk`), its hull is drawn over whoever stands in it, and it has two animations of its own (`sail-boat`, `founder-boat`). Props: `quay`, `harbour-town`, `harbour-water`, `gold-coin`. It replaces the stick figure at sea.
+- Effects for water: `splash`, `ripple`, `bubbles`, `wake`.
 - Ink wash: a master of the brush and of the fist (`ink-master`) arrives in one leap, takes up a brush lying by the inkstone, and writes 天 and 地 on an easel, each stroke struck from a stance, in the order they are written, the point of the brush on the paper all the way; a frog on a rock watches (`heaven-and-earth`). The brush is now something to hold (`ink-brush`); a new easel and rock. This replaces the pond scene, the single stroke and the brush as a character.
 - Default style: a ballpoint pen without its cap (`ballpoint`), the common gesture `high-five`, a tap dance for the pen and one for the highlighter, and the scene where they meet (`pen-pals`).
 - Neon at night: a runner on a light machine seen from behind (`neon-rider`, low and angular) and the race without end (`race-neon-rider`, scene `neon-ride`): two of them followed down a circuit that is a tunnel of lines, eight-sided, bending and twisting, with frames rushing by, panels on the walls, pulses along the edges, a core at the far end; they ride up the walls, trail a beam each, throw sparks when they brush, and the whole thing kicks forward every few seconds.
@@ -28,7 +29,6 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - The lists show a picture of each animation (its most telling moment) and of each scene (a band over its name), with a loader while they are drawn; the character who plays is pictured beside their name.
 
 ### Changed
-- `landfall` is in three acts, framed close on the boat: fair sailing, the leak and the compass, the quay coming into the picture; the sea runs under the boat instead of the boat crossing the picture. The pirate is redrawn in few bold pieces that read from far away.
 - The first dance: she is seen turning (a back view, a card on its edge), led by him in the middle of the steps and three times under his arm.
 - A fresh copy starts in the default style, which is now the stick figure's own. The button that opens the styles shows the colours of the one in use.
 - A first visit opens ready to ask for something: a new animation for the stick figure, the line to write in showing an example of a request.
@@ -38,6 +38,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - The atelier's server is split by concern: `cli/server.js` is the table of routes, and `cli/server/` holds the checks (`guard.js`), the access code (`door.js`), the files (`static.js`) and one module per part of the API. Nothing it answers has changed.
 
 ### Fixed
+- A head that draws outside its own layer may say how to take that away (`destroy()`): the figure calls it when it goes.
 - French: one form of address throughout (tu), and a French word for the timeline.
 - The server: an `Origin` that is no address is refused (403) and a name that cannot be read is a bad name (400), where both were answered as a breakdown (500); an address the API does not know is 404; a link out of the project is refused before it is read, not after.
 - GIFs: a film stepped by 80 ms moved on by 50 ms only, so a GIF played slowed down and a scene was cut before its end.

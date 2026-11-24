@@ -272,7 +272,7 @@ test('every character of the library lives on a page: it arrives, says hello, an
         Object.assign(figure.state, { wide: 1, squint: 1, lid: 0, gazeX: 1, gazeY: -1 });
         await advance(clock, 3000);
         for (const [key, value] of Object.entries(figure.state)) if (typeof value === 'number') assert.ok(Number.isFinite(value), `${name}.${key}`);
-        const text = JSON.stringify(figure.layer, (key, value) => (key === 'parent' ? undefined : value));
+        const text = JSON.stringify(figure.layer, (key, value) => (key === 'parent' || key === 'parentNode' ? undefined : value));
         assert.doesNotMatch(text, /NaN|undefined|Infinity/, `${name} draws no broken number`);
     }
 });

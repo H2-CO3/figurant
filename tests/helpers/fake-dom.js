@@ -9,8 +9,12 @@ export function fakeDocument() {
         parent: null,
         setAttribute(key, value) { this.attrs[key] = String(value); },
         getAttribute(key) { return this.attrs[key] ?? null; },
-        appendChild(child) { child.parent = this; this.children.push(child); return child; },
+        removeAttribute(key) { delete this.attrs[key]; },
+        // (As in a browser: a node has one parent; put elsewhere, it leaves where it was.)
+        get parentNode() { return this.parent; },
+        appendChild(child) { child.remove(); child.parent = this; this.children.push(child); return child; },
         insertBefore(child, reference) {
+            child.remove();
             child.parent = this;
             const i = this.children.indexOf(reference);
             this.children.splice(i < 0 ? this.children.length : i, 0, child);

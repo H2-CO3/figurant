@@ -108,6 +108,9 @@ head: {
   size applied); `matrix` is the same as an SVG matrix for a whole group;
   `k` is pixels per unit now; `drag` is the lag of a part that trails behind,
   in units (use it for hair, lashes, a tail).
+- `destroy()` (optional): for a head that drew something outside its own
+  layer (the hull of `library/trait-et-or/characters/boat.js`, put over
+  whoever stands in it); it takes that away when the figure goes.
 
 ## A body that is not a person's
 

@@ -41,4 +41,49 @@ export const effects = {
             ready.dust(fx, floor, { count: 16, ...options });
         },
     },
+    /** Water thrown up from a point of its surface: drops that fall back, a flat ring. */
+    splash: {
+        play(fx, [x, y], options) {
+            const k = options?.k ?? 1, drops = fx.particles({ color: options?.color, width: 1.8 * k });
+            for (let i = 0; i < 12; i++) drops.emit({ x: x + fx.range(-6, 6) * k, y, vx: fx.range(-55, 55) * k, vy: -fx.range(70, 170) * k, ay: 420 * k, life: fx.range(0.45, 0.8), trail: 0.03 });
+            drops.close();
+            ready.shockwave(fx, [x, y], { size: 30, flat: 0.22, width: 1.6, ...options });
+        },
+    },
+    /** Rings on still water, one after the other. */
+    ripple: {
+        play(fx, at, options) {
+            ready.shockwave(fx, at, { size: 26, flat: 0.2, life: 900, width: 1.4, ...options });
+            ready.shockwave(fx, at, { size: 44, flat: 0.2, life: 1300, width: 1.1, ...options });
+        },
+        every: 1600,
+    },
+    /** Air coming up through water: small rings that rise, wobble and are gone. */
+    bubbles: {
+        play(fx, [x, y], options) {
+            const k = options?.k ?? 1;
+            for (let i = 0; i < 7; i++) {
+                const from = x + fx.range(-16, 16) * k, r = fx.range(1.4, 3.6) * k, rise = fx.range(14, 34) * k, swing = fx.range(0, 6.28), late = fx.range(0, 0.4);
+                fx.shape({
+                    life: 900, tag: 'circle', attrs: { r: r.toFixed(2), 'stroke-width': 1.1 * k, ...(options?.color ? { stroke: options.color } : {}) },
+                    update(el, p) {
+                        const q = Math.max(0, (p - late) / (1 - late));
+                        el.setAttribute('cx', (from + Math.sin(swing + q * 7) * 2.5 * k).toFixed(2));
+                        el.setAttribute('cy', (y - q * rise).toFixed(2));
+                        el.setAttribute('opacity', (q <= 0 ? 0 : Math.min(1, (1 - q) * 3)).toFixed(2));
+                    },
+                });
+            }
+        },
+        every: 1100,
+    },
+    /** Foam left behind on the water by what goes through it: dashes that trail back and fade (`way`: -1 trails to the left). */
+    wake: {
+        play(fx, [x, y], options) {
+            const k = options?.k ?? 1, way = options?.way ?? -1, foam = fx.particles({ color: options?.color, width: 1.5 * k });
+            for (let i = 0; i < 6; i++) foam.emit({ x: x + way * fx.range(0, 12) * k, y: y + fx.range(-2.5, 2.5) * k, vx: way * fx.range(26, 60) * k, vy: 0, drag: 1.6, life: fx.range(0.5, 1), trail: 0.22 });
+            foam.close();
+        },
+        every: 500,
+    },
 };
