@@ -36,7 +36,7 @@ node cli/figurant.js atelier
 
 Open the address it prints (`http://localhost:4173/__figurant/`; if that port
 is taken, add `--port 5000`). You are in
-the atelier, with the whole library: 37 characters, 70 animations and 16
+the atelier, with the whole library: 38 characters, 72 animations and 16
 scenes, in six drawing styles.
 
 Without an assistant you can already watch everything, slow it down, step
