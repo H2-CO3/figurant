@@ -752,3 +752,25 @@ test('a part of a file is served when a part is asked for: a browser needs it to
         assert.equal((await ask('bytes=a-b')).status, 200, 'a Range that makes no sense is no Range');
     } finally { server.close(); await rm(root, { recursive: true, force: true }); }
 });
+
+test('the bare address of a project with no page of its own leads to the atelier; a project that has one keeps it', async () => {
+    const { mkdtempSync, writeFileSync, rmSync } = await import('node:fs');
+    const { tmpdir } = await import('node:os');
+    const { join } = await import('node:path');
+    const root = mkdtempSync(join(tmpdir(), 'figurant-bare-'));
+    const server = createAtelierServer({ root }).listen(0, '127.0.0.1');
+    await new Promise(resolve => server.once('listening', resolve));
+    const base = `http://localhost:${server.address().port}`;
+    try {
+        const bare = await fetch(`${base}/`, { redirect: 'manual' });
+        assert.equal(bare.status, 302);
+        assert.equal(bare.headers.get('location'), '/__figurant/atelier/');
+        // A site with its own home page is served as it is.
+        writeFileSync(join(root, 'index.html'), '<p>home</p>');
+        const home = await fetch(`${base}/`, { redirect: 'manual' });
+        assert.equal(home.status, 200);
+        assert.equal(await home.text(), '<p>home</p>');
+        // And what is really missing is still missing.
+        assert.equal((await fetch(`${base}/nothing-here.html`, { redirect: 'manual' })).status, 404);
+    } finally { server.close(); rmSync(root, { recursive: true, force: true }); }
+});

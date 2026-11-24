@@ -13,6 +13,7 @@
 //   assets.js    one part of the API each (see the table below)
 
 import { createServer } from 'node:http';
+import { existsSync } from 'node:fs';
 import { resolve, join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { inside, loopback, knownHost, crossSite } from './server/guard.js';
@@ -92,6 +93,8 @@ export function createAtelierServer({ root, fiches: ficheFolder = 'fiches', cust
     // Everything else is read only (GET or HEAD): the past, the atelier's page, the engine, the project.
     const toAtelier = (req, res) => { res.writeHead(302, { location: '/__figurant/atelier/' }); return res.end(); };
     const atelier = (req, res) => atelierPage(res, ENGINE, styles);
+    // The bare address: the project's own home page if it has one; if not, the atelier (not "Not found").
+    const home = (req, res) => (existsSync(join(root, 'index.html')) ? file(res, root, '/', false, req.headers.range) : toAtelier(req, res));
     const pages = [
         [ANY, /^\/__figurant\/at\/([^/]+)\/(.+)$/,   history.at],
         [ANY, '/__figurant',                         toAtelier],
@@ -100,6 +103,7 @@ export function createAtelierServer({ root, fiches: ficheFolder = 'fiches', cust
         [ANY, '/__figurant/atelier/index.html',      atelier],
         [ANY, /^\/__figurant\/atelier\/(.*)$/s,      (req, res, [, asked]) => file(res, join(ENGINE, 'atelier'), asked, true)],
         [ANY, /^\/__figurant\/engine\/(.*)$/s,       (req, res, [, asked]) => file(res, join(ENGINE, 'src'), asked)],
+        [ANY, '/',                                   home],
         [ANY, /^.*$/s,                               (req, res, [asked]) => file(res, root, asked, false, req.headers.range)],   // the project's own files
     ];
 

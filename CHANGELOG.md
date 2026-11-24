@@ -39,6 +39,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - The atelier's server is split by concern: `cli/server.js` is the table of routes, and `cli/server/` holds the checks (`guard.js`), the access code (`door.js`), the files (`static.js`) and one module per part of the API. Nothing it answers has changed.
 
 ### Fixed
+- The bare address of the atelier's server (`http://localhost:4173/`) leads to the atelier when the project has no home page of its own, instead of answering "Not found".
 - A head that draws outside its own layer may say how to take that away (`destroy()`): the figure calls it when it goes.
 - French: one form of address throughout (tu), and a French word for the timeline.
 - The server: an `Origin` that is no address is refused (403) and a name that cannot be read is a bad name (400), where both were answered as a breakdown (500); an address the API does not know is 404; a link out of the project is refused before it is read, not after.

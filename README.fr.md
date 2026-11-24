@@ -36,7 +36,7 @@ node cli/figurant.js atelier
 ```
 
 Ouvrez l'adresse affichée (`http://localhost:4173/__figurant/` ; si ce port
-est pris, ajoutez `--port 5000`). Vous êtes
+est pris, ajoutez `--port 4200`). Vous êtes
 dans l'atelier, avec toute la bibliothèque : 38 personnages, 72 animations et
 16 scènes, dans six styles de dessin.
 
