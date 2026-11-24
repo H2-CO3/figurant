@@ -1,6 +1,7 @@
-// Landfall, in three acts: a pirate captain sails in fair weather on the
-// masthead of his boat; the boat springs a leak and begins to go down while
-// he finds his way by a compass that will not agree with him; the quay comes
+// Landfall, in three acts: a pirate captain sails in fair weather, standing
+// in his skiff; the skiff springs a leak and begins to go down, and he
+// climbs its mast, where he finds his way by a compass that will not agree
+// with him; the quay comes
 // into the picture with its customs officer, and he steps onto it as the
 // last of the boat goes under, pays with a flipped coin, lifts his hat and
 // rolls off into town. The picture stays close on the boat: the sea runs
@@ -9,13 +10,13 @@
 
 import { T, SLIDE, KEEPER } from '../scenes/pirate/landfall.js';
 
-/** Where the edge of the quay is once it has come in, and where the boat is from there. */
-const QUAY = -110, BOAT = -12;
+/** Where the edge of the quay is once it has come in, and where the skiff's mast is from there. */
+const QUAY = -100, BOAT = -13;
 
 export const landfall = {
     title: 'Landfall',
     style: 'trait-et-or',
-    width: 620,
+    width: 640,
     // (It starts again as soon as the pirate has gone: the harbour goes with him.)
     length: 300 + T.end + 6500,
     loop: true,

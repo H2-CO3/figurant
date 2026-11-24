@@ -11,6 +11,7 @@ import { tollCustomsOfficer } from './scenes/customs-officer/toll.js';
 import { landfall } from './compositions/landfall.js';
 import { setSailBoat } from './scenes/boat/set-sail.js';
 import { pocketCompass } from './props/pocket-compass.js';
+import { skiff, quay, goldCoin } from './props/harbour.js';
 import { navigateStickman } from './scenes/stickman/navigate.js';
 import { globe } from './props/globe.js';
 import { weights, weight } from './props/weights.js';
@@ -20,7 +21,7 @@ import { weighBalance } from './scenes/balance/weigh.js';
 import { cabinet } from './compositions/cabinet.js';
 export const style = 'trait-et-or';
 export const characters = { compass, balance, boat, pirate, 'customs-officer': customsOfficer };
-export const props = { globe, weights, weight, 'pocket-compass': pocketCompass };
+export const props = { globe, weights, weight, 'pocket-compass': pocketCompass, skiff, quay, 'gold-coin': goldCoin };
 export const scenes = { 'bearing-compass': bearingCompass, 'weigh-balance': weighBalance, 'set-sail-boat': setSailBoat, 'navigate-stickman': navigateStickman, 'landfall-pirate': landfallPirate, 'toll-customs-officer': tollCustomsOfficer };
 /** Scenes: several characters, each on its track in time. */
 export const compositions = { 'cabinet': cabinet, landfall };
