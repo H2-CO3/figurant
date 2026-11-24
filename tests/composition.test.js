@@ -200,7 +200,7 @@ test('in a scene an animation plays where its character stands, not around the m
     show.stop();
 });
 
-test('landfall: the pirate stays at the foot of the mast while the boat carries it, the masthead comes level with the quay as it steps off, and nothing of the boat is left on the page afterwards', async () => {
+test('landfall: the pirate stays at the foot of the mast while the boat carries it, the quay comes into the picture only at the end, the masthead comes level with the quay as it steps off, and nothing of the boat is left on the page afterwards', async () => {
     const config = (await import('../examples/figurant.config.js')).default;
     const everyone = { ...config.cast, ...config.emoji };
     const project = { characters: Object.fromEntries(Object.entries(everyone).map(([key, member]) => [key, member.character])), animations: config.scenes, props: config.props };
@@ -208,23 +208,26 @@ test('landfall: the pirate stays at the foot of the mast while the boat carries 
     const stage = createStage({ doc, win });
     const clock = createClock();
     const show = playComposition({ stage, clock, composition: config.compositions.landfall, ...project, origin: () => [800, 500], unit: 1 });
-    const { boat, pirate, officer } = show.actors;
+    const { boat, pirate, officer, quay } = show.actors;
     const where = entry => entry.figure.state.x + entry.shift, height = entry => -(entry.figure.state.y + entry.figure.standHeight());
     const all = node => [node, ...node.children.flatMap(all)];
     const hulls = () => all(doc.body).filter(node => node.attrs['data-fig-layer'] === 'boat-hull').length;
     // Carried by the boat: never more than a unit from the foot of the mast, through both passages and the calm between.
     for (let t = 0; t < 22400; t += 400) {
         await advance(clock, 400);
+        if (t < 16400) assert.ok(where(quay) > 400, `at ${t + 400} ms the quay is at ${where(quay).toFixed(0)}`);
         assert.ok(Math.abs(where(pirate) - where(boat) - 19) < 1, `at ${t + 400} ms the pirate is ${(where(pirate) - where(boat)).toFixed(1)} units from the middle of the boat`);
     }
     assert.equal(hulls(), 1);
+    // The quay was out of the picture until the last passage; its edge is now a stride from the mast, the officer on its planks.
+    assert.ok(Math.abs(where(quay) - 9) < 1 && Math.abs(height(officer) - 48) < 1 && Math.abs(where(officer) - 155) < 1, `the quay is at ${where(quay).toFixed(0)}, the officer at ${where(officer).toFixed(0)}, ${height(officer).toFixed(0)} up`);
     // On the boom, it is as high as the planks of the quay; and the masthead has come down to its feet (the boat's mast is 84 units of its own above its deck line, drawn 1.5 times).
     assert.ok(Math.abs(height(pirate) - 48) < 1, `the pirate is ${height(pirate).toFixed(1)} units up`);
     const masthead = boat.figure.standHeight() + (84 - boat.figure.state.sunk * 122) * 1.5;
     assert.ok(Math.abs(masthead - 48) < 3, `the masthead is ${masthead.toFixed(1)} units above the water`);
     // Then onto the quay, as high as the officer, and out to the right; the boat is gone under.
     await advance(clock, 6500);
-    assert.ok(where(pirate) > 320 && Math.abs(height(pirate) - height(officer)) < 1, `the pirate ends at ${where(pirate).toFixed(0)}, ${height(pirate).toFixed(0)} up`);
+    assert.ok(where(pirate) > 200 && Math.abs(height(pirate) - height(officer)) < 1, `the pirate ends at ${where(pirate).toFixed(0)}, ${height(pirate).toFixed(0)} up`);
     assert.ok(boat.figure.state.sunk > 0.99);
     show.stop();
     assert.equal(hulls(), 0, 'the hull, drawn over everybody, goes with the boat');

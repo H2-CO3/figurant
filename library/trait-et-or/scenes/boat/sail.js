@@ -1,7 +1,8 @@
 // The boat sails on: the wind in its sails, foam at its stern. `data.by`: how
 // far it goes (character units, to the right), `data.over`: in how long;
 // `data.sunk`: how full of water it is when it gets there (it keeps what it
-// has when nothing is said). Alone, it sails on the spot.
+// has when nothing is said). With no `by` it sails on the spot: the water
+// runs under it, and a scene brings the land to it.
 
 import { easing } from 'figurant';
 import { effects } from '../../../common/effects.js';
@@ -19,8 +20,10 @@ export const sailBoat = {
         c.onLeave(() => { sailing = false; });
         // Foam trails from the stern for as long as it makes way.
         (async () => {
-            while (sailing && c.alive) {
+            for (let turn = 0; sailing && c.alive; turn++) {
                 if (fx) effects.wake.play(fx, [c.figure.points.centre[0] - 52 * k, c.figure.points.ground - 3 * k], { k });
+                // Taking in water as it goes: air comes up beside it.
+                if (fx && sunk > s.sunk + 0.01 && turn % 3 === 2) effects.bubbles.play(fx, [c.figure.points.centre[0] + (turn % 2 ? 20 : -24) * k, c.figure.points.ground - 2 * k], { k });
                 await c.clock.wait(240);
             }
         })();
