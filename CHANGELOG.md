@@ -28,6 +28,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - The lists show a picture of each animation (its most telling moment) and of each scene (a band over its name), with a loader while they are drawn; the character who plays is pictured beside their name.
 
 ### Changed
+- `landfall` is in three acts, framed close on the boat: fair sailing, the leak and the compass, the quay coming into the picture; the sea runs under the boat instead of the boat crossing the picture. The pirate is redrawn in few bold pieces that read from far away.
+- The first dance: she is seen turning (a back view, a card on its edge), led by him in the middle of the steps and three times under his arm.
 - A fresh copy starts in the default style, which is now the stick figure's own. The button that opens the styles shows the colours of the one in use.
 - A first visit opens ready to ask for something: a new animation for the stick figure, the line to write in showing an example of a request.
 - The atelier's stylesheet is one file per part of the page (`atelier/css/`: base, buttons, layout, tabs, strip, stage, side, dock, board, dialogs), imported in order by `atelier/atelier.css`, which says what each holds. The rules overridden further down are gone. Nothing looks different.

@@ -1,10 +1,10 @@
-// Made for the customs officer: the toll. Nobody is on the quay while the
-// boat is out at sea; when the harbour comes into sight it walks down the
-// quay to its post, book under its arm, and watches the arrival without a
-// word. It holds out a hand before the newcomer has said anything, catches
-// the coin, looks at it twice, puts it away, writes a line, and waves the
-// stranger through. It keeps the time of the one it waits for
-// (../pirate/landfall.js); `data.walk` is how far it comes to reach its post.
+// Made for the customs officer: the toll. It stands at its post on the quay,
+// book under its arm, and comes into the picture with the quay, which it
+// does not leave. It watches the arrival without a word, holds out a hand
+// before the newcomer has said anything, catches the coin, looks at it
+// twice, puts it away, writes a line, and waves the stranger through. It
+// keeps the time and the distances of the one it waits for
+// (../pirate/landfall.js): `data.out` is how far out of the picture it starts.
 
 import { easing, moves, props } from 'figurant';
 import { T } from '../pirate/landfall.js';
@@ -17,28 +17,22 @@ export const tollCustomsOfficer = {
     room: { left: 60, right: 60, up: 110 },
 
     async play(c, ctx) {
-        const s = c.state, way = -1, palm = 'left', other = 'right', post = s.x - (ctx?.data?.walk ?? 0) * c.figure.k;
+        const s = c.state, way = -1, palm = 'left', other = 'right', post = s.x - (ctx?.data?.out ?? 0) * c.figure.k;
         const start = c.clock.now, at = ms => c.wait(Math.max(0, ms - (c.clock.now - start)));
         c.onLeave(() => { c.hands({ left: null, right: null }, 1).catch(() => {}); });
         s.dir = way;
-        const book = c.give(other, notebook, { tilt: way * 12, state: { draw: 0 } });
+        const book = c.give(other, notebook, { tilt: way * 12, state: { draw: 1 } });
+        await c.hands({ [other]: { x: -way * 12, y: 6, angle: 30 } }, 300);
 
-        // Down the quay to its post, as the quay itself appears: measured, upright.
-        await at(T.quay + 900);
-        c.animate(book.state, { draw: 1 }, 400).catch(() => {});
-        c.hands({ [other]: { x: -way * 12, y: 6, angle: 30 } }, 400).catch(() => {});
-        await moves.walkTo(c, post, 0.75);
-        s.dir = way;
-        // It watches the boat come in, and go down: one look lower, a blink, nothing more.
-        await c.tween({ gazeX: way, gazeY: -0.3 }, 500, easeInOut);
-        await at(T.land - 1500);
-        await c.tween({ gazeY: 0.5 }, 600, easeInOut);
-        await moves.blink(c);
-        await c.tween({ gazeY: 0 }, 400, easeInOut);
+        // It comes into the picture with the quay: it is the quay that moves, at the pace the boat comes in.
+        await at(T.quay);
+        await c.all(c.tween({ x: post }, T.land - T.quay, easeOut), c.tween({ gazeX: way, gazeY: -0.2 }, 600, easeInOut));
+        // The boat goes down under the stranger's feet: one look lower, eyes wide, a blink.
         await at(T.land + 300);
-        c.also({ wide: 0.7 }, 150);
-        await c.wait(700);
-        await c.tween({ wide: 0 }, 300);
+        c.also({ wide: 0.8, gazeY: 0.5 }, 150);
+        await c.wait(800);
+        await moves.blink(c);
+        await c.tween({ wide: 0, gazeY: 0 }, 300);
 
         // The hand held out, palm up, before the other has said a word.
         await at(T.meet - 500);
