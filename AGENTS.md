@@ -11,6 +11,25 @@ figure in `src/characters/stickman.js` is only the reference character.
 If a person is at the atelier and wants things made, your job is in
 `docs/ATELIER.md`: start there. What is planned next is in `docs/ROADMAP.md`.
 
+## If a person just handed you this repository
+
+They want to play with it, not to read about it. It takes four steps and
+nothing to install (no `npm install`, no build, no account, no key):
+
+1. Clone it if it is not there yet, and check `node -v` says 20.6 or later.
+   That is the only requirement.
+2. From the repository, start the atelier **in the background**:
+   `node cli/figurant.js atelier` (add `--port 4200` if 4173 is taken).
+3. Give the person the address it prints
+   (`http://localhost:4173/__figurant/`) and tell them to write what they
+   want in the box at the bottom of the page.
+4. Read `docs/ATELIER.md`, then run `node cli/figurant.js fiches --wait` in
+   the background: it returns when the person has written something. Answer
+   it, and wait again.
+
+`npm test` (Node's own runner) tells you in a few seconds that the copy is
+sound.
+
 ## Which document for which job
 
 | You want to | Read |
@@ -113,6 +132,11 @@ nothing here is to be defended against them:
   and effects, scenes in time (`src/director/composition.js`), the GIF writer
   (`atelier/gif.js`), the conversation by files (`cli/fiche.js`), versions
   from git and the whiteboard. A body with legs is one use of them.
+- Material may come from outside: an MCP server the person uses, an image
+  model running on their machine, a folder of their drawings. None is
+  wired in. When they ask, connect it in their copy, and bring what it gives
+  through the same doors as the rest (`figurant inspect` for a drawing,
+  `docs/CHARACTERS.md` to rig it).
 - Keep their changes easy to keep: work on a branch of their copy, so that a
   later `git pull` of the original can be merged or declined.
 

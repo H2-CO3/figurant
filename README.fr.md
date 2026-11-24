@@ -27,7 +27,19 @@ site web.
 
 Read in English: [README.md](README.md)
 
-## L'essayer en une minute
+## Le plus court : une phrase à votre assistant
+
+Si vous avez un assistant de code (Claude Code, Codex…), il n'y a rien à
+installer ni à lire. Ouvrez-le dans un dossier vide et collez :
+
+> Clone https://github.com/H2-CO3/figurant, lis son AGENTS.md, lance
+> l'atelier et donne-moi l'adresse. Ensuite, réponds à ce que j'écris dans
+> la page.
+
+Il clone, lance la page, vous dit où l'ouvrir et se met à l'écoute. Vous
+parlez dans la page ; il dessine et anime.
+
+## L'essayer en une minute, à la main
 
 ```
 git clone https://github.com/H2-CO3/figurant.git
@@ -122,6 +134,12 @@ licence MIT. Demandez un autre genre d'animation, une autre interface, un
 jeu, un outil à vous. Le bouton **Changer l'interface** de l'atelier est là
 pour ça : dites ce que la page elle-même doit devenir.
 [AGENTS.md](AGENTS.md) dit à l'assistant qu'il en a le droit.
+
+Il en va de même pour la matière. Rien de tel n'est fourni, et rien ne s'y
+oppose : demandez à votre assistant de brancher votre copie sur ce que vous
+avez déjà, un serveur MCP, un modèle d'images qui tourne sur votre machine,
+un dossier de dessins, et de faire de ce qui en sort des personnages et des
+accessoires.
 
 ## Où il en est
 

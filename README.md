@@ -26,7 +26,18 @@ GIF, or as a folder ready to drop into a website.
 
 Lire en français : [README.fr.md](README.fr.md)
 
-## Try it in a minute
+## The shortest way: one sentence to your assistant
+
+If you have a coding assistant (Claude Code, Codex…), you do not need to
+install or read anything. Open it in an empty folder and paste:
+
+> Clone https://github.com/H2-CO3/figurant, read its AGENTS.md, start the
+> atelier and give me the address. Then answer what I write in the page.
+
+It clones, starts the page, tells you where to open it and listens. You talk
+in the page; it draws and animates.
+
+## Try it in a minute, by hand
 
 ```
 git clone https://github.com/H2-CO3/figurant.git
@@ -116,6 +127,11 @@ assistant can read and change, under the MIT licence. Ask for another kind of
 animation, another interface, a game, a tool of your own. The button **Change
 the interface** in the atelier is there for that: say what you want the page
 itself to become. [AGENTS.md](AGENTS.md) tells the assistant it may.
+
+The same goes for where the material comes from. Nothing of the kind is built
+in, and nothing is in the way: ask your assistant to plug your copy into what
+you already have, an MCP server, an image model running on your machine, a
+folder of drawings, and to turn what comes out into characters and props.
 
 ## Where it stands
 
