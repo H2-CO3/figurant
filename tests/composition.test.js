@@ -290,3 +290,31 @@ test('heaven and earth: the ink is the sheet\'s, a stroke a clip; the master\'s 
     assert.deepEqual([sheet.figure.state.heaven, sheet.figure.state.earth, sheet.figure.state.seal, brush.figure.state.gone], [4, 6, 1, 0]);
     show.stop();
 });
+
+test('the race without end: three tracks; the runners never ride through each other, and it ends as it begins', async () => {
+    const config = (await import('../examples/figurant.config.js')).default;
+    const { spot, REST } = await import('../library/neon-nuit/circuit.js');
+    const everyone = { ...config.cast, ...config.emoji };
+    const project = { characters: Object.fromEntries(Object.entries(everyone).map(([key, member]) => [key, member.character])), animations: config.scenes, props: config.props };
+    const composition = config.compositions['neon-ride'];
+    assert.deepEqual(Object.keys(composition.tracks), ['circuit', 'cyan', 'orange']);
+    const { doc, win } = fakeDocument();
+    const stage = createStage({ doc, win });
+    const clock = createClock();
+    const show = playComposition({ stage, clock, composition, ...project, origin: () => [800, 500], unit: 1 });
+    const { circuit, cyan, orange } = show.actors;
+    // Where a runner's middle is, and how big it is drawn (its body is some 50 units wide at rest).
+    const body = entry => { const { lane, far } = entry.figure.state, [x, y] = spot(lane, far), size = REST / far, up = -lane * Math.PI / 8; return [x + Math.sin(up) * -25 * size * -1, y - Math.cos(up) * 25 * size, size]; };
+    let boosted = 0, bent = 0;
+    for (let t = 0; t < 23600; t += 100) {
+        await advance(clock, 100);
+        const a = body(cyan), b = body(orange), apart = Math.hypot(a[0] - b[0], a[1] - b[1]);
+        assert.ok(apart > 26 * (a[2] + b[2]), `at ${t + 100} ms the two runners are ${apart.toFixed(0)} units apart`);
+        boosted = Math.max(boosted, circuit.figure.state.boost, cyan.figure.state.boost); bent = Math.max(bent, Math.abs(circuit.figure.state.bend));
+    }
+    assert.ok(boosted > 0.9 && bent > 0.8);
+    await advance(clock, 300);
+    const turn = lane => ((lane % 16) + 16) % 16;
+    assert.ok(Math.abs(turn(cyan.figure.state.lane) - turn(-0.55)) < 0.02 && Math.abs(orange.figure.state.lane - 0.55) < 0.02 && Math.abs(circuit.figure.state.bend) < 0.02, 'everyone is back where the race begins');
+    show.stop();
+});

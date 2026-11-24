@@ -295,9 +295,9 @@ test('every scene of the library plays to its end with the character it was made
         await advance(clock, 66000);
         const figure = director.members[0].figure;
         // Some animations go on until something else replaces them.
-        const loops = ['notes', 'notes-teapot', 'picket', 'haul', 'race-neon-rider'].includes(name);
+        const loops = ['notes', 'notes-teapot', 'picket', 'haul'].includes(name);
         // (Hauling on a rope goes on, leaning, for as long as the scene leaves it to.)
-        const underWay = name === 'picket' ? figure.state.handR.weight > 0.9 : name === 'haul' ? Math.abs(figure.state.tilt) > 5 : name === 'race-neon-rider' ? figure.state.rev > 0 : figure.state.seat === 1;
+        const underWay = name === 'picket' ? figure.state.handR.weight > 0.9 : name === 'haul' ? Math.abs(figure.state.tilt) > 5 : figure.state.seat === 1;
         assert.ok(loops ? underWay : ended === 1, `${name} ${loops ? 'is under way' : 'played to its end'} with ${owner}`);
         for (const [key, value] of Object.entries(figure.state)) if (typeof value === 'number') assert.ok(Number.isFinite(value), `${name}: ${key}`);
         if (castOf(scene).length) {
