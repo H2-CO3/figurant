@@ -56,7 +56,7 @@ export const heavenAndEarthInkMaster = {
         /** A point of a character's square as a place: across from the master's place, and above the floor. */
         const place = (square, [x, y]) => [sheet[0] + square[0] + x, -(sheet[1] + square[1] + y)];
         /** Something set down at a place counted from the master's own (wherever it is standing just now). */
-        const set = (thing, x, more = {}) => { const prop = c.prop(thing, more); prop.state.x = home + x * k; return prop; };
+        const set = (thing, x, more = {}) => c.prop(thing, { ...more, x: home / k + x });
         /** Takes the point of the brush to a place on the sheet: the hand stays a brush's length short of it. */
         const pointTo = ([x, up], ms, ease = easeInOut) => c.hands({ right: { x: x - REACH - (s.x - home) / k, y: MIDDLE - up + RISE } }, ms, ease);
         /** A stance: feet wide, low, the free arm drawn back. */
@@ -66,8 +66,7 @@ export const heavenAndEarthInkMaster = {
         // What is there before anyone comes: the easel, the stone, the brush lying beside it.
         const stand = set(easel, EASEL, { behind: true, state: { draw: 0 } });
         const stone = set(inkstone, STONE, { state: { draw: 0, flip: -1 } });
-        const lying = set(inkBrush, STONE + 44, { state: { draw: 0, tilt: -4 } });
-        lying.state.y = -3 * k;
+        const lying = set(inkBrush, STONE + 44, { y: -3, state: { draw: 0, tilt: -4 } });
         await c.all(c.animate(stand.state, { draw: 1 }, 1000, easeInOut), c.animate(stone.state, { draw: 1 }, 1000), c.animate(lying.state, { draw: 1 }, 1000));
 
         // The master: a run, a leap with a turn in it, a landing in a low stance.
@@ -150,8 +149,7 @@ export const heavenAndEarthInkMaster = {
         await write(EARTH, STROKES.earth);
 
         // The seal, under the two of them. The brush goes back where it was found; a salute to the sheet; and it looks.
-        const seal = set({ name: 'seal', shapes: [{ tag: 'path', attrs: { d: 'M 0 0 L 8 0 L 8 8 L 0 8 Z M 2.2 2.4 L 5.8 2.4 M 4 2.4 L 4 6 M 2 6 L 6 6', stroke: RED, 'stroke-linejoin': 'round' }, weight: 1.1 }], points: {} }, sheet[0] + 40, { state: { draw: 0 } });
-        seal.state.y = (sheet[1] + 106) * k;
+        const seal = set({ name: 'seal', shapes: [{ tag: 'path', attrs: { d: 'M 0 0 L 8 0 L 8 8 L 0 8 Z M 2.2 2.4 L 5.8 2.4 M 4 2.4 L 4 6 M 2 6 L 6 6', stroke: RED, 'stroke-linejoin': 'round' }, weight: 1.1 }], points: {} }, sheet[0] + 40, { y: sheet[1] + 106, state: { draw: 0 } });
         await c.animate(seal.state, { draw: 1 }, 400, easeOut);
         await c.all(moves.walkTo(c, home + (STONE + 34) * k, 0.8), c.hands({ right: { x: 12, y: -4 } }, 400), c.animate(spin, { turn: 184 }, 400));
         s.dir = -1;
