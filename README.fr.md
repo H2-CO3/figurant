@@ -15,6 +15,8 @@ site web.
 | ![Une tasse et une cassette en néon, la nuit](docs/media/open-all-night.gif) | ![Un chat tigré fait un salto arrière](docs/media/backflip-tabby.gif) |
 | ![Un maître et son chien en laisse](docs/media/walk-the-dog.gif) | ![Une boussole et une balance, au trait et à l'or](docs/media/cabinet.gif) |
 | ![Une lune de papier se met à faire peur, avec des chauves-souris](docs/media/spook.gif) | ![Une lune de papier passe par ses phases](docs/media/phases.gif) |
+| ![Deux danseurs en papier découpé se rencontrent, dansent, et il la porte](docs/media/first-dance.gif) | ![Un pirate atteint le ponton sur le mât d'un bateau qui coule](docs/media/landfall.gif) |
+| ![Un maître écrit le ciel et la terre au pinceau, sous l'œil d'une grenouille](docs/media/heaven-and-earth.gif) | |
 
 - **Aucune dépendance, rien à installer.** Des modules JavaScript et du SVG.
   Il suffit de Node 20.6 ou plus récent.
@@ -35,8 +37,8 @@ node cli/figurant.js atelier
 
 Ouvrez l'adresse affichée (`http://localhost:4173/__figurant/` ; si ce port
 est pris, ajoutez `--port 5000`). Vous êtes
-dans l'atelier, avec toute la bibliothèque : 29 personnages, 36 animations et
-8 scènes, dans six styles de dessin.
+dans l'atelier, avec toute la bibliothèque : 37 personnages, 70 animations et
+16 scènes, dans six styles de dessin.
 
 Sans assistant, vous pouvez déjà tout regarder, ralentir, avancer image par
 image, dessiner sur le tableau blanc et donner des jambes à votre dessin, et

@@ -14,6 +14,8 @@ GIF, or as a folder ready to drop into a website.
 | ![A neon cup and a cassette at night](docs/media/open-all-night.gif) | ![A tabby cat does a backflip](docs/media/backflip-tabby.gif) |
 | ![An owner and a dog on a lead](docs/media/walk-the-dog.gif) | ![A compass and a pair of scales, in line and gold](docs/media/cabinet.gif) |
 | ![A paper moon turns frightening, with bats](docs/media/spook.gif) | ![A paper moon goes through its phases](docs/media/phases.gif) |
+| ![Two dancers in cut paper meet, dance, and he lifts her](docs/media/first-dance.gif) | ![A pirate reaches the quay on the mast of a sinking boat](docs/media/landfall.gif) |
+| ![A master writes heaven and earth with a brush, a frog watching](docs/media/heaven-and-earth.gif) | |
 
 - **No dependency, nothing to install.** Plain JavaScript modules and SVG.
   Node 20.6 or later is all it needs.
@@ -34,7 +36,7 @@ node cli/figurant.js atelier
 
 Open the address it prints (`http://localhost:4173/__figurant/`; if that port
 is taken, add `--port 5000`). You are in
-the atelier, with the whole library: 29 characters, 36 animations and 8
+the atelier, with the whole library: 37 characters, 70 animations and 16
 scenes, in six drawing styles.
 
 Without an assistant you can already watch everything, slow it down, step
