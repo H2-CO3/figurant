@@ -258,3 +258,35 @@ test('the first dance: in hold the two stay within a few units of a step apart w
     assert.ok(Math.abs(height(her)) < 1 && Math.abs(where(her) - 20) < 1.5, `she is set down at ${where(her).toFixed(1)}`);
     show.stop();
 });
+
+test('heaven and earth: the ink is the sheet\'s, a stroke a clip; the master\'s hand is where the ink runs, a brush\'s length short of it; the brush on the floor is gone while it is held', async () => {
+    const config = (await import('../examples/figurant.config.js')).default;
+    const { strokes, along } = await import('../library/encre-de-chine/writing.js');
+    const everyone = { ...config.cast, ...config.emoji };
+    const project = { characters: Object.fromEntries(Object.entries(everyone).map(([key, member]) => [key, member.character])), animations: config.scenes, props: config.props };
+    const composition = config.compositions['heaven-and-earth'];
+    const { doc, win } = fakeDocument();
+    const stage = createStage({ doc, win });
+    const clock = createClock();
+    const show = playComposition({ stage, clock, composition, ...project, origin: () => [800, 500], unit: 1 });
+    const { master, sheet, brush } = show.actors;
+    const clips = composition.tracks.sheet.filter(clip => clip.set.seal === undefined);
+    assert.equal(clips.length, 10);
+    const all = [...strokes('heaven'), ...strokes('earth')];
+    let now = 0;
+    for (const [i, clip] of clips.entries()) {
+        // Half way through the stroke (the clip starts its ink 160 ms after its time, as every clip does).
+        const middle = clip.at + 160 + clip.over / 2;
+        await advance(clock, middle - now); now = middle;
+        const written = i < 4 ? sheet.figure.state.heaven - i : sheet.figure.state.earth - (i - 4);
+        assert.ok(written > 0.2 && written < 0.8, `stroke ${i + 1} is ${written.toFixed(2)} written at its middle`);
+        const [x, y] = along(all[i], written), hand = master.figure.points.armR.tip;
+        const tip = [hand[0] - 800 + 26 - 40, hand[1] - 500 - 12];
+        // (Across, to a few units; in height the hand is lower by what the stance takes off, a stroke's worth at most.)
+        assert.ok(Math.abs(tip[0] - x) < 5 && Math.abs(tip[1] - y) < 22, `stroke ${i + 1}: the point of the brush is at ${tip.map(n => n.toFixed(0))}, the ink at ${[x, y].map(n => n.toFixed(0))}`);
+        assert.ok(brush.figure.state.gone > 0.99, 'the brush is in the hand, not on the floor');
+    }
+    await advance(clock, 39000 - now);
+    assert.deepEqual([sheet.figure.state.heaven, sheet.figure.state.earth, sheet.figure.state.seal, brush.figure.state.gone], [4, 6, 1, 0]);
+    show.stop();
+});
