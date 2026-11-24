@@ -11,7 +11,7 @@
 import { GOLD, INK, PAPER, goldShape, inkShape, dotShape } from '../kit.js';
 
 /** The mast above the skiff's waterline; its floor, where one stands in it; the water below the quay's planks; the length of a wave. */
-export const MAST = 122, FLOOR = 3, WATER = 36, WAVE = 54;
+export const MAST = 98, FLOOR = 3, WATER = 36, WAVE = 54;
 const STYLE = 'trait-et-or';
 
 export const skiffRig = {
@@ -21,8 +21,8 @@ export const skiffRig = {
         inkShape(`M 0 -6 L 0 ${-MAST}`, 1.4),                                                        // the mast
         inkShape(`M -11 ${-MAST} L 11 ${-MAST} M -11 ${-MAST} L -11 ${-MAST - 6} M 11 ${-MAST} L 11 ${-MAST - 6}`, 1.1), // the masthead
         inkShape(`M -4 ${-MAST + 18} L 46 ${-MAST + 26}`, 1),                                        // the yard
-        goldShape(`M 3 ${-MAST + 19} L 45 ${-MAST + 27} Q 52 -66 40 -34 L 3 -26 Q 10 -64 3 ${-MAST + 19} Z`), // the sail, full
-        inkShape(`M 19 ${-MAST + 48} l 8 7 m -8 0 l 8 -7 M 13 -50 l 15 -4`, 0.7),                    // its patches
+        goldShape(`M 3 ${-MAST + 19} L 45 ${-MAST + 27} Q 52 -58 40 -34 L 3 -26 Q 10 -56 3 ${-MAST + 19} Z`), // the sail, full
+        inkShape(`M 19 ${-MAST + 38} l 8 7 m -8 0 l 8 -7 M 13 -44 l 15 -4`, 0.7),                    // its patches
         inkShape('M 0 -26 L 42 -34', 0.9),                                                           // the boom
     ],
     points: { masthead: [0, -MAST] },

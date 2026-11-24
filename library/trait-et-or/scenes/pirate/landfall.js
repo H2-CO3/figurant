@@ -33,12 +33,14 @@ const { easeOut, easeIn, easeInOut, linear } = easing;
 export const T = { sail: 600, leak: 6000, climb: 7600, compass: 10400, point: 15700, quay: 17500, land: 21500, walk: 22800, meet: 25100, coin: 26100, hat: 27300, end: 28600 };
 /** How far out of the picture the quay starts (further than the widest picture is wide), and where the officer stands on it. */
 export const SLIDE = 820, KEEPER = 108;
+/** The skiff is drawn larger than its pattern here, to be a boat for somebody this size: its mast and its floor, as tall as they then are. */
+const BIG = 1.4, TALL = MAST * BIG, DECK = FLOOR * BIG;
 /** Where the pirate stands in the skiff at first: at the stern, this far from the mast. */
-const STERN = -30;
+const STERN = -42;
 
 export const landfallPirate = {
     character: 'pirate',
-    room: { left: 130, right: 490, up: 210 },
+    room: { left: 150, right: 490, up: 270 },
 
     async play(c, ctx) {
         const s = c.state, k = c.figure.k, home = s.x, ground = s.y, base = ctx?.data?.home ?? -12, fx = ctx?.api?.fx ?? null;
@@ -50,8 +52,8 @@ export const landfallPirate = {
         // From the back to the front: the far swell, the skiff's rig, the pirate, the hull it stands in,
         // the water over what of the skiff is under, the near swell, the quay.
         const far = c.prop(swell(-5, 0.6), { behind: true, state: { draw: 0 } });
-        const rig = c.prop(skiffRig, { behind: true, state: { draw: 0 } });
-        const hull = c.prop(skiffHull, { state: { draw: 0 } });
+        const rig = c.prop(skiffRig, { behind: true, state: { draw: 0, scale: BIG } });
+        const hull = c.prop(skiffHull, { state: { draw: 0, scale: BIG } });
         const water = c.prop(harbourWater, { state: { draw: 0 } });
         const near = c.prop(swell(11, 0.8), { state: { draw: 0 } });
         const pier = c.prop(quay, { state: { draw: 1 } });
@@ -59,7 +61,7 @@ export const landfallPirate = {
         // The voyage: how fast the sea runs by, how deep the boat has gone, how far out the quay still is.
         // And the pirate in it: how high its feet are above the skiff's waterline, how far from the mast it stands.
         // (Three things that change each at its own pace, so each has its own numbers: the sea and the quay, the depth, the pirate's perch.)
-        const voyage = { way: 1, out: SLIDE, aboard: true, run: 0, t: 0 }, depth = { sunk: 0 }, stand = { perch: FLOOR, off: STERN };
+        const voyage = { way: 1, out: SLIDE, aboard: true, run: 0, t: 0 }, depth = { sunk: 0 }, stand = { perch: DECK, off: STERN };
         c.onLeave(c.clock.onFrame(dt => {
             voyage.t += dt / 1000;
             voyage.run = (voyage.run + voyage.way * 52 * dt / 1000) % WAVE;
@@ -86,7 +88,7 @@ export const landfallPirate = {
         // ── 2. The leak: up the mast; and the compass. ──
         await at(T.leak);
         await c.animate(depth, { sunk: 12 }, 240, easeIn);
-        c.animate(depth, { sunk: 52 }, T.quay - T.leak - 240, linear).then(() => c.animate(depth, { sunk: MAST - WATER }, T.land - T.quay, easeIn)).catch(() => {});
+        c.animate(depth, { sunk: 52 }, T.quay - T.leak - 240, linear).then(() => c.animate(depth, { sunk: TALL - WATER }, T.land - T.quay, easeIn)).catch(() => {});
         // Water round its feet: a look down, one foot lifted and shaken, then the other.
         c.also({ wide: 1, squint: 0, grin: 0.1 }, 120);
         await c.all(c.tween({ tilt: 0, gazeX: 0.1, gazeY: 1 }, 260, easeOut), c.hands({ left: { x: -16, y: -6 }, right: { x: 16, y: -6 } }, 260, easeOut));
@@ -99,7 +101,7 @@ export const landfallPirate = {
         for (let pull = 0; pull < 4; pull++) {
             const up = pull % 2 ? 'left' : 'right', hold = pull % 2 ? 'right' : 'left';
             await c.all(c.hands({ [up]: { x: 3, y: -36 }, [hold]: { x: 3, y: -12 } }, 190, easeOut), c.tween({ crouch: 5 }, 190, easeOut));
-            await c.all(c.animate(stand, { perch: FLOOR + (MAST - FLOOR) * (pull + 1) / 4 }, 300, easeInOut), c.hands({ [up]: { x: 3, y: -14 }, [hold]: { x: 3, y: 6 } }, 300, easeInOut), c.tween({ crouch: 0 }, 300, easeInOut), c.feet({ [up]: { x: 3, y: 12 }, [hold]: { x: 3, y: 2 } }, 300, easeInOut));
+            await c.all(c.animate(stand, { perch: DECK + (TALL - DECK) * (pull + 1) / 4 }, 300, easeInOut), c.hands({ [up]: { x: 3, y: -14 }, [hold]: { x: 3, y: 6 } }, 300, easeInOut), c.tween({ crouch: 0 }, 300, easeInOut), c.feet({ [up]: { x: 3, y: 12 }, [hold]: { x: 3, y: 2 } }, 300, easeInOut));
         }
         // On the masthead, upright: as if it had meant to be there all along.
         await c.all(c.animate(stand, { off: 0 }, 300, easeInOut), c.feet({ left: { x: 0, y: 0 }, right: { x: 0, y: 0 } }, 300, easeInOut), c.hands({ left: { x: -10, y: 10, angle: 30 }, right: { x: 13, y: 6, angle: -20 } }, 300, easeInOut), c.tween({ gazeX: 0.9, gazeY: 0, squint: 0.5, grin: 1 }, 300));
@@ -140,7 +142,7 @@ export const landfallPirate = {
         await at(T.land);
         voyage.aboard = false;
         s.y = ground;
-        c.animate(depth, { sunk: MAST + 22 }, 2400, easeIn).then(() => {
+        c.animate(depth, { sunk: TALL + 22 }, 2400, easeIn).then(() => {
             if (!fx || !c.alive) return;
             const bubbles = fx.particles({ color: INK, width: 1.4 });
             for (let i = 0; i < 9; i++) bubbles.emit({ x: c.figure.points.centre[0] + (X(base) - s.x) + fx.range(-10, 10) * k, y: c.figure.points.ground + WATER * k, vx: fx.range(-12, 12) * k, vy: -fx.range(20, 60) * k, life: fx.range(0.4, 0.9), trail: 0.02 });
