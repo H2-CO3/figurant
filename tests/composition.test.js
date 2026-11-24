@@ -229,3 +229,29 @@ test('landfall: the pirate stays at the foot of the mast while the boat carries 
     show.stop();
     assert.equal(hulls(), 0, 'the hull, drawn over everybody, goes with the boat');
 });
+
+test('the first dance: in hold the two stay within a few units of a step apart whichever way they sway, and she is held up over him while he stands', async () => {
+    const config = (await import('../examples/figurant.config.js')).default;
+    const everyone = { ...config.cast, ...config.emoji };
+    const project = { characters: Object.fromEntries(Object.entries(everyone).map(([key, member]) => [key, member.character])), animations: config.scenes, props: config.props };
+    const { doc, win } = fakeDocument();
+    const stage = createStage({ doc, win });
+    const clock = createClock();
+    const show = playComposition({ stage, clock, composition: config.compositions['first-dance'], ...project, origin: () => [800, 500], unit: 1 });
+    const { him, her } = show.actors;
+    const where = entry => entry.figure.state.x + entry.shift, height = entry => -(entry.figure.state.y + entry.figure.standHeight());
+    await advance(clock, 7000);
+    let swayed = 0;
+    for (let t = 7000; t < 13200; t += 100) {
+        await advance(clock, 100);
+        assert.ok(Math.abs(where(her) - where(him) - 40) < 6, `at ${t + 100} ms they are ${(where(her) - where(him)).toFixed(1)} units apart`);
+        swayed = Math.max(swayed, Math.abs(where(him) + 20));
+    }
+    assert.ok(swayed > 12, `they sway ${swayed.toFixed(1)} units`);
+    await advance(clock, 18500 - 13200);
+    assert.ok(Math.abs(where(him) + 34) < 1 && Math.abs(where(her) - where(him) - 22) < 1.5, `he stands at ${where(him).toFixed(1)}, she is at ${where(her).toFixed(1)}`);
+    assert.ok(height(her) > 70 && Math.abs(height(him)) < 3, `she is ${height(her).toFixed(1)} up, he ${height(him).toFixed(1)}`);
+    await advance(clock, 21500 - 18500);
+    assert.ok(Math.abs(height(her)) < 1 && Math.abs(where(her) - 20) < 1.5, `she is set down at ${where(her).toFixed(1)}`);
+    show.stop();
+});
