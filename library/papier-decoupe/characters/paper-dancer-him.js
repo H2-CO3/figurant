@@ -29,8 +29,8 @@ const head = {
         const quiff = stage.el('g', group);
         k.piece(quiff, 'M -3 -48.6 Q 2 -58 11 -53.6 Q 6 -51.6 6.4 -46.6 Z', NAVY, 0.9);
         const cheeks = [-8.4, 8.4].map(x => k.dot(group, x, -28.4, 2.6, CORAL));
-        // A wide smile, cut from navy paper: it grows with the cheeks.
-        const smile = stage.el('path', group, { fill: NAVY, stroke: 'none' });
+        // A small smile, one soft curve.
+        const smile = stage.el('path', group, { fill: 'none', stroke: NAVY, 'stroke-width': 1.5, 'stroke-linecap': 'round' });
         const eyes = [-5, 5].map(x => stage.el('ellipse', group, { cx: x, cy: -34, rx: 1.9, ry: 1.9, fill: NAVY, stroke: 'none' }));
         const frame = { hips: [[-5, 22], [5, 22]], shoulders: [[-10.6, -11.6], [11, -11.2]], hipY: 22, top: [0, -51], soft: 0.25 };
         return {
@@ -45,8 +45,8 @@ const head = {
                     eye.setAttribute('rx', f(1.9 * (1 + 0.3 * wide)));
                 });
                 cheeks.forEach(cheek => cheek.setAttribute('r', f(2.6 + 2.2 * notch(clamp(s.blush, 0, 1)))));
-                const joy = 1.6 + 1.6 * notch(clamp(s.blush, 0, 1));
-                smile.setAttribute('d', `M -5.4 -27.4 Q 0 ${f(-27.4 + joy * 2.6)} 5.4 -27.4 Q 0 ${f(-27.4 + joy * 1.1)} -5.4 -27.4 Z`);
+                const joy = notch(clamp(s.blush, 0, 1));
+                smile.setAttribute('d', `M ${f(-3.4 - joy)} -26.6 Q 0 ${f(-23.6 + joy)} ${f(3.4 + joy)} -26.6`);
                 quiff.setAttribute('transform', `rotate(${f(notch(clamp(-drag[0] * 2.4, -24, 24) / 24, 4) * 24 - 16 * wide)} 2 -47)`);
                 tie.setAttribute('transform', `rotate(${f(gx * 10)} 0 -9.6)`);
             },

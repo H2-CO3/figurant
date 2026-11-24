@@ -1,7 +1,10 @@
 // A dancer, in cut paper: her. A stick figure dressed in paper: a coral dress
 // with a skirt that flares, a mustard belt, a sand head, navy hair with a
-// ponytail and a coral band, two navy dots for eyes with a lash each, a wide
-// smile, two coral cheeks. What is its own: the ponytail swings behind every move;
+// ponytail and a coral band, two navy dots for eyes with two lashes at the
+// corner of each, a small soft smile, two coral cheeks. What is its own: the
+// ponytail swings behind every move; `spin` turns her round like a card on
+// its edge (1 is one whole turn: at a half she is seen from behind, all hair
+// and ponytail);
 // `twirl` (0 -> 1) opens the skirt wide and lifts its hem, as when she spins;
 // `blush` (0 -> 1) makes the cheeks grow, one notch at a time.
 //
@@ -29,28 +32,40 @@ const head = {
         k.piece(group, 'M -13.6 -34 Q -13.8 -47.6 0 -48 Q 13.8 -47.6 14 -34 Q 13.6 -20.6 0 -20.4 Q -13.4 -20.8 -13.6 -34 Z', SAND, 1.8);
         k.piece(group, 'M -14.6 -32 Q -16 -50.6 0 -50.8 Q 15.4 -50.4 14.8 -36 Q 6 -40 -4 -43.6 Q -11 -40 -14.6 -32 Z', NAVY, 1.1);
         k.piece(group, 'M -12 -45.4 Q 0 -51.6 12.6 -44.6 L 13.4 -41.4 Q 0 -48 -12.8 -42.2 Z', CORAL, 0.7);
-        const cheeks = [-8.4, 8.4].map(x => k.dot(group, x, -28.4, 2.6, CORAL));
-        const eyes = [-5, 5].map(x => stage.el('ellipse', group, { cx: x, cy: -34, rx: 1.9, ry: 1.9, fill: NAVY, stroke: 'none' }));
-        // A wide smile, cut from navy paper: it grows with the cheeks.
-        const smile = stage.el('path', group, { fill: NAVY, stroke: 'none' });
-        const lashes = [-1, 1].map(side => stage.el('path', group, { fill: 'none', stroke: NAVY, 'stroke-width': 1.1, 'stroke-linecap': 'round' }));
+        // Her face, apart: it is not there when she is seen from behind.
+        const face = stage.el('g', group);
+        const cheeks = [-8.4, 8.4].map(x => k.dot(face, x, -28.4, 2.6, CORAL));
+        const eyes = [-5, 5].map(x => stage.el('ellipse', face, { cx: x, cy: -34, rx: 2, ry: 2, fill: NAVY, stroke: 'none' }));
+        // A small smile, one soft curve; two lashes at the outer corner of each eye.
+        const smile = stage.el('path', face, { fill: 'none', stroke: NAVY, 'stroke-width': 1.5, 'stroke-linecap': 'round' });
+        const lashes = [-1, 1].map(side => stage.el('path', face, { fill: 'none', stroke: NAVY, 'stroke-width': 1, 'stroke-linecap': 'round' }));
+        // The back of her head: hair all over, the band, the ponytail down the middle.
+        const back = stage.el('g', group);
+        k.piece(back, 'M -14.6 -34 Q -15 -50.8 0 -50.8 Q 15 -50.6 14.8 -34 Q 14 -20.4 0 -20.2 Q -14 -20.6 -14.6 -34 Z', NAVY, 1.1);
+        k.piece(back, 'M -13.4 -43.6 Q 0 -48.6 13.6 -43.2 L 13.8 -40 Q 0 -45 -13.6 -40.4 Z', CORAL, 0.7);
+        k.piece(back, 'M -4.4 -40 Q 0 -43 4.6 -40 Q 7 -26 3 -13 Q 0 -10 -3 -13.4 Q -6.6 -26 -4.4 -40 Z', NAVY, 1);
         const frame = { hips: [[-5, 22], [5, 22]], shoulders: [[-8.8, -11.6], [9.2, -11.2]], hipY: 22, top: [0, -51], soft: 0.25 };
         return {
-            state: { gazeX: 0, gazeY: 0, lid: 1, wide: 0, squint: 0, blush: 0, twirl: 0 },
+            state: { gazeX: 0, gazeY: 0, lid: 1, wide: 0, squint: 0, blush: 0, twirl: 0, spin: 0 },
             frame: () => frame,
             draw({ state: s, matrix, drag }) {
-                group.setAttribute('transform', `matrix(${matrix.map(n => n.toFixed(4)).join(' ')})`);
+                // Turning round: she narrows to an edge and opens again, facing the other way at each half turn.
+                const round = Math.cos((s.spin || 0) * Math.PI * 2), edge = Math.sign(round || 1) * Math.max(0.1, Math.abs(round));
+                group.setAttribute('transform', `matrix(${matrix.map(n => n.toFixed(4)).join(' ')}) scale(${f(edge)} 1)`);
+                face.setAttribute('display', round >= 0 ? '' : 'none'); back.setAttribute('display', round >= 0 ? 'none' : ''); tail.setAttribute('display', round >= 0 ? '' : 'none');
                 const gx = notch(clamp(s.gazeX, -1, 1), 3), gy = notch(clamp(s.gazeY, -1, 1), 3), wide = clamp(s.wide, 0, 1);
                 eyes.forEach((eye, i) => {
                     const x = (i ? 5 : -5) + gx * 2.6, y = -34 + gy * 2.2;
                     eye.setAttribute('cx', f(x)); eye.setAttribute('cy', f(y));
                     eye.setAttribute('ry', f(1.9 * (0.15 + 0.85 * notch(clamp(s.lid, 0, 1), 2)) * (1 + 0.5 * wide) * (1 - 0.45 * clamp(s.squint, 0, 1))));
                     eye.setAttribute('rx', f(1.9 * (1 + 0.3 * wide)));
-                    lashes[i].setAttribute('d', `M ${f(x + (i ? 1.6 : -1.6))} ${f(y - 1.6)} l ${i ? 2.4 : -2.4} -2`);
+                    // (Level with the eye: above it they would read as a frown.)
+                    const out = i ? 1 : -1;
+                    lashes[i].setAttribute('d', `M ${f(x + out * 2)} ${f(y - 0.5)} l ${f(out * 2.6)} -1.2 M ${f(x + out * 2)} ${f(y + 0.5)} l ${f(out * 2.4)} 0.5`);
                 });
                 cheeks.forEach(cheek => cheek.setAttribute('r', f(2.6 + 2.2 * notch(clamp(s.blush, 0, 1)))));
-                const joy = 1.6 + 1.6 * notch(clamp(s.blush, 0, 1));
-                smile.setAttribute('d', `M -5.4 -27.4 Q 0 ${f(-27.4 + joy * 2.6)} 5.4 -27.4 Q 0 ${f(-27.4 + joy * 1.1)} -5.4 -27.4 Z`);
+                const joy = notch(clamp(s.blush, 0, 1));
+                smile.setAttribute('d', `M ${f(-3.2 - joy)} -26.6 Q 0 ${f(-23.8 + joy)} ${f(3.2 + joy)} -26.6`);
                 // The skirt flares with `twirl`, and with a quick move sideways.
                 const open = notch(clamp(Math.max(s.twirl, Math.abs(drag[0]) / 9), 0, 1));
                 for (const piece of hem) piece.setAttribute('d', skirt(open));

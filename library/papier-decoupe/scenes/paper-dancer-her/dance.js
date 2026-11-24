@@ -24,7 +24,7 @@ export const firstDanceHer = {
         const s = c.state, k = c.figure.k, home = s.x, ground = s.y, base = ctx?.data?.home ?? 130, fx = ctx?.api?.fx ?? null;
         const start = c.clock.now, at = ms => c.wait(Math.max(0, ms - (c.clock.now - start)));
         const X = place => home + (place - base) * k;
-        c.onLeave(() => { s.y = ground; s.twirl = 0; s.blush = 0; c.feet({ left: null, right: null }, 1).catch(() => {}); c.hands({ left: null, right: null }, 1).catch(() => {}); });
+        c.onLeave(() => { s.y = ground; s.twirl = 0; s.blush = 0; s.spin = 0; c.feet({ left: null, right: null }, 1).catch(() => {}); c.hands({ left: null, right: null }, 1).catch(() => {}); });
         s.dir = -1;
 
         // She sees him: a look, a look away, the cheeks.
@@ -48,8 +48,8 @@ export const firstDanceHer = {
             // In the middle of it he lifts her hand, and she turns once round on the spot, led by him.
             if (beat === 4) {
                 await c.all(c.tween({ x: X(SPOT.her), tilt: 0 }, 200, easeInOut), c.hands({ left: { x: -8, y: -48 } }, 200, easeInOut), c.tween({ twirl: 0.8, blush: 1 }, 200));
-                for (let turn = 0; turn < 2; turn++) { s.dir = -s.dir; await c.tween({ squash: turn ? 0 : -0.1 }, 330, easeInOut); }
-                s.dir = -1;
+                await c.tween({ spin: 1 }, 760, easeInOut);
+                s.spin = 0;
                 await c.all(c.tween({ twirl: 0, squash: 0 }, 220, easeInOut), c.hands({ left: { x: -19, y: -4, angle: 200 } }, 220, easeInOut));
                 beat++;
                 continue;
@@ -62,8 +62,8 @@ export const firstDanceHer = {
         // The spin, under his arm: three turns, the skirt wide open.
         await at(T.spin);
         await c.all(c.hands({ left: { x: -8, y: -50 }, right: { x: 16, y: 2, angle: -10 } }, 300, easeInOut), c.tween({ twirl: 1, gazeX: 0 }, 300, easeOut));
-        for (let turn = 0; turn < 6; turn++) { s.dir = -s.dir; await c.tween({ squash: turn % 2 ? 0 : -0.12, tilt: turn % 2 ? -3 : 3 }, 240, easeInOut); }
-        s.dir = -1;
+        await c.tween({ spin: 3 }, 1500, easeInOut);
+        s.spin = 0;
         await c.all(c.tween({ twirl: 0, squash: 0, tilt: 0, gazeX: -1 }, 360, easeInOut), c.hands({ left: null, right: null }, 360));
         // She backs away, all the way; a breath; she runs.
         await at(T.apart);
