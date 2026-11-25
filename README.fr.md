@@ -34,7 +34,7 @@ installer ni à lire. Ouvrez-le dans un dossier vide et collez :
 
 > Clone https://github.com/H2-CO3/figurant, lis son AGENTS.md, lance
 > l'atelier et donne-moi l'adresse. Ensuite, réponds à ce que j'écris dans
-> la page.
+> la page, et reste à l'écoute tant que l'atelier tourne.
 
 Il clone, lance la page, vous dit où l'ouvrir et se met à l'écoute. Vous
 parlez dans la page ; il dessine et anime.
@@ -61,7 +61,7 @@ même dossier et dites-lui :
 
 > Lis AGENTS.md et docs/ATELIER.md. Lance ensuite
 > `node cli/figurant.js fiches --wait` en tâche de fond et réponds à ce que
-> j'écris dans l'atelier.
+> j'écris dans l'atelier, en le relançant après chaque réponse.
 
 À partir de là vous n'utilisez plus que la page : écrivez dans la zone du
 bas, l'assistant dessine ou anime, la page montre le résultat et vous

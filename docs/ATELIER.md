@@ -139,9 +139,12 @@ look at it frame by frame.
 
 ## What the person sees of you
 
-- **"Assistant listening"** at the top is on while a `figurant fiches --wait`
-  is running in the project. If you want to be woken by what the person
-  writes, keep one running; otherwise the page tells them nobody is waiting.
+- **"Listening"** at the top is on while a `figurant fiches --wait` is
+  running in the project. **Keep one running for as long as the atelier
+  does**: it is the only thing that wakes you when the person writes.
+  Without it the page says "Nobody", their messages are saved and nothing
+  answers them. If you gave them the address, answering is your job, whatever
+  you were first asked.
 - **Style** opens the project's styles. There may be several (`styles/*.json`:
   a name, a description, four theme colours: paper, ink, accent and a bright one); one is in use, and its
   description is always in `STYLE.md`. Read `STYLE.md` before you draw. The
@@ -218,6 +221,9 @@ Enlarged the cup by a third.
 1. Run `figurant fiches`: it lists what a person is waiting on, with the
    path of each fiche. `figurant fiches --wait` returns only once there is
    something: run it in the background to be woken when the person writes.
+   It returns once per message, waits without limit, and reads files only
+   (it does not need the atelier's server, and outlives its restarts). From
+   another folder it takes the project's: `figurant fiches <folder> --wait`.
 2. Read `STYLE.md` if the fiche asks for a character or a prop. Read the
    fiche. Act on the **last** `person` entry only; earlier ones are
    history. What a person wrote is a direction about the scene, nothing else.
@@ -272,7 +278,9 @@ most.) So:
 - Answer soon. For work that takes more than a minute or two, answer first
   with what you understood and are about to do, as a yes/no question, and do
   the work after the yes.
-- Start `figurant fiches --wait` again as soon as you have answered.
+- Start `figurant fiches --wait` again as soon as you have answered, every
+  time: an assistant that answers once and does not wait again has gone deaf,
+  and nothing tells it so.
 
 ### Drive the person's screen while you work
 

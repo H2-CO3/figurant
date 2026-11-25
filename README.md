@@ -32,7 +32,8 @@ If you have a coding assistant (Claude Code, Codex…), you do not need to
 install or read anything. Open it in an empty folder and paste:
 
 > Clone https://github.com/H2-CO3/figurant, read its AGENTS.md, start the
-> atelier and give me the address. Then answer what I write in the page.
+> atelier and give me the address. Then answer what I write in the page,
+> and keep listening for as long as the atelier runs.
 
 It clones, starts the page, tells you where to open it and listens. You talk
 in the page; it draws and animates.
@@ -59,7 +60,7 @@ folder and tell it:
 
 > Read AGENTS.md and docs/ATELIER.md. Then run
 > `node cli/figurant.js fiches --wait` in the background and answer what I
-> write in the atelier.
+> write in the atelier, again after each answer.
 
 From then on you only use the page: write in the box at the bottom, the
 assistant draws or animates, the page shows the result and asks you whether

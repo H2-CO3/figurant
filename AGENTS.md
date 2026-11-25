@@ -13,19 +13,41 @@ If a person is at the atelier and wants things made, your job is in
 
 ## If a person just handed you this repository
 
-They want to play with it, not to read about it. It takes four steps and
-nothing to install (no `npm install`, no build, no account, no key):
+Whatever they asked for (to play with it, to try it, to review it, to say
+whether it runs): **the moment you give someone the atelier's address, you
+are the one who answers what they write there.** The page has a box to write
+in. With no assistant listening, what they write is saved and nothing
+answers it: the product is installed and cannot be used. Starting the page is
+half the job; listening is the other half, and nobody has to ask you for it.
 
-1. Clone it if it is not there yet, and check `node -v` says 20.6 or later.
-   That is the only requirement.
+Nothing is installed (no `npm install`, no build, no account, no key):
+
+1. Clone it if it is not there yet, in a folder the person will keep (not a
+   temporary one: what you make for them is files in this copy), and check
+   `node -v` says 20.6 or later. That is the only requirement.
 2. From the repository, start the atelier **in the background**:
    `node cli/figurant.js atelier` (add `--port 4200` if 4173 is taken).
-3. Give the person the address it prints
+3. Read `docs/ATELIER.md` ("If you are the LLM": how a message is answered,
+   where files go). Then start listening, **in the background** too:
+   `node cli/figurant.js fiches --wait`. From another folder, give both
+   paths: `node /path/to/figurant/cli/figurant.js fiches /path/to/figurant --wait`
+   (the atelier prints that line, filled in, when it starts).
+4. Only now give the person the address the atelier printed
    (`http://localhost:4173/__figurant/`) and tell them to write what they
-   want in the box at the bottom of the page.
-4. Read `docs/ATELIER.md`, then run `node cli/figurant.js fiches --wait` in
-   the background: it returns when the person has written something. Answer
-   it, and wait again.
+   want in the box at the bottom of the page. The top of the page says
+   "Listening" when step 3 is done, "Nobody" when it is not.
+5. `fiches --wait` returns **once**, when the person has written something.
+   Each time: answer in the fiche it names, commit what you made (in this
+   copy, on a branch, without pushing: the page's "before and after" are
+   read from git, so here a commit is part of the answer and is not to be
+   waited for), and **run `fiches --wait` again**. Keep doing so for as long
+   as the atelier runs; stop only when the person says so. It waits without
+   limit and reads files only: it need not be started again when the atelier
+   is.
+
+If you do not listen (the person said not to, or you cannot run something in
+the background), say so in plain words: "the box at the bottom of the page
+will not be answered".
 
 `npm test` (Node's own runner) tells you in a few seconds that the copy is
 sound.

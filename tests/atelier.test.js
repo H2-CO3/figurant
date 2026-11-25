@@ -468,6 +468,26 @@ test('a new project has something to show, is well formed, and has a history', a
     } finally { await rm(root, { recursive: true, force: true }); }
 });
 
+test('the atelier, once started, says how to listen to it: the command, with this copy and this project in it', async () => {
+    // An assistant that starts the atelier and gives the address without listening leaves the person writing to nobody.
+    // The last thing it reads before deciding is what the command printed.
+    const { spawn, execFile } = await import('node:child_process');
+    const here = new URL('..', import.meta.url).pathname;
+    const root = await mkdtemp(join(tmpdir(), 'figurant-listen-'));
+    await writeFile(join(root, 'figurant.config.js'), 'export default { cast: {}, scenes: {} };\n');
+    try {
+        const said = await new Promise((done, fail) => { const child = spawn(process.execPath, ['cli/figurant.js', 'atelier', root, '--port', '0'], { cwd: here }); child.stdout.on('data', text => { child.kill(); done(String(text)); }); child.on('error', fail); child.stderr.on('data', text => fail(new Error(String(text)))); });
+        const command = /^\s*node (\S+) fiches (\S+) --wait$/m.exec(said);
+        assert.ok(command, `it names the command to run:\n${said}`);
+        assert.match(said, /background/);
+        assert.match(said, /after each answer/);
+        assert.match(said, /ATELIER\.md/);
+        // The command works as printed, from any folder: here without --wait, which answers at once.
+        const out = await new Promise(done => execFile(process.execPath, [command[1], 'fiches', command[2]], { cwd: tmpdir() }, (error, text, err) => done(text + err)));
+        assert.match(out, /No fiche is waiting/);
+    } finally { await rm(root, { recursive: true, force: true }); }
+});
+
 test('a fresh copy of a project starts in the style its config names', async () => {
     const { spawn } = await import('node:child_process');
     const here = new URL('..', import.meta.url).pathname;
